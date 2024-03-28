@@ -1,6 +1,8 @@
 A web application to experiment with a neural network that recognizes handwritten digits : training, predicting, evaluating the precision.
 
-The app runs in all modern browsers, it is deployed to https://nwolff.github.io/cours-RN/
+Deployed automatically when branch main is pushed:
+
+http://rn.nwolff.info/
 
 The python backend is only needed if you want to train new/different models
 
@@ -10,9 +12,7 @@ Requires an installation of nodejs
 
 ## Installing dependencies
 
-**force** is important for now, il bill become unnecessary onces square releases a new version of svelte-store
-
-    npm install --force
+    npm install
 
 ## Developing
 
@@ -39,7 +39,9 @@ This step makes sure we haven't forgotten anything.
     npm run build
     npm run preview -- --open
 
-## Deploying to GitHub pages
+## Deploying to GitHub pages manually
+
+(The app is currently automatically deployed with github actions when the main branch is pushed)
 
 This will run a full build and deploy
 
