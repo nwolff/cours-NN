@@ -1,10 +1,7 @@
-# Bugs
-
-- Left menu too close to left edge of page
-
 # UX
 
 - Diagramme performance en Français et avec des graphiques plus clairs
+- Show whats being fed when training
 - Training and operating views should be completely different.
 - Carry statistics of models and display them (number of samples seen and accuracy)
 
