@@ -3,11 +3,18 @@
 	import { modelStore } from '../../stores';
 	import DistributionChart from '$lib/DistributionChart.svelte';
 	import DrawBox from '$lib/DrawBox.svelte';
+	import ConfusionMatrix from '$lib/ConfusionMatrix.svelte';
 
 	let tfvis;
 
-	const labels = ['z', '1', 't', 'F', '5', 'six'];
-	const values = [0, 0.1, 0.2, 0.3, 0.5, 0.6];
+	const labels = ['One', 'Two', 'Three', 'Four'];
+	const values = [0, 0.1, 0.2, 0.3];
+
+	const classes = ['A', 'B', 'C'];
+	const labelsAndPredictions = [
+		[0, 1, 2, 1, 0, 0],
+		[0, 1, 2, 2, 2, 2]
+	];
 
 	onMount(async () => {
 		tfvis = await import('@tensorflow/tfjs-vis');
@@ -30,3 +37,4 @@
 
 <DrawBox on:imageData={handleDrawnImage} />
 <DistributionChart {labels} {values} color="orange" />
+<ConfusionMatrix {classes} {labelsAndPredictions} />

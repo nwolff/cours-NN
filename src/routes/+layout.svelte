@@ -6,7 +6,7 @@
 </script>
 
 <AppShell>
-	<Navbar slot="navbar" fixed position={{ top:10, left:10 }} width={{ base: '100%', sm: 110 }}>
+	<Navbar slot="navbar" fixed position={{ top: 10, left: 10 }} width={{ base: '100%', sm: 110 }}>
 		<Stack>
 			<Anchor href="{base}/"><Logo size={40} /></Anchor>
 			<Anchor size="lg" href="{base}/predict" underline={$page.url.pathname.endsWith('/predict')}>
