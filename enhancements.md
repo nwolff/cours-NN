@@ -1,4 +1,14 @@
-# UX
+# # UX
+
+- Carry statistics and history of models and display them (number of samples seen and accuracy)
+- Check for tensor leaks.
+  Are we using the WebGL backend?
+  https://www.tensorflow.org/js/guide/tensors_operations
+- Diagramme performance en Français et avec des graphiques plus clairs
+- Training and operating views show a confusing mix of things.
+  They should most likely be completely separate.
+  Also simplify the link filtering thing, work started on another "betterer branch"
+- Show what's being fed when training, ideally animate it.
 
 - Diagramme performance en Français et avec des graphiques plus clairs
 - Show whats being fed when training

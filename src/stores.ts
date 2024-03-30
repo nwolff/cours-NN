@@ -1,5 +1,4 @@
 import { asyncReadable, writable } from '@square/svelte-store';
-import { base } from '$app/paths';
 import { loadData } from '$lib/data';
 import { DenseNetwork } from '$lib/NetworkShape';
 import * as tf from '@tensorflow/tfjs';
@@ -9,11 +8,6 @@ export const mnistDataStore = asyncReadable(null, async () => {
 });
 
 export const modelStore = writable(newModel());
-
-export const twoHiddenLayersModelStore = asyncReadable(null, async () => {
-	const modelUrl = base + '/two_hidden_layers/model.json';
-	return await tf.loadLayersModel(modelUrl);
-});
 
 export const learningRateStore = writable(0);
 

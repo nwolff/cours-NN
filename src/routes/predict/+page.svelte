@@ -5,13 +5,12 @@
 	import { Link } from '$lib/NetworkShape';
 	import { Space, Grid, Divider, Title, Loader } from '@svelteuidev/core';
 	import * as tf from '@tensorflow/tfjs';
-	import { getNetworkShape, modelStore, twoHiddenLayersModelStore } from '../../stores';
+	import { getNetworkShape, modelStore } from '../../stores';
 	import { onMount } from 'svelte';
 
 	const networkShape = getNetworkShape();
 	const labels = networkShape.outputLayer.labels;
 	let prediction: number[];
-	let twoHiddenLayersPrediction: number[];
 	let activations: number[][];
 
 	let isLoading = true;
@@ -19,7 +18,6 @@
 	$: weights = $modelStore?.weights;
 
 	onMount(async () => {
-		await twoHiddenLayersModelStore.load();
 		await modelStore.load();
 		isLoading = false;
 	});
@@ -47,10 +45,6 @@
 				.toFloat()
 				.div(255)
 		);
-
-		twoHiddenLayersPrediction = tf
-			.squeeze($twoHiddenLayersModelStore.predict(processedImage))
-			.dataSync();
 
 		const activationsTensor = toFeatureModel($modelStore).predict(processedImage);
 		activations = [processedImage, ...activationsTensor].map((x) => tf.squeeze(x).dataSync());
@@ -102,16 +96,12 @@
 
 			<Divider />
 
-			<Title order={4}>Modèle qui apprend</Title>
+			<Title order={4}>Prédiction du Réseau</Title>
 			<Space h="sm" />
 			<DistributionChart {labels} values={prediction} color="#0000ff" />
 			<Space h="sm" />
 
 			<Divider />
-
-			<Title order={4}>Modèle déja entraîné</Title>
-			<Space h="sm" />
-			<DistributionChart {labels} values={twoHiddenLayersPrediction} color="orange" />
 		</Grid.Col>
 
 		<Grid.Col span={3}>
