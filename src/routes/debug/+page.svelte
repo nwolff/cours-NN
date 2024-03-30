@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { modelStore } from '../../stores';
+	import * as tf from '@tensorflow/tfjs';
 	import DistributionChart from '$lib/DistributionChart.svelte';
 	import DrawBox from '$lib/DrawBox.svelte';
 	import ConfusionMatrix from '$lib/ConfusionMatrix.svelte';
+	import { Grid, Button, Loader, Title, Text, Divider, Stack } from '@svelteuidev/core';
 
 	let tfvis;
 
@@ -16,9 +18,12 @@
 		[0, 1, 2, 2, 2, 2]
 	];
 
+	let tfStats: string;
+
 	onMount(async () => {
 		tfvis = await import('@tensorflow/tfjs-vis');
 		showModelSummary();
+		showStats();
 	});
 
 	async function showModelSummary() {
@@ -30,11 +35,23 @@
 		}
 	}
 
+	async function showStats() {
+		tfStats = JSON.stringify(tf.memory(), null, ' ');
+	}
+
 	function handleDrawnImage(event: { detail: { image: CanvasRenderingContext2D } }) {
 		console.log('handleDrawnImage', event.detail.image);
 	}
 </script>
 
+<pre>
+	 {tfStats}
+</pre>
+
+<!--
+
 <DrawBox on:imageData={handleDrawnImage} />
 <DistributionChart {labels} {values} color="orange" />
 <ConfusionMatrix {classes} {labelsAndPredictions} />
+
+-->
