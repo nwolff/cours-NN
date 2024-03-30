@@ -98,10 +98,7 @@
 
 			<Title order={4}>Prédiction du Réseau</Title>
 			<Space h="sm" />
-			<DistributionChart {labels} values={prediction} color="#0000ff" />
-			<Space h="sm" />
-
-			<Divider />
+			<DistributionChart {labels} percentages={prediction} />
 		</Grid.Col>
 
 		<Grid.Col span={3}>

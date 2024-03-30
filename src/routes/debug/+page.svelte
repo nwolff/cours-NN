@@ -9,8 +9,8 @@
 
 	let tfvis;
 
-	const labels = ['One', 'Two', 'Three', 'Four'];
-	const values = [0, 0.1, 0.2, 0.3];
+	const labels = ['A', 'B', 'C', 'D'];
+	const percentages = [0, 0.2, 0.5, 0.3];
 
 	const classes = ['A', 'B', 'C'];
 	const labelsAndPredictions = [
@@ -49,9 +49,9 @@
 </pre>
 
 <!--
-
 <DrawBox on:imageData={handleDrawnImage} />
-<DistributionChart {labels} {values} color="orange" />
+-->
+<DistributionChart {labels} {percentages} color="orange" />
+<!--
 <ConfusionMatrix {classes} {labelsAndPredictions} />
-
 -->

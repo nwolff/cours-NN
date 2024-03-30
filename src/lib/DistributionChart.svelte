@@ -4,23 +4,22 @@
 	import { VegaLite } from 'svelte-vega';
 
 	export let labels: string[] = [];
-	export let values: number[] = [];
-	export let color = 'blue';
+	export let percentages: number[] = [];
+	export let color = '#8888CC';
+	export let highlightColor = '#0000FF';
 
-	$: barchartData = toData(labels, values);
+	$: data = toData(labels, percentages, color, highlightColor);
 
-	$: visualizationSpec = visualizationSpecFromColor(color);
-
-	type BarchartData = {
-		table: { label: string; value: number }[];
+	type DistributionData = {
+		distributionData: { label: string; percentage: number; color: string }[];
 	};
 
-	const defaultVisualizationSpec: VegaLiteSpec = {
+	const spec: VegaLiteSpec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		width: 220,
 		height: 110,
 		data: {
-			name: 'table'
+			name: 'distributionData'
 		},
 		mark: 'bar',
 		encoding: {
@@ -32,30 +31,46 @@
 				axis: { labelFontSize: 18, labelAngle: 0, ticks: false }
 			},
 			y: {
-				field: 'value',
+				field: 'percentage',
 				type: 'quantitative',
 				title: null,
 				scale: { domain: [0, 1] },
 				axis: null
+			},
+			color: {
+				field: 'color',
+				type: 'nominal',
+				scale: null
+			},
+			tooltip: {
+				field: 'percentage',
+				type: 'quantitative',
+				format: '.0%',
+				formatType: 'number'
 			}
 		}
 	};
 
-	const defaultOptions: EmbedOptions = { actions: false };
+	const options: EmbedOptions = { actions: false };
 
-	function toData(labels: string[], values: number[]): BarchartData {
+	function toData(
+		labels: string[],
+		percentages: number[],
+		color: string,
+		highlightColor: string
+	): DistributionData {
+		const maxPercentage = Math.max(...percentages);
 		const rows = [];
 		for (const [i, label] of labels.entries()) {
-			rows.push({ label: label, value: values[i] });
+			const percentage = percentages[i];
+			rows.push({
+				label: label,
+				percentage: percentage,
+				color: percentage == maxPercentage ? highlightColor : color
+			});
 		}
-		return { table: rows };
-	}
-
-	function visualizationSpecFromColor(color: string): VegaLiteSpec {
-		const spec: VegaLiteSpec = JSON.parse(JSON.stringify(defaultVisualizationSpec));
-		spec.encoding.color = { value: color };
-		return spec;
+		return { distributionData: rows };
 	}
 </script>
 
-<VegaLite data={barchartData} spec={visualizationSpec} options={defaultOptions} />
+<VegaLite {data} {spec} {options} />
