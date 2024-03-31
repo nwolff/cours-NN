@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { MnistData } from '$lib/data.js';
-	import { mnistDataStore, modelStore } from '../../stores';
+	import { mnistDataStore, networkStore } from '../../stores';
 	import { Grid, Button, Loader, Title, Text, Divider, Stack, Space } from '@svelteuidev/core';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
@@ -27,7 +27,7 @@
 			const testxs = testData.xs.reshape([testDataSize, 28 * 28]);
 
 			const labels = testData.labels.argMax(-1);
-			const preds = $modelStore.predict(testxs).argMax(-1);
+			const preds = $networkStore.tfModel.predict(testxs).argMax(-1);
 
 			return [labels.arraySync() as number[], preds.arraySync() as number[]];
 		});

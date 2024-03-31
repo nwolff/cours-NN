@@ -8,6 +8,7 @@
 
 # Maybe
 
+- Disable buttons while training is ongoing
 - Show what's being fed when training, ideally animate it
 - Highlight connections when hovering over a neuron.
 - Essayer de suivre le réseau à l’envers pour voir les pixels qui représentent un digit
@@ -16,3 +17,4 @@
 - Séparer accuracy sur entrainement VS jeu de test. Montrer que ça se trompe, éventuellement en choisissant un jeu de test très différent
 - Idée de ne pas montrer un certain chiffre pendant l’entrainement, ou moins le montrer
 - Idée d'entrainer avec un symbole supplémentaire que le réseau reconnait sans qu'on le sache vraiment.
+- Replace SvelteUI with DaisyUI

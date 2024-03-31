@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { modelStore } from '../../stores';
+	import { networkStore } from '../../stores';
 	import * as tf from '@tensorflow/tfjs';
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import DrawBox from '$lib/components/DrawBox.svelte';
@@ -27,9 +27,10 @@
 	});
 
 	async function showModelSummary() {
+		const tfModel: tf.Sequential = $networkStore.tfModel;
 		const summaryContainer = { name: 'Résumé du modèle', tab: 'Inspection' };
-		tfvis.show.modelSummary(summaryContainer, $modelStore);
-		for (const [index, layer] of $modelStore.layers.entries()) {
+		tfvis.show.modelSummary(summaryContainer, tfModel);
+		for (const [index, layer] of tfModel.layers.entries()) {
 			const layerContainer = { name: 'Couche ' + index, tab: 'Inspection' };
 			tfvis.show.layer(layerContainer, layer);
 		}

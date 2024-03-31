@@ -137,7 +137,7 @@ export class MnistData {
 	}
 }
 
-export async function loadData() {
+export async function loadData(): MnistData {
 	const data = new MnistData();
 	await data.load();
 	return data;

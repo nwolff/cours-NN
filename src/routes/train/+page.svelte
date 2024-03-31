@@ -4,17 +4,12 @@
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
-	import {
-		learningRateStore,
-		mnistDataStore,
-		modelStore,
-		newModel,
-		getNetworkShape
-	} from '../../stores';
+	import { learningRateStore, mnistDataStore, networkStore } from '../../stores';
 	import { Button, Loader, Space, Grid, Text, Title, Stack, Divider } from '@svelteuidev/core';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import { newAllDigitsNetwork } from '$lib/models';
 
-	const networkShape = getNetworkShape();
+	const networkShape = $networkStore.shape;
 	let data: MnistData;
 	let isLoading = true;
 	let learningRates = [0];
@@ -23,7 +18,7 @@
 
 	let fitCallbacksContainer: HTMLElement;
 
-	$: weights = $modelStore?.weights;
+	$: weights = $networkStore.tfModel.weights;
 
 	onMount(async () => {
 		tfvis = await import('@tensorflow/tfjs-vis');
@@ -48,9 +43,9 @@
 		epochs = 1,
 		learningRate = 0.01
 	} = {}) {
-		const model = $modelStore;
+		const networkUnderTraining = $networkStore;
 
-		model.optimizer = new tf.SGDOptimizer(learningRate);
+		networkUnderTraining.tfModel.optimizer = new tf.SGDOptimizer(learningRate);
 
 		const testDataSize = trainDataSize / 5;
 
@@ -68,11 +63,12 @@
 		const visualFitCallbacks = tfvis.show.fitCallbacks(fitCallbacksContainer, metrics);
 
 		function onBatchEnd(batch: number, logs: any): Promise<void> {
-			notifyModelChange();
+			networkUnderTraining.trainingRoundDone({ samplesSeen: 100, finalAccuracy: 1 }); // XXX
+			networkStore.update((n) => n); // Just to notify the views
 			return visualFitCallbacks.onBatchEnd(batch, logs);
 		}
 
-		return model.fit(trainXs, trainYs, {
+		return networkUnderTraining.tfModel.fit(trainXs, trainYs, {
 			validationData: [testXs, testYs],
 			epochs: epochs,
 			batchSize: batchSize,
@@ -93,12 +89,8 @@
 		train({ trainDataSize: 5000, batchSize: 100, epochs: 8, learningRate: learningRates[0] });
 	}
 
-	function notifyModelChange() {
-		modelStore.update((m) => m);
-	}
-
 	function resetModel() {
-		modelStore.update(() => newModel());
+		networkStore.update(() => newAllDigitsNetwork()); // XXX
 	}
 
 	function linkFilter(links: Link[]) {

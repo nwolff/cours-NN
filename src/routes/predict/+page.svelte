@@ -5,20 +5,20 @@
 	import { Link } from '$lib/NetworkShape';
 	import { Space, Grid, Divider, Title, Loader } from '@svelteuidev/core';
 	import * as tf from '@tensorflow/tfjs';
-	import { getNetworkShape, modelStore } from '../../stores';
+	import { networkStore } from '../../stores';
 	import { onMount } from 'svelte';
 
-	const networkShape = getNetworkShape();
+	const networkShape = $networkStore?.shape;
 	const labels = networkShape.outputLayer.labels;
 	let prediction: number[];
 	let activations: number[][];
 
 	let isLoading = true;
 
-	$: weights = $modelStore?.weights;
+	$: weights = $networkStore.tfModel.weights;
 
 	onMount(async () => {
-		await modelStore.load();
+		await networkStore.load();
 		isLoading = false;
 	});
 
@@ -26,15 +26,6 @@
 		const image = event.detail.image;
 		const pixels = tf.browser.fromPixels(image, 1);
 		doPrediction(pixels);
-	}
-
-	// The feature model lets us retrieve the activations of intermediate layers
-	function toFeatureModel(model: tf.Sequential) {
-		const outputs = [];
-		for (const layer of model.layers) {
-			outputs.push(layer.output);
-		}
-		return tf.model({ inputs: model.input, outputs: outputs.flat() });
 	}
 
 	function doPrediction(pixels: tf.Tensor) {
@@ -46,8 +37,8 @@
 				.div(255)
 		);
 
-		const activationsTensor = toFeatureModel($modelStore).predict(processedImage);
-		activations = [processedImage, ...activationsTensor].map((x) => tf.squeeze(x).dataSync());
+		const activationsTensor = $networkStore.featureModel.predict(processedImage);
+		activations = [processedImage, ...activationsTensor].map((x) => tf.squeeze(x).arraySync());
 		// console.log("processed image", processedImage);
 
 		prediction = activations[activations.length - 1];
