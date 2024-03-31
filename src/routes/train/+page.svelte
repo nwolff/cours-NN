@@ -3,7 +3,7 @@
 	import type { Link } from '$lib/NetworkShape';
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
-	import NetworkGraph from '$lib/NetworkGraph.svelte';
+	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
 	import {
 		learningRateStore,
 		mnistDataStore,

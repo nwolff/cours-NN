@@ -1,7 +1,7 @@
 <script lang="ts">
-	import DrawBox from '$lib/DrawBox.svelte';
-	import DistributionChart from '$lib/DistributionChart.svelte';
-	import NetworkGraph from '$lib/NetworkGraph.svelte';
+	import DrawBox from '$lib/components/DrawBox.svelte';
+	import DistributionChart from '$lib/components/DistributionChart.svelte';
+	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
 	import { Link } from '$lib/NetworkShape';
 	import { Space, Grid, Divider, Title, Loader } from '@svelteuidev/core';
 	import * as tf from '@tensorflow/tfjs';

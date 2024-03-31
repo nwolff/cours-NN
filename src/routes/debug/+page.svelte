@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import { modelStore } from '../../stores';
 	import * as tf from '@tensorflow/tfjs';
-	import DistributionChart from '$lib/DistributionChart.svelte';
-	import DrawBox from '$lib/DrawBox.svelte';
-	import ConfusionMatrix from '$lib/ConfusionMatrix.svelte';
+	import DistributionChart from '$lib/components/DistributionChart.svelte';
+	import DrawBox from '$lib/components/DrawBox.svelte';
+	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import { Grid, Button, Loader, Title, Text, Divider, Stack } from '@svelteuidev/core';
 
 	let tfvis;

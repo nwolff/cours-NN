@@ -3,7 +3,7 @@
 	import type { MnistData } from '$lib/data.js';
 	import { mnistDataStore, modelStore } from '../../stores';
 	import { Grid, Button, Loader, Title, Text, Divider, Stack, Space } from '@svelteuidev/core';
-	import ConfusionMatrix from '$lib/ConfusionMatrix.svelte';
+	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
 
 	let data: MnistData;

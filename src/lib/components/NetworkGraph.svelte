@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { DenseNetwork, Link, LinkFilter, Layer } from './NetworkShape';
+	import type { DenseNetwork, Link, LinkFilter, Layer } from '../NetworkShape';
 	import type { LayerVariable } from '@tensorflow/tfjs';
 	import { onMount } from 'svelte';
-	import { DefaultMap, zip2 } from './utils';
-	import { allLinks } from './NetworkShape';
+	import { DefaultMap, zip2 } from '../utils';
+	import { allLinks } from '../NetworkShape';
 	import plotly from 'plotly.js-dist';
-	import { hsv2rgb } from './colorconversions';
+	import { hsv2rgb } from '../colorconversions';
 
 	let plotElement: HTMLElement;
 

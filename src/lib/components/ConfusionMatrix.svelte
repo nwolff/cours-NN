@@ -3,6 +3,8 @@
 	import type { EmbedOptions } from 'vega-embed';
 	import { VegaLite } from 'svelte-vega';
 
+	import { zip2 } from '../utils';
+
 	export let classes: string[] = [];
 	export let labelsAndPredictions: [number[], number[]] = [[], []];
 
@@ -14,8 +16,7 @@
 		const aggregates = Array(size)
 			.fill(null)
 			.map(() => Array(size).fill(0));
-		for (const [i, label] of labels.entries()) {
-			const prediction = predictions[i];
+		for (const [label, prediction] of zip2(labels, predictions)) {
 			aggregates[label][prediction] += 1;
 		}
 

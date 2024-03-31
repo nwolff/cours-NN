@@ -2,6 +2,7 @@
 	import type { VegaLiteSpec } from 'svelte-vega';
 	import type { EmbedOptions } from 'vega-embed';
 	import { VegaLite } from 'svelte-vega';
+	import { zip2 } from '../utils';
 
 	export let labels: string[] = [];
 	export let percentages: number[] = [];
@@ -61,8 +62,7 @@
 	): DistributionData {
 		const maxPercentage = Math.max(...percentages);
 		const rows = [];
-		for (const [i, label] of labels.entries()) {
-			const percentage = percentages[i];
+		for (const [label, percentage] of zip2(labels, percentages)) {
 			rows.push({
 				label: label,
 				percentage: percentage,
