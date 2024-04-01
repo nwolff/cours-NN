@@ -5,7 +5,6 @@
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
 	import { learningRateStore, mnistDataStore, networkStore } from '../../stores';
-	import { Button, Loader, Space, Grid, Text, Title, Stack, Divider } from '@svelteuidev/core';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import { newAllDigitsNetwork } from '$lib/models';
 
@@ -85,9 +84,15 @@
 		train({ trainDataSize: 1000, batchSize: 50, epochs: 1, learningRate: learningRates[0] });
 	}
 
+	async function train5000() {
+		train({ trainDataSize: 5000, batchSize: 100, epochs: 1, learningRate: learningRates[0] });
+	}
+
+	/*
 	async function trainFully() {
 		train({ trainDataSize: 5000, batchSize: 100, epochs: 8, learningRate: learningRates[0] });
 	}
+	*/
 
 	function resetModel() {
 		networkStore.update(() => newAllDigitsNetwork()); // XXX
@@ -105,36 +110,53 @@
 	}
 </script>
 
-<Title order={1}>Entraîner le réseau avec des images</Title>
-
-<Divider />
-
 {#if isLoading}
-	<Loader size="xl" />
+	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<Grid cols={4}>
-		<Grid.Col span={1}>
-			<Space h="xl" />
-			<Stack>
-				<Text>Taux d'apprentissage</Text>
-				<RangeSlider
-					bind:values={learningRates}
-					min={0}
-					max={1}
-					step={0.2}
-					pips
-					all="label"
-					springValues={{ stiffness: 0.2, damping: 0.7 }}
-				/>
-				<Button on:click={train100}>Entraîner avec 100 images</Button>
-				<Button on:click={train1000}>Entraîner avec 1000 images</Button>
-				<Button on:click={trainFully}>Entraîner avec 5000 images, 8 fois</Button>
-				<Button color="Red" on:click={resetModel}>Réinitialiser le réseau</Button>
-			</Stack>
+	<div class="grid grid-cols-4 gap-4">
+		<div>
+			<h4 class="text-xl">Entraîner avec des exemples</h4>
+			<br />
+			<p>Taux d'apprentissage</p>
+			<RangeSlider
+				bind:values={learningRates}
+				min={0}
+				max={1}
+				step={0.2}
+				pips
+				all="label"
+				springValues={{ stiffness: 0.2, damping: 0.7 }}
+			/>
+
+			<div>
+				<ul class="menu pt-4">
+					<li class="mt-1">
+						<button class="btn btn-outline btn-primary" on:click={train100}>
+							Entraîner avec 100 images
+						</button>
+					</li>
+					<li class="mt-1">
+						<button class="btn btn-outline btn-primary" on:click={train1000}>
+							Entraîner avec 1'000 images
+						</button>
+					</li>
+					<li class="mt-1">
+						<button class="btn btn-outline btn-primary" on:click={train5000}>
+							Entraîner avec 5'000 images
+						</button>
+					</li>
+					<li class="mt-8">
+						<button class="btn btn-outline btn-error" on:click={resetModel}>
+							Réinitialiser le réseau
+						</button>
+					</li>
+				</ul>
+			</div>
+
 			<div bind:this={fitCallbacksContainer} />
-		</Grid.Col>
-		<Grid.Col span={3}>
+		</div>
+		<div class="col-span-3">
 			<NetworkGraph {networkShape} {weights} {linkFilter} />
-		</Grid.Col>
-	</Grid>
+		</div>
+	</div>
 {/if}

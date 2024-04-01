@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { networkStore } from '../../stores';
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
-	import { Grid, Button, Loader, Title, Text, Divider, Stack } from '@svelteuidev/core';
 
 	import * as tf from '@tensorflow/tfjs';
 
@@ -36,10 +34,14 @@
 	 {tfStats}
 </pre>
 
-<!--
-<DrawBox on:imageData={handleDrawnImage} />
--->
-<DistributionChart {labels} {percentages} color="orange" />
-<!--
-<ConfusionMatrix {classes} {labelsAndPredictions} />
--->
+<div>
+	<DrawBox on:imageData={handleDrawnImage} />
+</div>
+
+<div>
+	<DistributionChart {labels} {percentages} color="orange" />
+</div>
+
+<div>
+	<ConfusionMatrix {classes} {labelsAndPredictions} />
+</div>

@@ -1,7 +1,7 @@
 # TODO
 
+- Diagramme performance en Français et avec des graphiques plus clairs. Finally lets us get rid to tf-vis
 - Carry statistics and history of models and display them (number of samples seen and accuracy)
-- Diagramme performance en Français et avec des graphiques plus clairs
 - Training and operating views show a confusing mix of things:
   They should most likely be completely separate.
   Also simplify the link filtering thing, work started on another "betterer branch"
@@ -17,4 +17,3 @@
 - Séparer accuracy sur entrainement VS jeu de test. Montrer que ça se trompe, éventuellement en choisissant un jeu de test très différent
 - Idée de ne pas montrer un certain chiffre pendant l’entrainement, ou moins le montrer
 - Idée d'entrainer avec un symbole supplémentaire que le réseau reconnait sans qu'on le sache vraiment.
-- Replace SvelteUI with DaisyUI

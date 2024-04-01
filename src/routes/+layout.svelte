@@ -1,28 +1,35 @@
 <script lang="ts">
+	import 'tailwindcss/tailwind.css';
 	import { base } from '$app/paths';
 	import { page } from '$app/stores';
-	import { Stack, Anchor, AppShell, Navbar, Header } from '@svelteuidev/core';
 	import Logo from './_Logo.svelte';
 </script>
 
-<AppShell>
-	<Navbar slot="navbar" fixed position={{ top: 10, left: 10 }} width={{ base: '100%', sm: 110 }}>
-		<Stack>
-			<Anchor href="{base}/"><Logo size={40} /></Anchor>
-			<Anchor size="lg" href="{base}/predict" underline={$page.url.pathname.endsWith('/predict')}>
+<div class="navbar px-8 py-0">
+	<a href="{base}/">
+		<Logo size={40} />
+	</a>
+	<ul class="menu menu-horizontal">
+		<li class="text-lg mx-1">
+			<a href="{base}/predict" class={$page.url.pathname.endsWith('/predict') ? 'active' : ''}>
 				Reconnaître
-			</Anchor>
-			<Anchor size="lg" href="{base}/train" underline={$page.url.pathname.endsWith('/train')}>
+			</a>
+		</li>
+		<li class="text-lg mx-1">
+			<a href="{base}/train" class={$page.url.pathname.endsWith('/train') ? 'active' : ''}>
 				Entraîner
-			</Anchor>
-			<Anchor size="lg" href="{base}/evaluate" underline={$page.url.pathname.endsWith('/evaluate')}>
+			</a>
+		</li>
+		<li class="text-lg mx-1">
+			<a href="{base}/evaluate" class={$page.url.pathname.endsWith('/evaluate') ? 'active' : ''}>
 				Evaluer
-			</Anchor>
-		</Stack>
-	</Navbar>
+			</a>
+		</li>
+	</ul>
+</div>
 
-	<!-- Avoid wasted space at top of page -->
-	<Header fixed height="-10" />
+<div class="divider m-0 pb-6"></div>
 
+<div class="container px-8">
 	<slot />
-</AppShell>
+</div>

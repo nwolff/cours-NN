@@ -1,7 +1,6 @@
 <script lang="ts">
 	// Paint code from https://www.i-am.ai/neural-numbers.html
 	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import { Button, Group } from '@svelteuidev/core';
 
 	const dispatch = createEventDispatcher();
 
@@ -75,7 +74,7 @@
 		removeEventListeners();
 	});
 
-	function clear() {
+	export function clear() {
 		drawcontext.fillRect(0, 0, drawcanvas.width, drawcanvas.height);
 		normalize(100);
 		imageReady();
@@ -191,27 +190,21 @@
 	}
 </script>
 
-<Group>
-	<div class="numbers">
-		<div class="drawcanvas-wrapper">
-			<canvas bind:this={drawcanvas} class="drawcanvas" id="canvas" width="140" height="140" />
-		</div>
-		<div class="normalizecanvas-wrapper">
-			<canvas bind:this={normalizecanvas} class="normalizecanvas" width="28" height="28" />
-		</div>
+<div class="numbers">
+	<div class="drawcanvas-wrapper">
+		<canvas bind:this={drawcanvas} class="drawcanvas" id="canvas" width="140" height="140" />
 	</div>
-</Group>
-<Group>
-	<Button id="clear-canvas" on:click={clear}>Effacer</Button>
-</Group>
+	<div class="normalizecanvas-wrapper">
+		<canvas bind:this={normalizecanvas} class="normalizecanvas" width="28" height="28" />
+	</div>
+</div>
 
 <style>
 	.numbers {
 		display: flex;
-		margin-bottom: 20px;
 	}
+
 	.numbers .drawcanvas-wrapper {
-		flex: 2;
 		width: 140px;
 		height: 140px;
 		border: 8px dashed #666;

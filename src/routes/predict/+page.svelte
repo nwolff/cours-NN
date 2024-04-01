@@ -3,7 +3,6 @@
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
 	import { Link } from '$lib/NetworkShape';
-	import { Space, Grid, Divider, Title, Loader } from '@svelteuidev/core';
 	import * as tf from '@tensorflow/tfjs';
 	import { networkStore } from '../../stores';
 	import { onMount } from 'svelte';
@@ -14,6 +13,7 @@
 	let activations: number[][];
 
 	let isLoading = true;
+	let drawbox;
 
 	$: weights = $networkStore.tfModel.weights;
 
@@ -72,28 +72,19 @@
 	}
 </script>
 
-<Title order={1}>Reconnaître des chiffres</Title>
-
-<Divider />
-
 {#if isLoading}
-	<Loader size="xl" />
+	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<Grid cols={4}>
-		<Grid.Col span={1}>
-			<Space h="lg" />
-			<DrawBox on:imageData={handleDrawnImage} />
-			<Space h="sm" />
-
-			<Divider />
-
-			<Title order={4}>Prédiction du Réseau</Title>
-			<Space h="sm" />
+	<div class="grid grid-cols-4 gap-4">
+		<div>
+			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
+			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
+			<button class="btn btn-outline btn-primary mt-4" on:click={drawbox.clear}>Effacer</button>
+			<h4 class="text-xl mt-14 mb-2">Prédiction du réseau</h4>
 			<DistributionChart {labels} percentages={prediction} />
-		</Grid.Col>
-
-		<Grid.Col span={3}>
+		</div>
+		<div class="col-span-3">
 			<NetworkGraph {networkShape} {activations} {weights} {linkFilter} />
-		</Grid.Col>
-	</Grid>
+		</div>
+	</div>
 {/if}

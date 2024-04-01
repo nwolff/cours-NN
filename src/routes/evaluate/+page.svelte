@@ -2,10 +2,8 @@
 	import { onMount } from 'svelte';
 	import type { MnistData } from '$lib/data.js';
 	import { mnistDataStore, networkStore } from '../../stores';
-	import { Grid, Button, Loader, Title, Text, Divider, Stack, Space } from '@svelteuidev/core';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
-
 	let data: MnistData;
 	let isLoading = true;
 	let labelsAndPredictions: [number[], number[]];
@@ -14,6 +12,7 @@
 		mnistDataStore.load().then((value) => {
 			isLoading = false;
 			data = value;
+			showAccuracy();
 		});
 	});
 
@@ -34,26 +33,24 @@
 	}
 </script>
 
-<Title order={1}>Evaluer la précision du réseau</Title>
-<Divider />
 {#if isLoading}
-	<Loader size="xl" />
+	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<Grid cols={4}>
-		<Grid.Col span={1}>
-			<Space h="md" />
-			<Stack>
-				<Text
-					>A chaque appui sur le bouton, on donne au réseau 1000 nouvelles images de <b>test</b> qu'il
-					n'a jamais vues.
-				</Text>
-				<Button id="show-accuracy" on:click={showAccuracy}>Evaluer la précision</Button>
-			</Stack>
-		</Grid.Col>
-
-		<Grid.Col span={3}>
-			<p />
+	<div class="grid grid-cols-4 gap-4">
+		<div>
+			<p class="text-xl">Evaluer la précision du réseau</p>
+			<br />
+			<p>
+				A chaque appui sur le bouton, on donne au réseau 1000 nouvelles images de <b>test</b> qu'il n'a
+				jamais vues.
+			</p>
+			<br />
+			<button class="btn btn-outline btn-primary" on:click={showAccuracy}
+				>Evaluer la précision</button
+			>
+		</div>
+		<div class="col-span-3">
 			<ConfusionMatrix {classes} {labelsAndPredictions} />
-		</Grid.Col>
-	</Grid>
+		</div>
+	</div>
 {/if}
