@@ -8,7 +8,12 @@
 	export let classes: string[] = [];
 	export let labelsAndPredictions: [number[], number[]] = [[], []];
 
+	export let width = 400;
+	export let height = 400;
+
 	$: data = toData(classes, labelsAndPredictions);
+
+	$: options = optionsFromWidthAndHeight(width, height);
 
 	function toData(classes: string[], [labels, predictions]: [number[], number[]]) {
 		// Aggregate over each label/prediction pair
@@ -39,12 +44,9 @@
 
 	const spec: VegaLiteSpec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+		data: { name: 'matrixData' },
 		width: 400,
 		height: 400,
-		data: {
-			name: 'matrixData'
-		},
-		mark: 'rect',
 		encoding: {
 			x: {
 				field: 'predicted',
@@ -57,30 +59,62 @@
 				type: 'nominal',
 				sort: null,
 				title: 'Chiffre montré'
-			},
-			fill: {
-				field: 'percentage',
-				title: "Nombre d'occurences",
-				type: 'quantitative',
-				scale: {
-					range: ['white', 'blue'],
-					interpolate: 'hsl',
-					domain: [0, 1]
-				},
-				legend: null
-			},
-			tooltip: {
-				field: 'percentage',
-				type: 'quantitative',
-				format: '.0%',
-				formatType: 'number'
 			}
 		},
+		layer: [
+			{
+				mark: 'rect',
+				params: [
+					{
+						name: 'select-row',
+						select: {
+							type: 'point',
+							fields: ['actual'],
+							on: 'pointerover'
+						}
+					}
+				],
+				encoding: {
+					color: {
+						field: 'percentage',
+						title: "Nombre d'occurences",
+						type: 'quantitative',
+						scale: {
+							range: ['white', 'blue'],
+							interpolate: 'hsl',
+							domain: [0, 1]
+						},
+						legend: null
+					}
+				}
+			},
+			{
+				mark: {
+					type: 'text',
+					fontSize: 14
+				},
+				encoding: {
+					text: {
+						field: 'percentage',
+						type: 'quantitative',
+						format: '.0%',
+						formatType: 'number'
+					},
+					color: {
+						condition: { test: "datum['percentage'] < 0.4", value: 'black' },
+						value: 'white'
+					},
+					opacity: {
+						condition: { param: 'select-row', empty: false, value: 1 },
+						value: 0
+					}
+				}
+			}
+		],
 		config: {
 			axis: {
 				titlePadding: 15,
 				titleFontSize: 18,
-				grid: true,
 				tickBand: 'extent',
 				labelAngle: 0,
 				labelFontSize: 12
@@ -88,7 +122,9 @@
 		}
 	};
 
-	const options: EmbedOptions = { actions: false };
+	function optionsFromWidthAndHeight(width: number, height: number): EmbedOptions {
+		return { width: width, height: height, actions: false };
+	}
 </script>
 
 <VegaLite {data} {spec} {options} />

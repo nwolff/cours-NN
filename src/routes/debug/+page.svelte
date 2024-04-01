@@ -13,7 +13,9 @@
 	const labelsAndPredictions = [
 		[0, 1, 2, 1, 0, 0],
 		[0, 1, 2, 2, 2, 2]
-	];
+	] as [number[], number[]];
+
+	let drawbox: DrawBox;
 
 	let tfStats: string;
 
@@ -30,18 +32,25 @@
 	}
 </script>
 
-<pre>
-	 {tfStats}
-</pre>
+<div>
+	<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
+	<button class="btn btn-primary mt-3" on:click={drawbox.clear}> clear </button>
+</div>
+
+<div class="divider"></div>
 
 <div>
-	<DrawBox on:imageData={handleDrawnImage} />
+	<ConfusionMatrix {classes} {labelsAndPredictions} width={150} height={150} />
 </div>
+
+<div class="divider"></div>
 
 <div>
 	<DistributionChart {labels} {percentages} color="orange" />
 </div>
 
-<div>
-	<ConfusionMatrix {classes} {labelsAndPredictions} />
-</div>
+<div class="divider"></div>
+
+<pre>
+	 {tfStats}
+</pre>
