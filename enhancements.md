@@ -1,15 +1,15 @@
 # TODO
 
-- Diagramme performance en Français et avec des graphiques plus clairs. Finally lets us get rid to tf-vis
+- Diagramme performance en Français et avec des graphiques plus simples. 
 - Carry statistics and history of models and display them (number of samples seen and accuracy)
 - Training and operating views show a confusing mix of things:
   They should most likely be completely separate.
   Also simplify the link filtering thing, work started on another "betterer branch"
+- Disable buttons while training is ongoing
+- Show what's being fed when training, ideally animate it
 
 # Maybe
 
-- Disable buttons while training is ongoing
-- Show what's being fed when training, ideally animate it
 - Highlight connections when hovering over a neuron.
 - Essayer de suivre le réseau à l’envers pour voir les pixels qui représentent un digit
 - Entrainer avec un batch de 1 et montrer le gradient.

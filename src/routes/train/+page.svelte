@@ -20,8 +20,6 @@
 	$: weights = $networkStore.tfModel.weights;
 
 	onMount(async () => {
-		tfvis = await import('@tensorflow/tfjs-vis');
-
 		mnistDataStore.load().then((value) => {
 			isLoading = false;
 			data = value;
@@ -58,13 +56,10 @@
 			return [d.xs.reshape([testDataSize, 28 * 28]), d.labels];
 		});
 
-		const metrics = ['acc', 'val_acc'];
-		const visualFitCallbacks = tfvis.show.fitCallbacks(fitCallbacksContainer, metrics);
 
-		function onBatchEnd(batch: number, logs: any): Promise<void> {
+		function onBatchEnd(batch: number, logs: any) {
 			networkUnderTraining.trainingRoundDone({ samplesSeen: 100, finalAccuracy: 1 }); // XXX
 			networkStore.update((n) => n); // Just to notify the views
-			return visualFitCallbacks.onBatchEnd(batch, logs);
 		}
 
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, {
