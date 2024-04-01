@@ -6,6 +6,9 @@
 	import * as tf from '@tensorflow/tfjs';
 	import { networkStore } from '../../stores';
 	import { onMount } from 'svelte';
+	import * as tslog from 'tslog';
+
+	const logger = new tslog.Logger({ name: 'predict' });
 
 	const networkShape = $networkStore?.shape;
 	const labels = networkShape.outputLayer.labels;
@@ -24,25 +27,26 @@
 
 	function handleDrawnImage(event: { detail: { image: ImageData } }) {
 		const image = event.detail.image;
-		const pixels = tf.browser.fromPixels(image, 1);
-		doPrediction(pixels);
+		activations = calculateActivations(image);
+		prediction = activations[activations.length - 1];
+		logger.debug('tf.memory() ', tf.memory());
 	}
 
-	function doPrediction(pixels: tf.Tensor) {
-		// From: https://github.com/tensorflow/tfjs-examples/blob/master/webcam-transfer-learning/index.js
-		const processedImage = tf.tidy(() =>
-			tf
+	function calculateActivations(image: ImageData): number[][] {
+		return tf.tidy(() => {
+			const pixels = tf.browser.fromPixels(image, 1);
+
+			// From: https://github.com/tensorflow/tfjs-examples/blob/master/webcam-transfer-learning/index.js
+			const processedImage = tf
 				.reshape(pixels, [1, 28 * 28])
 				.toFloat()
-				.div(255)
-		);
+				.div(255);
 
-		const activationsTensor = $networkStore.featureModel.predict(processedImage);
-		activations = [processedImage, ...activationsTensor].map((x) => tf.squeeze(x).arraySync());
-		// console.log("processed image", processedImage);
-
-		prediction = activations[activations.length - 1];
-		// console.log('prediction', prediction);
+			const activationsTensor = $networkStore.featureModel.predict(processedImage) as tf.Tensor[];
+			return [processedImage, ...activationsTensor].map((x) =>
+				tf.squeeze(x).arraySync()
+			) as number[][];
+		});
 	}
 
 	function keepTopLinks(links: Link[]): Link[] {

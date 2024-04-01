@@ -46,3 +46,7 @@ This step makes sure we haven't forgotten anything.
 This will run a full build and deploy
 
     npm run gh-pages
+
+# Refs
+
+https://wandb.ai/mostafaibrahim17/ml-articles/reports/A-Deep-Dive-Into-Learning-Curves-in-Machine-Learning--Vmlldzo0NjA1ODY0

@@ -4,6 +4,10 @@
 	import { mnistDataStore, networkStore } from '../../stores';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
+	import * as tslog from 'tslog';
+
+	const logger = new tslog.Logger({ name: 'evaluate' });
+
 	let data: MnistData;
 	let isLoading = true;
 	let labelsAndPredictions: [number[], number[]];
@@ -30,6 +34,8 @@
 
 			return [labels.arraySync() as number[], preds.arraySync() as number[]];
 		});
+
+		logger.debug('tf.memory() ', tf.memory());
 	}
 </script>
 

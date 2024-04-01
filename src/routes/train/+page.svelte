@@ -7,6 +7,9 @@
 	import { learningRateStore, mnistDataStore, networkStore } from '../../stores';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import { newAllDigitsNetwork } from '$lib/models';
+	import * as tslog from 'tslog';
+
+	const logger = new tslog.Logger({ name: 'train' });
 
 	const networkShape = $networkStore.shape;
 	let data: MnistData;
@@ -46,27 +49,46 @@
 
 		const testDataSize = trainDataSize / 5;
 
+		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
 			const d = data.nextTrainBatch(trainDataSize);
 			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
 		});
+		logger.debug('after generating train data: tf.memory()', tf.memory());
 
+		logger.debug('before generating test data: tf.memory()', tf.memory());
 		const [testXs, testYs] = tf.tidy(() => {
 			const d = data.nextTestBatch(testDataSize);
 			return [d.xs.reshape([testDataSize, 28 * 28]), d.labels];
 		});
+		logger.debug('after generating test data: tf.memory()', tf.memory());
 
 		function onBatchEnd(batch: number, logs: any) {
+			logger.debug('onBatchEnd', batch, logs);
 			networkUnderTraining.trainingRoundDone({ samplesSeen: 100, finalAccuracy: 1 }); // XXX
 			networkStore.update((n) => n); // Just to notify the views
 		}
 
+		function onTrainEnd(logs: any) {
+			logger.debug('onTrain end : tf.memory()', tf.memory());
+			tf.dispose(trainXs);
+			tf.dispose(trainYs);
+			tf.dispose(testXs);
+			tf.dispose(testYs);
+			logger.debug('after disposing: tf.memory()', tf.memory());
+		}
+
+		logger.debug('Before fit: tf.memory()', tf.memory());
+
+		// If this fails because there is already another fit running
+		// Then the 4 tensors get leaked (because the cleanup occurs in
+		// onTrainEnd, which is never called)
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, {
 			validationData: [testXs, testYs],
 			epochs: epochs,
 			batchSize: batchSize,
 			shuffle: true,
-			callbacks: { onBatchEnd }
+			callbacks: { onBatchEnd, onTrainEnd }
 		});
 	}
 
