@@ -1,6 +1,6 @@
 # TODO
 
-- Diagramme performance en Français et avec des graphiques plus simples. 
+- Diagramme performance en Français et avec des graphiques plus simples.
 - Carry statistics and history of models and display them (number of samples seen and accuracy)
 - Training and operating views show a confusing mix of things:
   They should most likely be completely separate.

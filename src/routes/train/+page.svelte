@@ -56,7 +56,6 @@
 			return [d.xs.reshape([testDataSize, 28 * 28]), d.labels];
 		});
 
-
 		function onBatchEnd(batch: number, logs: any) {
 			networkUnderTraining.trainingRoundDone({ samplesSeen: 100, finalAccuracy: 1 }); // XXX
 			networkStore.update((n) => n); // Just to notify the views
