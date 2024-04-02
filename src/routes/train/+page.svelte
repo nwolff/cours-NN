@@ -138,8 +138,8 @@
 {#if isLoading}
 	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<div class="grid grid-cols-4 gap-4">
-		<div>
+	<div class="grid grid-cols-7 gap-4">
+		<div class="col-span-2">
 			<h4 class="text-xl">Entraîner avec des exemples</h4>
 			<br />
 			<p>Taux d'apprentissage</p>
@@ -177,7 +177,7 @@
 			</ul>
 			<NetworkStats stats={$networkStore.stats} />
 		</div>
-		<div class="col-span-3">
+		<div class="col-span-5">
 			<NetworkGraph {networkShape} {weights} {linkFilter} />
 		</div>
 	</div>

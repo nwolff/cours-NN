@@ -80,8 +80,8 @@
 {#if isLoading}
 	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<div class="grid grid-cols-4 gap-4">
-		<div>
+	<div class="grid grid-cols-7 gap-4">
+		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4" on:click={drawbox.clear}>Effacer</button>
@@ -90,7 +90,7 @@
 			<h4 class="text-xl mt-12 mb-2">Statistiques</h4>
 			<NetworkStats stats={$networkStore.stats} />
 		</div>
-		<div class="col-span-3">
+		<div class="col-span-5">
 			<NetworkGraph {networkShape} {activations} {weights} {linkFilter} />
 		</div>
 	</div>

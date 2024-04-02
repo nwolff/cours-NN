@@ -43,8 +43,8 @@
 {#if isLoading}
 	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<div class="grid grid-cols-4 gap-4">
-		<div>
+	<div class="grid grid-cols-7 gap-4">
+		<div class="col-span-2">
 			<p class="text-xl">Evaluer la précision du réseau</p>
 			<br />
 			<p>
@@ -57,7 +57,7 @@
 			</button>
 			<NetworkStats stats={$networkStore.stats} />
 		</div>
-		<div class="col-span-3">
+		<div class="col-span-5">
 			<ConfusionMatrix {classes} {labelsAndPredictions} />
 		</div>
 	</div>

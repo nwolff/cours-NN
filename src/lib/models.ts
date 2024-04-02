@@ -79,31 +79,31 @@ function newAllDigitsNetworkShape(): DenseNetwork {
 		{
 			name: "Couche d'entrée",
 			neuron_count: 28 * 28,
-			width: 22,
-			height: 22,
-			marker_size: 6,
+			width: 24,
+			height: 24,
+			marker_size: 7,
 			neurons_per_row: 28
 		},
 		{
 			name: 'Couche cachée 1',
 			neuron_count: 32,
-			width: 60,
+			width: 55,
 			height: 0,
-			marker_size: 18
+			marker_size: 17
 		},
 		{
 			name: 'Couche cachée 2',
 			neuron_count: 32,
-			width: 60,
+			width: 55,
 			height: 0,
-			marker_size: 18
+			marker_size: 17
 		},
 		{
 			name: 'Couche de sortie',
 			neuron_count: 10,
-			width: 50,
+			width: 40,
 			height: 5,
-			marker_size: 18,
+			marker_size: 17,
 			labels: Array.from({ length: 10 }, (_, i) => i.toString())
 		}
 	);
@@ -136,31 +136,31 @@ function newTwoDigitsNetworkShape(): DenseNetwork {
 		{
 			name: "Couche d'entrée",
 			neuron_count: 28 * 28,
-			width: 22,
-			height: 22,
-			marker_size: 6,
+			width: 24,
+			height: 24,
+			marker_size: 7,
 			neurons_per_row: 28
 		},
 		{
 			name: 'Couche cachée 1',
 			neuron_count: 32,
-			width: 60,
+			width: 55,
 			height: 0,
-			marker_size: 18
+			marker_size: 17
 		},
 		{
 			name: 'Couche cachée 2',
 			neuron_count: 16,
-			width: 40,
+			width: 35,
 			height: 0,
-			marker_size: 18
+			marker_size: 17
 		},
 		{
 			name: 'Couche de sortie',
 			neuron_count: 2,
 			width: 20,
 			height: 5,
-			marker_size: 18,
+			marker_size: 17,
 			labels: Array.from({ length: 2 }, (_, i) => i.toString())
 		}
 	);

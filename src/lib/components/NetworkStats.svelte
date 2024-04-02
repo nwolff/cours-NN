@@ -9,7 +9,7 @@
 	$: accuracyPercent = Math.floor(stats.accuracy * 100) || '';
 </script>
 
-<div class="stats shadow stats-vertical xl:stats-horizontal">
+<div class="stats shadow stats-vertical lg:stats-horizontal">
 	<div class="stat">
 		<div class="stat-title">Images vues</div>
 		<div class="stat-value">{formattedNumExamples}</div>
