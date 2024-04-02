@@ -2,6 +2,8 @@
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
+	import { networkStore } from '../../stores';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
 	const labels = ['A', 'B', 'C', 'D'];
 	const percentages = [0, 0.2, 0.5, 0.3];
@@ -19,19 +21,17 @@
 	}
 </script>
 
-<div>
-	<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-	<button class="btn btn-primary mt-3" on:click={drawbox.clear}> clear </button>
-</div>
+<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
+<button class="btn btn-primary mt-3" on:click={drawbox.clear}> clear </button>
 
 <div class="divider"></div>
 
-<div>
-	<ConfusionMatrix {classes} {labelsAndPredictions} width={150} height={150} />
-</div>
+<NetworkStats stats={$networkStore.stats} />
 
 <div class="divider"></div>
 
-<div>
-	<DistributionChart {labels} {percentages} color="orange" />
-</div>
+<ConfusionMatrix {classes} {labelsAndPredictions} width={150} height={150} />
+
+<div class="divider"></div>
+
+<DistributionChart {labels} {percentages} color="orange" />

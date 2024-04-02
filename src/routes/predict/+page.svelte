@@ -7,6 +7,7 @@
 	import { networkStore } from '../../stores';
 	import { onMount } from 'svelte';
 	import * as tslog from 'tslog';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
 	const logger = new tslog.Logger({ name: 'predict' });
 
@@ -84,8 +85,10 @@
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4" on:click={drawbox.clear}>Effacer</button>
-			<h4 class="text-xl mt-14 mb-2">Prédiction du réseau</h4>
+			<h4 class="text-xl mt-12 mb-2">Prédiction</h4>
 			<DistributionChart {labels} percentages={prediction} />
+			<h4 class="text-xl mt-12 mb-2">Statistiques</h4>
+			<NetworkStats stats={$networkStore.stats} />
 		</div>
 		<div class="col-span-3">
 			<NetworkGraph {networkShape} {activations} {weights} {linkFilter} />

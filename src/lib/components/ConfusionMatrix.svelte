@@ -32,10 +32,12 @@
 		for (const [rowIndex, row] of aggregates.entries()) {
 			const rowSum = row.reduce((a, b) => a + b, 0) as number;
 			for (const [colIndex, element] of row.entries()) {
+				const percentage = element / rowSum;
 				matrixData.push({
 					actual: classes[rowIndex],
 					predicted: classes[colIndex],
-					percentage: element / rowSum
+					percentage: percentage,
+					signedPercentage: rowIndex == colIndex ? percentage : -percentage
 				});
 			}
 		}
@@ -76,13 +78,13 @@
 				],
 				encoding: {
 					color: {
-						field: 'percentage',
+						field: 'signedPercentage',
 						title: "Nombre d'occurences",
 						type: 'quantitative',
 						scale: {
-							range: ['white', 'blue'],
+							range: ['red', 'white', 'blue'],
 							interpolate: 'hsl',
-							domain: [0, 1]
+							domain: [-1, 0, 1]
 						},
 						legend: null
 					}

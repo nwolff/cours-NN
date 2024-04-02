@@ -5,6 +5,7 @@
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import * as tslog from 'tslog';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
 	const logger = new tslog.Logger({ name: 'evaluate' });
 
@@ -51,9 +52,10 @@
 				jamais vues.
 			</p>
 			<br />
-			<button class="btn btn-outline btn-primary" on:click={showAccuracy}
-				>Evaluer la précision</button
-			>
+			<button class="btn btn-outline btn-primary" on:click={showAccuracy}>
+				Evaluer la précision
+			</button>
+			<NetworkStats stats={$networkStore.stats} />
 		</div>
 		<div class="col-span-3">
 			<ConfusionMatrix {classes} {labelsAndPredictions} />

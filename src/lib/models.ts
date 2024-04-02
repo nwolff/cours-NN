@@ -4,7 +4,12 @@ import * as tf from '@tensorflow/tfjs';
 
 type TrainingRound = {
 	samplesSeen: number;
-	finalAccuracy: number;
+	finalAccuracy?: number;
+};
+
+export type NetworkStats = {
+	samplesSeen: number;
+	accuracy?: number;
 };
 
 export class NetworkUnderTraining {
@@ -13,7 +18,6 @@ export class NetworkUnderTraining {
 	readonly shape: DenseNetwork;
 
 	private _samplesSeen: number = 0;
-	private _accuracy: number = 0;
 	private trainingStats: TrainingRound[] = [];
 
 	constructor(tfModel: tf.Sequential, networkShape: DenseNetwork) {
@@ -22,17 +26,19 @@ export class NetworkUnderTraining {
 		this.shape = networkShape;
 	}
 
-	get accuracy(): number {
-		return this._accuracy;
-	}
-
-	get samplesSeen(): number {
-		return this._samplesSeen;
+	get stats(): NetworkStats {
+		let accuracy;
+		if (this.trainingStats.length > 0) {
+			accuracy = this.trainingStats[this.trainingStats.length-1].finalAccuracy;
+		}
+		return {
+			samplesSeen: this._samplesSeen,
+			accuracy: accuracy
+		};
 	}
 
 	trainingRoundDone(trainingRound: TrainingRound) {
 		this.trainingStats.push(trainingRound);
-		this._accuracy = trainingRound.finalAccuracy;
 		this._samplesSeen += trainingRound.samplesSeen;
 	}
 }

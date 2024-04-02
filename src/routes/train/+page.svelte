@@ -8,6 +8,7 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import { newAllDigitsNetwork } from '$lib/models';
 	import * as tslog from 'tslog';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
 	const logger = new tslog.Logger({ name: 'train' });
 
@@ -15,10 +16,6 @@
 	let data: MnistData;
 	let isLoading = true;
 	let learningRates = [0];
-
-	let tfvis;
-
-	let fitCallbacksContainer: HTMLElement;
 
 	$: weights = $networkStore.tfModel.weights;
 
@@ -44,10 +41,9 @@
 		learningRate = 0.01
 	} = {}) {
 		const networkUnderTraining = $networkStore;
-
 		networkUnderTraining.tfModel.optimizer = new tf.SGDOptimizer(learningRate);
 
-		const testDataSize = trainDataSize / 5;
+		const validationDataSize = trainDataSize / 5;
 
 		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
@@ -57,24 +53,37 @@
 		logger.debug('after generating train data: tf.memory()', tf.memory());
 
 		logger.debug('before generating test data: tf.memory()', tf.memory());
-		const [testXs, testYs] = tf.tidy(() => {
-			const d = data.nextTestBatch(testDataSize);
-			return [d.xs.reshape([testDataSize, 28 * 28]), d.labels];
+		const [validationXs, validationYs] = tf.tidy(() => {
+			const d = data.nextTestBatch(validationDataSize);
+			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
 		});
 		logger.debug('after generating test data: tf.memory()', tf.memory());
 
-		function onBatchEnd(batch: number, logs: any) {
-			logger.debug('onBatchEnd', batch, logs);
-			networkUnderTraining.trainingRoundDone({ samplesSeen: 100, finalAccuracy: 1 }); // XXX
-			networkStore.update((n) => n); // Just to notify the views
+		function onBatchEnd(batch: number, logs?: tf.Logs) {
+			logger.debug('end batch:', batch, '. logs:', logs);
+			networkUnderTraining.trainingRoundDone({
+				samplesSeen: logs?.size || 0,
+				finalAccuracy: logs?.acc
+			});
+			networkStore.update((n) => n); // Notify subscribers
 		}
 
-		function onTrainEnd(logs: any) {
+		function onEpochEnd(epoch: number, logs?: tf.Logs) {
+			logger.debug('end epoch:', epoch, '. logs:', logs);
+			networkUnderTraining.trainingRoundDone({
+				samplesSeen: 0,
+				finalAccuracy: logs?.val_acc // XXX: Should acc and val_acc be kept separate in networkUnderTraining ?
+			});
+			networkStore.update((n) => n); // Notify subscribers
+		}
+
+		function onTrainEnd(logs?: tf.Logs) {
+			logger.debug('on train end. logs:', logs);
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			tf.dispose(trainXs);
 			tf.dispose(trainYs);
-			tf.dispose(testXs);
-			tf.dispose(testYs);
+			tf.dispose(validationXs);
+			tf.dispose(validationYs);
 			logger.debug('after disposing: tf.memory()', tf.memory());
 		}
 
@@ -84,16 +93,16 @@
 		// Then the 4 tensors get leaked (because the cleanup occurs in
 		// onTrainEnd, which is never called)
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, {
-			validationData: [testXs, testYs],
+			validationData: [validationXs, validationYs],
 			epochs: epochs,
 			batchSize: batchSize,
 			shuffle: true,
-			callbacks: { onBatchEnd, onTrainEnd }
+			callbacks: { onBatchEnd, onTrainEnd, onEpochEnd }
 		});
 	}
 
 	async function train100() {
-		train({ trainDataSize: 100, batchSize: 25, epochs: 1, learningRate: learningRates[0] });
+		train({ trainDataSize: 100, batchSize: 50, epochs: 1, learningRate: learningRates[0] });
 	}
 
 	async function train1000() {
@@ -101,7 +110,7 @@
 	}
 
 	async function train5000() {
-		train({ trainDataSize: 5000, batchSize: 100, epochs: 1, learningRate: learningRates[0] });
+		train({ trainDataSize: 5000, batchSize: 50, epochs: 1, learningRate: learningRates[0] });
 	}
 
 	/*
@@ -144,32 +153,29 @@
 				springValues={{ stiffness: 0.2, damping: 0.7 }}
 			/>
 
-			<div>
-				<ul class="menu pt-4">
-					<li class="mt-1">
-						<button class="btn btn-outline btn-primary" on:click={train100}>
-							Entraîner avec 100 images
-						</button>
-					</li>
-					<li class="mt-1">
-						<button class="btn btn-outline btn-primary" on:click={train1000}>
-							Entraîner avec 1'000 images
-						</button>
-					</li>
-					<li class="mt-1">
-						<button class="btn btn-outline btn-primary" on:click={train5000}>
-							Entraîner avec 5'000 images
-						</button>
-					</li>
-					<li class="mt-8">
-						<button class="btn btn-outline btn-error" on:click={resetModel}>
-							Réinitialiser le réseau
-						</button>
-					</li>
-				</ul>
-			</div>
-
-			<div bind:this={fitCallbacksContainer} />
+			<ul class="menu py-4">
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train100}>
+						Entraîner avec 100 images
+					</button>
+				</li>
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train1000}>
+						Entraîner avec 1'000 images
+					</button>
+				</li>
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train5000}>
+						Entraîner avec 5'000 images
+					</button>
+				</li>
+				<li class="mt-8">
+					<button class="btn btn-outline btn-error" on:click={resetModel}>
+						Réinitialiser le réseau
+					</button>
+				</li>
+			</ul>
+			<NetworkStats stats={$networkStore.stats} />
 		</div>
 		<div class="col-span-3">
 			<NetworkGraph {networkShape} {weights} {linkFilter} />
