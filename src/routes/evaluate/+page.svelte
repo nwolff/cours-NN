@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { MnistData } from '$lib/data.js';
-	import { mnistDataStore, networkStore } from '../../stores';
+	import { networkStore } from '../../stores';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import * as tslog from 'tslog';
@@ -9,16 +8,13 @@
 
 	const logger = new tslog.Logger({ name: 'evaluate' });
 
-	let data: MnistData;
-	let isLoading = true;
 	let labelsAndPredictions: [number[], number[]];
 
+	let isLoading = true;
 	onMount(async () => {
-		mnistDataStore.load().then((value) => {
-			isLoading = false;
-			data = value;
-			showAccuracy();
-		});
+		await networkStore.load();
+		isLoading = false;
+		showAccuracy();
 	});
 
 	const classes = ['Zero', 'Un', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf'];
@@ -27,7 +23,7 @@
 		const testDataSize = 1000;
 
 		labelsAndPredictions = tf.tidy(() => {
-			const testData = data.nextTestBatch(testDataSize);
+			const testData = $networkStore.nextTestBatch(testDataSize);
 			const testxs = testData.xs.reshape([testDataSize, 28 * 28]);
 
 			const labels = testData.labels.argMax(-1);

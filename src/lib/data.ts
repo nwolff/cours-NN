@@ -136,9 +136,3 @@ export class MnistData {
 		return { xs, labels };
 	}
 }
-
-export async function loadData(): MnistData {
-	const data = new MnistData();
-	await data.load();
-	return data;
-}

@@ -1,6 +1,7 @@
 import { DenseNetwork } from './NetworkShape';
 
 import * as tf from '@tensorflow/tfjs';
+import type { MnistData } from './data';
 
 type TrainingRound = {
 	samplesSeen: number;
@@ -12,6 +13,16 @@ export type NetworkStats = {
 	accuracy?: number;
 };
 
+type DataBatch = {
+	xs: tf.Tensor2D;
+	labels: tf.Tensor2D;
+};
+
+interface DataSource {
+	nextTrainBatch: (batchSize: number) => DataBatch;
+	nextTestBatch: (batchSize: number) => DataBatch;
+}
+
 export class NetworkUnderTraining {
 	readonly tfModel: tf.Sequential;
 	readonly featureModel: tf.LayersModel;
@@ -19,17 +30,27 @@ export class NetworkUnderTraining {
 
 	private _samplesSeen: number = 0;
 	private trainingStats: TrainingRound[] = [];
+	private dataSource: DataSource;
 
-	constructor(tfModel: tf.Sequential, networkShape: DenseNetwork) {
+	constructor(tfModel: tf.Sequential, networkShape: DenseNetwork, dataSource: DataSource) {
 		this.tfModel = tfModel;
 		this.featureModel = toFeatureModel(tfModel);
 		this.shape = networkShape;
+		this.dataSource = dataSource;
+	}
+
+	nextTrainBatch(batchSize: number) {
+		return this.dataSource.nextTrainBatch(batchSize);
+	}
+
+	nextTestBatch(batchSize: number) {
+		return this.dataSource.nextTrainBatch(batchSize);
 	}
 
 	get stats(): NetworkStats {
 		let accuracy;
 		if (this.trainingStats.length > 0) {
-			accuracy = this.trainingStats[this.trainingStats.length-1].finalAccuracy;
+			accuracy = this.trainingStats[this.trainingStats.length - 1].finalAccuracy;
 		}
 		return {
 			samplesSeen: this._samplesSeen,
@@ -52,8 +73,12 @@ function toFeatureModel(model: tf.Sequential): tf.LayersModel {
 	return tf.model({ inputs: model.input, outputs: outputs.flat() });
 }
 
-export function newAllDigitsNetwork(): NetworkUnderTraining {
-	return new NetworkUnderTraining(newAllDigitsTFModel(), newAllDigitsNetworkShape());
+export function newAllDigitsNetwork(mnistData: MnistData): NetworkUnderTraining {
+	return new NetworkUnderTraining(
+		newAllDigitsTFModel(),
+		newAllDigitsNetworkShape(),
+		new AllDigitsDataSource(mnistData)
+	);
 }
 
 function newAllDigitsTFModel(): tf.Sequential {
@@ -71,6 +96,19 @@ function newAllDigitsTFModel(): tf.Sequential {
 		metrics: ['accuracy']
 	});
 	return model;
+}
+
+class AllDigitsDataSource implements DataSource {
+	private mnistData: MnistData;
+	constructor(mnistData: MnistData) {
+		this.mnistData = mnistData;
+	}
+	nextTrainBatch(batchSize: number) {
+		return this.mnistData.nextTrainBatch(batchSize);
+	}
+	nextTestBatch(batchSize: number) {
+		return this.mnistData.nextTestBatch(batchSize);
+	}
 }
 
 function newAllDigitsNetworkShape(): DenseNetwork {
@@ -109,8 +147,12 @@ function newAllDigitsNetworkShape(): DenseNetwork {
 	);
 }
 
-export function newTwoDigitsNetwork(): NetworkUnderTraining {
-	return new NetworkUnderTraining(newTwoDigitsTFModel(), newTwoDigitsNetworkShape());
+export function newTwoDigitsNetwork(mnistData: MnistData): NetworkUnderTraining {
+	return new NetworkUnderTraining(
+		newTwoDigitsTFModel(),
+		newTwoDigitsNetworkShape(),
+		new TwoDigitsDataSource(mnistData)
+	);
 }
 
 function newTwoDigitsTFModel(): tf.Sequential {
@@ -164,4 +206,18 @@ function newTwoDigitsNetworkShape(): DenseNetwork {
 			labels: Array.from({ length: 2 }, (_, i) => i.toString())
 		}
 	);
+}
+
+// XXX: Should do some filtering, and also some overfetching
+class TwoDigitsDataSource implements DataSource {
+	private mnistData: MnistData;
+	constructor(mnistData: MnistData) {
+		this.mnistData = mnistData;
+	}
+	nextTrainBatch(batchSize: number) {
+		return this.mnistData.nextTrainBatch(batchSize);
+	}
+	nextTestBatch(batchSize: number) {
+		return this.mnistData.nextTestBatch(batchSize);
+	}
 }

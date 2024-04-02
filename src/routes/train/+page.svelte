@@ -1,33 +1,28 @@
 <script lang="ts">
-	import type { MnistData } from '$lib/data.js';
 	import type { Link } from '$lib/NetworkShape';
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
-	import { learningRateStore, mnistDataStore, networkStore } from '../../stores';
+	import { learningRateStore, networkStore } from '../../stores';
 	import RangeSlider from 'svelte-range-slider-pips';
-	import { newAllDigitsNetwork } from '$lib/models';
 	import * as tslog from 'tslog';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
 	const logger = new tslog.Logger({ name: 'train' });
 
-	const networkShape = $networkStore.shape;
-	let data: MnistData;
-	let isLoading = true;
 	let learningRates = [0];
 
-	$: weights = $networkStore.tfModel.weights;
+	$: networkShape = $networkStore?.shape;
 
+	$: weights = $networkStore?.tfModel.weights;
+
+	let isLoading = true;
 	onMount(async () => {
-		mnistDataStore.load().then((value) => {
-			isLoading = false;
-			data = value;
-		});
-
+		await networkStore.load();
 		learningRateStore.load().then((value) => {
 			learningRates = [value];
 		});
+		isLoading = false;
 	});
 
 	onDestroy(async () => {
@@ -47,14 +42,14 @@
 
 		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
-			const d = data.nextTrainBatch(trainDataSize);
+			const d = $networkStore.nextTrainBatch(trainDataSize);
 			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
 		});
 		logger.debug('after generating train data: tf.memory()', tf.memory());
 
 		logger.debug('before generating test data: tf.memory()', tf.memory());
 		const [validationXs, validationYs] = tf.tidy(() => {
-			const d = data.nextTestBatch(validationDataSize);
+			const d = $networkStore.nextTestBatch(validationDataSize);
 			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
 		});
 		logger.debug('after generating test data: tf.memory()', tf.memory());
@@ -72,7 +67,7 @@
 			logger.debug('end epoch:', epoch, '. logs:', logs);
 			networkUnderTraining.trainingRoundDone({
 				samplesSeen: 0,
-				finalAccuracy: logs?.val_acc // XXX: Should acc and val_acc be kept separate in networkUnderTraining ?
+				finalAccuracy: logs?.val_acc
 			});
 			networkStore.update((n) => n); // Notify subscribers
 		}
@@ -120,7 +115,7 @@
 	*/
 
 	function resetModel() {
-		networkStore.update(() => newAllDigitsNetwork()); // XXX
+		networkStore.reload();
 	}
 
 	function linkFilter(links: Link[]) {

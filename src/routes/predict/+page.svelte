@@ -11,16 +11,16 @@
 
 	const logger = new tslog.Logger({ name: 'predict' });
 
-	const networkShape = $networkStore?.shape;
-	const labels = networkShape.outputLayer.labels;
+	$: networkShape = $networkStore?.shape;
+	$: labels = networkShape?.outputLayer.labels;
 	let prediction: number[];
 	let activations: number[][];
 
-	let isLoading = true;
 	let drawbox;
 
-	$: weights = $networkStore.tfModel.weights;
+	$: weights = $networkStore?.tfModel.weights;
 
+	let isLoading = true;
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
