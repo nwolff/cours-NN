@@ -4,9 +4,9 @@ Based on :
 https://medium.com/analytics-vidhya/lenet-with-tensorflow-a35da0d503df
 
 """
+import keras
 import tensorflow as tf
-from tensorflow import keras
-from keras import datasets, models, layers, losses
+from keras import datasets, layers, losses, models
 
 # For repeatable results
 keras.utils.set_random_seed(1)
@@ -27,7 +27,8 @@ y_train = y_train[:-2000]
 
 model = models.Sequential(
     [
-        layers.Conv2D(6, 5, activation="tanh", input_shape=x_train.shape[1:]),
+        layers.Input(shape=x_train.shape[1:]),
+        layers.Conv2D(6, 5, activation="tanh"),
         layers.AveragePooling2D(2),
         layers.Activation("sigmoid"),
         layers.Conv2D(16, 5, activation="tanh"),
@@ -62,4 +63,4 @@ scores = model.evaluate(x_test, y_test, verbose=0)
 print("Loss: %.2f%%" % (scores[0] * 100))
 print("Accuracy: %.2f%%" % (scores[1] * 100))
 
-model.save("trained_models/le_net.h5")
+model.save("build/le_net.keras")

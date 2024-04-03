@@ -1,7 +1,12 @@
 import { DenseNetwork } from './NetworkShape';
 
 import * as tf from '@tensorflow/tfjs';
-import type { MnistData } from './data';
+import {
+	MnistData,
+	allDigitsDataSourceConfig,
+	zeroOneDataSourceConfig,
+	type DataSource
+} from './datasource';
 
 type TrainingRound = {
 	samplesSeen: number;
@@ -13,24 +18,14 @@ export type NetworkStats = {
 	accuracy?: number;
 };
 
-export type DataBatch = {
-	xs: tf.Tensor2D;
-	labels: tf.Tensor2D;
-};
-
-interface DataSource {
-	nextTrainBatch: (batchSize: number) => DataBatch;
-	nextTestBatch: (batchSize: number) => DataBatch;
-}
-
 export class NetworkUnderTraining {
 	readonly tfModel: tf.Sequential;
 	readonly featureModel: tf.LayersModel;
 	readonly shape: DenseNetwork;
+	readonly dataSource: DataSource;
 
 	private _samplesSeen: number = 0;
 	private trainingStats: TrainingRound[] = [];
-	private dataSource: DataSource;
 
 	constructor(tfModel: tf.Sequential, networkShape: DenseNetwork, dataSource: DataSource) {
 		this.tfModel = tfModel;
@@ -73,11 +68,11 @@ function toFeatureModel(model: tf.Sequential): tf.LayersModel {
 	return tf.model({ inputs: model.input, outputs: outputs.flat() });
 }
 
-export function newAllDigitsNetwork(mnistData: MnistData): NetworkUnderTraining {
+export function newAllDigitsNetwork(): NetworkUnderTraining {
 	return new NetworkUnderTraining(
 		newAllDigitsTFModel(),
 		newAllDigitsNetworkShape(),
-		new AllDigitsDataSource(mnistData)
+		new MnistData(allDigitsDataSourceConfig)
 	);
 }
 
@@ -96,19 +91,6 @@ function newAllDigitsTFModel(): tf.Sequential {
 		metrics: ['accuracy']
 	});
 	return model;
-}
-
-class AllDigitsDataSource implements DataSource {
-	private mnistData: MnistData;
-	constructor(mnistData: MnistData) {
-		this.mnistData = mnistData;
-	}
-	nextTrainBatch(batchSize: number) {
-		return this.mnistData.nextTrainBatch(batchSize);
-	}
-	nextTestBatch(batchSize: number) {
-		return this.mnistData.nextTestBatch(batchSize);
-	}
 }
 
 function newAllDigitsNetworkShape(): DenseNetwork {
@@ -147,18 +129,17 @@ function newAllDigitsNetworkShape(): DenseNetwork {
 	);
 }
 
-export function newTwoDigitsNetwork(mnistData: MnistData): NetworkUnderTraining {
+export function newZeroOneNetwork(): NetworkUnderTraining {
 	return new NetworkUnderTraining(
-		newTwoDigitsTFModel(),
-		newTwoDigitsNetworkShape(),
-		new TwoDigitsDataSource(mnistData)
+		newZeroOneTFModel(),
+		newZeroOneNetworkShape(),
+		new MnistData(zeroOneDataSourceConfig)
 	);
 }
 
-function newTwoDigitsTFModel(): tf.Sequential {
+function newZeroOneTFModel(): tf.Sequential {
 	const model = tf.sequential();
 	model.add(tf.layers.dense({ inputShape: [28 * 28], units: 32, activation: 'relu' }));
-	model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
 	model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
 
 	// This can be changed later, while training the model
@@ -172,9 +153,9 @@ function newTwoDigitsTFModel(): tf.Sequential {
 	return model;
 }
 
-function newTwoDigitsNetworkShape(): DenseNetwork {
+function newZeroOneNetworkShape(): DenseNetwork {
 	return new DenseNetwork(
-		15,
+		12,
 		{
 			name: "Couche d'entrée",
 			neuron_count: 28 * 28,
@@ -186,38 +167,17 @@ function newTwoDigitsNetworkShape(): DenseNetwork {
 		{
 			name: 'Couche cachée 1',
 			neuron_count: 32,
-			width: 55,
+			width: 40,
 			height: 0,
-			marker_size: 17
-		},
-		{
-			name: 'Couche cachée 2',
-			neuron_count: 16,
-			width: 35,
-			height: 0,
-			marker_size: 17
+			marker_size: 14
 		},
 		{
 			name: 'Couche de sortie',
 			neuron_count: 2,
 			width: 20,
-			height: 5,
+			height: 0,
 			marker_size: 17,
 			labels: Array.from({ length: 2 }, (_, i) => i.toString())
 		}
 	);
-}
-
-// XXX: Should do some filtering, and also some overfetching
-class TwoDigitsDataSource implements DataSource {
-	private mnistData: MnistData;
-	constructor(mnistData: MnistData) {
-		this.mnistData = mnistData;
-	}
-	nextTrainBatch(batchSize: number) {
-		return this.mnistData.nextTrainBatch(batchSize);
-	}
-	nextTestBatch(batchSize: number) {
-		return this.mnistData.nextTestBatch(batchSize);
-	}
 }

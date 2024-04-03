@@ -1,8 +1,9 @@
 # TODO
 
-- Disable buttons while training is ongoing
+- Disable buttons while training is ongoing (this should also fix the 4 tensor leaks)
 - Show what's being fed when training, ideally animate it
-- Work with 0 and 1 models, find a UI thingy (maybe a url parameter ?) to select which one
+- find a way in the UI to switch between models.
+- Error in console when resizing
 
 # Maybe
 
@@ -14,8 +15,3 @@
 - Séparer accuracy sur entrainement VS jeu de test. Montrer que ça se trompe, éventuellement en choisissant un jeu de test très différent
 - Idée de ne pas montrer un certain chiffre pendant l’entrainement, ou moins le montrer
 - Idée d'entrainer avec un symbole supplémentaire que le réseau reconnait sans qu'on le sache vraiment.
-
-# Technical
-
-- Memory leaks on training: One on every run + 4 when there is already a training running
-- Error in console when resizing

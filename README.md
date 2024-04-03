@@ -1,10 +1,10 @@
 A web application to experiment with a neural network that recognizes handwritten digits : training, predicting, evaluating the precision.
 
-Deployed automatically when branch main is pushed:
+Deployed automatically when branch main is pushed, to:
 
 http://rn.nwolff.info/
 
-The python backend is only needed if you want to train new/different models
+The python backend is only needed if you want to train new/different models or generate new datasets for use in the frontend
 
 # Tooling
 
@@ -50,3 +50,9 @@ This will run a full build and deploy
 # Refs
 
 https://wandb.ai/mostafaibrahim17/ml-articles/reports/A-Deep-Dive-Into-Learning-Curves-in-Machine-Learning--Vmlldzo0NjA1ODY0
+
+https://medium.com/duke-ai-society-blog/training-neural-networks-for-binary-classification-identifying-types-of-breast-cancer-keras-in-r-b38fb26a500c
+
+https://artemoppermann.com/activation-functions-in-deep-learning-sigmoid-tanh-relu/
+
+https://www.tensorflow.org/tutorials/keras/keras_tuner

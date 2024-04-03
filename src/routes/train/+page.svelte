@@ -38,7 +38,7 @@
 		const networkUnderTraining = $networkStore;
 		networkUnderTraining.tfModel.optimizer = new tf.SGDOptimizer(learningRate);
 
-		const validationDataSize = trainDataSize / 5;
+		const validationDataSize = Math.ceil(trainDataSize / 5);
 
 		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
@@ -96,6 +96,10 @@
 		});
 	}
 
+	async function train10() {
+		train({ trainDataSize: 10, batchSize: 10, epochs: 1, learningRate: learningRates[0] });
+	}
+
 	async function train100() {
 		train({ trainDataSize: 100, batchSize: 50, epochs: 1, learningRate: learningRates[0] });
 	}
@@ -149,6 +153,11 @@
 			/>
 
 			<ul class="menu py-4">
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train10}>
+						Entraîner avec 10 images
+					</button>
+				</li>
 				<li class="mt-1">
 					<button class="btn btn-outline btn-primary" on:click={train100}>
 						Entraîner avec 100 images

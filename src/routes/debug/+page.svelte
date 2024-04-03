@@ -5,8 +5,12 @@
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import { onMount } from 'svelte';
-	import type { DataBatch } from '$lib/models';
+	import type { DataBatch } from '$lib/datasource';
 	import LabelledImage from '$lib/components/LabelledImage.svelte';
+	import * as tslog from 'tslog';
+	import * as tf from '@tensorflow/tfjs';
+
+	const logger = new tslog.Logger({ name: 'debug' });
 
 	const labels = ['A', 'B', 'C', 'D'];
 	const percentages = [0, 0.2, 0.5, 0.3];
@@ -23,6 +27,7 @@
 
 	function nextImage() {
 		indexInBatch += 1;
+		logger.debug('tf.memory() ', tf.memory());
 	}
 
 	let drawbox: DrawBox;

@@ -12,5 +12,6 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
-# Ignore anything that was given, like tensorflow models
+# Ignore anything that's not js/ts code.
+/backend_prep
 /static
