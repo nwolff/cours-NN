@@ -13,7 +13,7 @@ export type NetworkStats = {
 	accuracy?: number;
 };
 
-type DataBatch = {
+export type DataBatch = {
 	xs: tf.Tensor2D;
 	labels: tf.Tensor2D;
 };
