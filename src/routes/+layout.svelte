@@ -21,6 +21,14 @@
 			</a>
 		</li>
 		<li class="text-lg mx-1">
+			<a
+				href="{base}/trainmanually"
+				class={$page.url.pathname.endsWith('/trainmanually') ? 'active' : ''}
+			>
+				Entraîner manuellement
+			</a>
+		</li>
+		<li class="text-lg mx-1">
 			<a href="{base}/evaluate" class={$page.url.pathname.endsWith('/evaluate') ? 'active' : ''}>
 				Evaluer
 			</a>
