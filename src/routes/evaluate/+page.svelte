@@ -3,12 +3,12 @@
 	import { networkStore } from '../../stores';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
-	import * as tslog from 'tslog';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 
-	const logger = new tslog.Logger({ name: 'evaluate' });
-
 	let labelsAndPredictions: [number[], number[]];
+
+	$: classes = $networkStore?.shape.outputLayer.labels;
+	$: testDataSize = classes?.length * 50;
 
 	let isLoading = true;
 	onMount(async () => {
@@ -17,22 +17,16 @@
 		showAccuracy();
 	});
 
-	const classes = ['Zero', 'Un', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf'];
-
 	function showAccuracy() {
-		const testDataSize = 1000;
-
 		labelsAndPredictions = tf.tidy(() => {
 			const testData = $networkStore.nextTestBatch(testDataSize);
-			const testxs = testData.xs.reshape([testDataSize, 28 * 28]);
+			const testxs = testData.xs.reshape([testDataSize, -1]);
 
 			const labels = testData.labels.argMax(-1);
 			const preds = $networkStore.tfModel.predict(testxs).argMax(-1);
 
 			return [labels.arraySync() as number[], preds.arraySync() as number[]];
 		});
-
-		logger.debug('tf.memory() ', tf.memory());
 	}
 </script>
 
@@ -44,8 +38,8 @@
 			<p class="text-xl">Evaluer la précision du réseau</p>
 			<br />
 			<p>
-				A chaque appui sur le bouton, on donne au réseau 1000 nouvelles images de <b>test</b> qu'il n'a
-				jamais vues.
+				A chaque appui sur le bouton, on donne au réseau {testDataSize} nouvelles images de
+				<b>test</b> qu'il n'a jamais vues.
 			</p>
 			<br />
 			<button class="btn btn-outline btn-primary" on:click={showAccuracy}>
