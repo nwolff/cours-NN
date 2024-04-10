@@ -8,8 +8,8 @@
 	export let classes: string[] = [];
 	export let labelsAndPredictions: [number[], number[]] = [[], []];
 
-	export let width = 400;
-	export let height = 400;
+	export let width = 300;
+	export let height = 300;
 
 	$: data = toData(classes, labelsAndPredictions);
 
@@ -29,13 +29,13 @@
 		// (because in the data we got there were not the same number of labels shown to the network)
 		// And build a datastructure that can be easily fed into vega
 		const matrixData = [];
-		for (const [rowIndex, row] of aggregates.entries()) {
-			const rowSum = row.reduce((a, b) => a + b, 0) as number;
-			for (const [colIndex, element] of row.entries()) {
-				const percentage = element / rowSum;
+		for (const [colIndex, col] of aggregates.entries()) {
+			const colSum = col.reduce((a, b) => a + b, 0) as number;
+			for (const [rowIndex, element] of col.entries()) {
+				const percentage = element / colSum;
 				matrixData.push({
-					actual: classes[rowIndex],
-					predicted: classes[colIndex],
+					actual: classes[colIndex],
+					predicted: classes[rowIndex],
 					percentage: percentage,
 					signedPercentage: rowIndex == colIndex ? percentage : -percentage
 				});
@@ -51,16 +51,19 @@
 		height: 400,
 		encoding: {
 			x: {
-				field: 'predicted',
-				type: 'nominal',
-				sort: null,
-				title: 'Chiffre prédit'
-			},
-			y: {
 				field: 'actual',
 				type: 'nominal',
 				sort: null,
-				title: 'Chiffre montré'
+				title: 'Classe réelle',
+				axis: {
+					orient: 'top'
+				}
+			},
+			y: {
+				field: 'predicted',
+				type: 'nominal',
+				sort: null,
+				title: 'Prédiction'
 			}
 		},
 		layer: [
@@ -68,7 +71,7 @@
 				mark: 'rect',
 				params: [
 					{
-						name: 'select-row',
+						name: 'select-col',
 						select: {
 							type: 'point',
 							fields: ['actual'],
@@ -79,7 +82,6 @@
 				encoding: {
 					color: {
 						field: 'signedPercentage',
-						title: "Nombre d'occurences",
 						type: 'quantitative',
 						scale: {
 							range: ['red', 'white', 'blue'],
@@ -93,7 +95,7 @@
 			{
 				mark: {
 					type: 'text',
-					fontSize: 14
+					fontSize: 13
 				},
 				encoding: {
 					text: {
@@ -107,7 +109,7 @@
 						value: 'white'
 					},
 					opacity: {
-						condition: { param: 'select-row', empty: false, value: 1 },
+						condition: { param: 'select-col', empty: false, value: 1 },
 						value: 0
 					}
 				}
@@ -116,10 +118,10 @@
 		config: {
 			axis: {
 				titlePadding: 15,
-				titleFontSize: 18,
+				titleFontSize: 20,
 				tickBand: 'extent',
 				labelAngle: 0,
-				labelFontSize: 12
+				labelFontSize: 17
 			}
 		}
 	};
