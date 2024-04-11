@@ -5,7 +5,7 @@
 	import { zip2 } from '$lib/generic/utils';
 
 	export let classes: string[] = [];
-	export let percentages: number[] = [];
+	export let percentages: number[] | undefined;
 	export let color = '#8888CC';
 	export let highlightColor = '#0000FF';
 
@@ -29,7 +29,7 @@
 				type: 'nominal',
 				sort: null,
 				title: null,
-				axis: { labelFontSize: 18, labelAngle: 0, ticks: false }
+				axis: { labelFontSize: 18, tickBand: 'extent' }
 			},
 			y: {
 				field: 'percentage',
@@ -56,18 +56,28 @@
 
 	function toData(
 		labels: string[],
-		percentages: number[],
+		percentages: number[] | undefined,
 		color: string,
 		highlightColor: string
 	): DistributionData {
-		const maxPercentage = Math.max(...percentages);
 		const rows = [];
-		for (const [label, percentage] of zip2(labels, percentages)) {
-			rows.push({
-				label: label,
-				percentage: percentage,
-				color: percentage == maxPercentage ? highlightColor : color
-			});
+		if (percentages) {
+			const maxPercentage = Math.max(...percentages);
+			for (const [label, percentage] of zip2(labels, percentages)) {
+				rows.push({
+					label: label,
+					percentage: percentage,
+					color: percentage == maxPercentage ? highlightColor : color
+				});
+			}
+		} else {
+			for (const label of labels) {
+				rows.push({
+					label: label,
+					percentage: 0,
+					color: 'black'
+				});
+			}
 		}
 		return { distributionData: rows };
 	}

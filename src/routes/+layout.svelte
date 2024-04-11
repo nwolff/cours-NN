@@ -23,6 +23,11 @@
 				Tous les chiffres
 			</a>
 		</li>
+		<li class="text-lg mx-1">
+			<a href="{base}/fashion" class={$page.url.pathname.endsWith('/fashion') ? 'active' : ''}>
+				Mode
+			</a>
+		</li>
 	</ul>
 </div>
 

@@ -12,8 +12,8 @@ x_test = x_test / 255
 
 x_val = x_train[-2000:, :]
 y_val = y_train[-2000:]
-x_train = x_train[:-2000, :]
-y_train = y_train[:-2000]
+x_train = x_train[:2000, :]
+y_train = y_train[:2000]
 
 
 def build_model(hp):

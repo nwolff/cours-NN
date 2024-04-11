@@ -1,11 +1,12 @@
 # TODO
 
-- Fashion
-- Entrainer à la main le réseau. Résout : Entrainer avec un batch de 1 et montrer le gradient.
 - Show what's being fed when training
+- Entrainer à la main le réseau. Résout : Entrainer avec un batch de 1 et montrer le gradient.
+- Better fashion input
 
 # Later
 
+- Extract common things from all routes pages
 - Disable buttons while training is ongoing (this should also fix 4 tensor leaks)
 - Error in console when resizing
 

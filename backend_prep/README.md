@@ -9,14 +9,28 @@
 
 # Preparing datasets
 
-We use the full MNIST dataset, but also want a trimmed-down version with only zeroes and ones.
+## Zero one dataset
+We want a trimmed-down version of the MNIST dataset with only zeroes and ones.
 
 Because it's painful to do the trimming in the frontend (masking data is asynchronous and that mixes really badly with the manual memory management required by tensors),
 we prepare that dataset here in python and then use it from the frontend.
 
     ./make_zero_one_dataset.py
-
     cp build/zero_one* ../static
+
+## Fashion
+The original format it's in (gzipped binary files) would mean more work in the frontend.
+We prefer transforming the data here, because we get support from keras and because python is simpler.
+
+
+    ./make_fashion_dataset.py
+
+If you get an ssl exception then you'll have to patch the url in the keras library to replace https by http
+
+The next step is :
+
+    cp build/fashion* ../static
+
 
 # Training
 

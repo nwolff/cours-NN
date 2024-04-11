@@ -11,7 +11,7 @@
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 
-	const logger = new tslog.Logger({ name: 'train' });
+	const logger = new tslog.Logger({ name: 'all_digits' });
 
 	let learningRates = [0];
 
@@ -22,9 +22,10 @@
 	$: weights = $networkStore?.tfModel.weights;
 
 	let drawbox: DrawBox;
-	let prediction: number[];
-	let activations: number[][];
+	let prediction: number[] | undefined;
+	let activations: number[][] | undefined;
 	let linkFilter = keepTopLinks;
+	let image: ImageData | undefined;
 
 	let isLoading = true;
 	onMount(async () => {
@@ -40,11 +41,21 @@
 	});
 
 	function handleDrawnImage(event: { detail: { image: ImageData } }) {
-		const image = event.detail.image;
-		activations = calculateActivations(image);
-		prediction = activations[activations.length - 1];
-		linkFilter = activatedlinkFilter;
-		logger.debug('tf.memory() ', tf.memory());
+		image = event.detail.image;
+		predict_image();
+	}
+
+	function predict_image() {
+		if (image) {
+			activations = calculateActivations(image);
+			prediction = activations[activations.length - 1];
+			linkFilter = activatedlinkFilter;
+			logger.debug('tf.memory() ', tf.memory());
+		} else {
+			linkFilter = keepTopLinks;
+			activations = undefined;
+			prediction = undefined;
+		}
 	}
 
 	function calculateActivations(image: ImageData): number[][] {
@@ -79,32 +90,13 @@
 		return keepTopLinks(linksWithActivationApplied);
 	}
 
-	/*
-	function handleDrawnImage(event: { detail: { image: ImageData } }) {
-		const image = event.detail.image;
-		const processed_image = tf.tidy(() => {
-			const pixels = tf.browser.fromPixels(image, 1);
-
-			// XXX: This leaks ?
-			return tf
-				.reshape(pixels, [1, 28 * 28])
-				.toFloat()
-				.div(255) as tf.Tensor2D;
-		});
-		logger.debug('tf.memory() ', tf.memory());
-		const trainXs = processed_image;
-		const trainYs = tf.tensor([[1, 0]]) as tf.Tensor2D;
-		train(trainXs, trainYs, null, null, 1, learningRates[0]);
-	}
-	*/
-
 	async function trainOnData(trainDataSize: number, batchSize: number) {
 		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
 			const d = $networkStore.nextTrainBatch(trainDataSize);
 			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
 		});
-		const validationDataSize = Math.ceil(trainDataSize / 5);
+		const validationDataSize = Math.ceil(trainDataSize / 20);
 		const [valXs, valYs] = tf.tidy(() => {
 			const d = $networkStore.nextTrainBatch(validationDataSize);
 			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
@@ -124,6 +116,11 @@
 		const networkUnderTraining = $networkStore;
 		const optimizer = networkUnderTraining.tfModel.optimizer as tf.SGDOptimizer;
 		optimizer.setLearningRate(learningRate);
+
+		function onBatchBegin(batch: number, logs?: tf.Logs) {
+			console.log('sddfsadsfdsfafds');
+			predict_image();
+		}
 
 		function onBatchEnd(batch: number, logs?: tf.Logs) {
 			logger.debug('end batch:', batch, '. logs:', logs);
@@ -169,7 +166,7 @@
 			epochs: 1,
 			batchSize: batchSize,
 			shuffle: true,
-			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd }
+			callbacks: { onBatchBegin, onBatchEnd, onEpochEnd, onTrainEnd }
 		};
 		if (valXs && valYs) {
 			params['validationData'] = [valXs, valYs];
@@ -196,8 +193,8 @@
 
 	function clear() {
 		drawbox.clear();
-		linkFilter = keepTopLinks;
-		activations = undefined;
+		image = undefined;
+		predict_image();
 	}
 
 	function keepTopLinks(links: Link[]) {

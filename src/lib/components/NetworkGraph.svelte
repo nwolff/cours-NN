@@ -138,14 +138,15 @@
 		// https://plotly.com/javascript/text-and-annotations/
 
 		const annotations = [];
-		if (outputLayer.labels) {
-			for (const [neuron, label] of zip2(outputLayer.neurons, outputLayer.labels)) {
+		if (outputLayer.classes) {
+			for (const [neuron, class_] of zip2(outputLayer.neurons, outputLayer.classes)) {
 				annotations.push({
 					x: neuron.x,
 					y: neuron.y,
 					yanchor: 'top',
+					textangle: -90,
 					yshift: -10,
-					text: label,
+					text: class_,
 					showarrow: false
 				});
 			}

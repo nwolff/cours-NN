@@ -11,7 +11,7 @@
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 
-	const logger = new tslog.Logger({ name: 'train' });
+	const logger = new tslog.Logger({ name: 'zero_one' });
 
 	let learningRates = [0];
 
@@ -104,7 +104,7 @@
 			const d = $networkStore.nextTrainBatch(trainDataSize);
 			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
 		});
-		const validationDataSize = Math.ceil(trainDataSize / 5);
+		const validationDataSize = Math.ceil(trainDataSize / 20);
 		const [valXs, valYs] = tf.tidy(() => {
 			const d = $networkStore.nextTrainBatch(validationDataSize);
 			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
