@@ -11,13 +11,16 @@
 	</a>
 	<ul class="menu menu-horizontal">
 		<li class="text-lg mx-1">
-			<a href="{base}/predict" class={$page.url.pathname.endsWith('/predict') ? 'active' : ''}>
-				Reconnaître
+			<a href="{base}/zero_one" class={$page.url.pathname.endsWith('/zero_one') ? 'active' : ''}>
+				0 et 1
 			</a>
 		</li>
 		<li class="text-lg mx-1">
-			<a href="{base}/train" class={$page.url.pathname.endsWith('/train') ? 'active' : ''}>
-				Entraîner
+			<a
+				href="{base}/all_digits"
+				class={$page.url.pathname.endsWith('/all_digits') ? 'active' : ''}
+			>
+				Tous les chiffres
 			</a>
 		</li>
 	</ul>

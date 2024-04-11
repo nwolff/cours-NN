@@ -1,6 +1,5 @@
 # TODO
 
-- Everything on one page. Find a way in the UI to switch between the models.
 - Fashion
 - Entrainer à la main le réseau. Résout : Entrainer avec un batch de 1 et montrer le gradient.
 - Show what's being fed when training

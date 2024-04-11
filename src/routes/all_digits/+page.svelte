@@ -1,0 +1,271 @@
+<script lang="ts">
+	import { Link, type LinkFilter } from '$lib/NetworkShape';
+	import { onDestroy, onMount } from 'svelte';
+	import * as tf from '@tensorflow/tfjs';
+	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
+	import { learningRateStore, allDigitsNetworkStore } from '../../stores';
+	import RangeSlider from 'svelte-range-slider-pips';
+	import * as tslog from 'tslog';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
+	import { testNetwork } from '$lib/NetworkTesting';
+	import DrawBox from '$lib/components/DrawBox.svelte';
+	import DistributionChart from '$lib/components/DistributionChart.svelte';
+
+	const logger = new tslog.Logger({ name: 'train' });
+
+	let learningRates = [0];
+
+	const networkStore = allDigitsNetworkStore;
+
+	$: networkShape = $networkStore?.shape;
+	$: classes = $networkStore?.shape.classes;
+	$: weights = $networkStore?.tfModel.weights;
+
+	let drawbox: DrawBox;
+	let prediction: number[];
+	let activations: number[][];
+	let linkFilter = keepTopLinks;
+
+	let isLoading = true;
+	onMount(async () => {
+		await networkStore.load();
+		learningRateStore.load().then((value) => {
+			learningRates = [value];
+		});
+		isLoading = false;
+	});
+
+	onDestroy(async () => {
+		learningRateStore.set(learningRates[0]);
+	});
+
+	function handleDrawnImage(event: { detail: { image: ImageData } }) {
+		const image = event.detail.image;
+		activations = calculateActivations(image);
+		prediction = activations[activations.length - 1];
+		linkFilter = activatedlinkFilter;
+		logger.debug('tf.memory() ', tf.memory());
+	}
+
+	function calculateActivations(image: ImageData): number[][] {
+		return tf.tidy(() => {
+			const pixels = tf.browser.fromPixels(image, 1);
+
+			// From: https://github.com/tensorflow/tfjs-examples/blob/master/webcam-transfer-learning/index.js
+			const processedImage = tf
+				.reshape(pixels, [1, 28 * 28])
+				.toFloat()
+				.div(255);
+
+			const activationsTensor = $networkStore.featureModel.predict(processedImage) as tf.Tensor[];
+			return [processedImage, ...activationsTensor].map((x) =>
+				tf.squeeze(x).arraySync()
+			) as number[][];
+		});
+	}
+
+	function applyActivation(links: Link[]): Link[] {
+		if (!links.find((link) => link.a.activation)) {
+			// A small optimization
+			return links;
+		}
+		return links.map(
+			(link) => new Link(link.a, link.b, link.weight * (1 + 0.5 * link.a.activation))
+		);
+	}
+
+	function activatedlinkFilter(links: Link[]) {
+		const linksWithActivationApplied = applyActivation(links);
+		return keepTopLinks(linksWithActivationApplied);
+	}
+
+	/*
+	function handleDrawnImage(event: { detail: { image: ImageData } }) {
+		const image = event.detail.image;
+		const processed_image = tf.tidy(() => {
+			const pixels = tf.browser.fromPixels(image, 1);
+
+			// XXX: This leaks ?
+			return tf
+				.reshape(pixels, [1, 28 * 28])
+				.toFloat()
+				.div(255) as tf.Tensor2D;
+		});
+		logger.debug('tf.memory() ', tf.memory());
+		const trainXs = processed_image;
+		const trainYs = tf.tensor([[1, 0]]) as tf.Tensor2D;
+		train(trainXs, trainYs, null, null, 1, learningRates[0]);
+	}
+	*/
+
+	async function trainOnData(trainDataSize: number, batchSize: number) {
+		logger.debug('before generating train data: tf.memory()', tf.memory());
+		const [trainXs, trainYs] = tf.tidy(() => {
+			const d = $networkStore.nextTrainBatch(trainDataSize);
+			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
+		});
+		const validationDataSize = Math.ceil(trainDataSize / 5);
+		const [valXs, valYs] = tf.tidy(() => {
+			const d = $networkStore.nextTrainBatch(validationDataSize);
+			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
+		});
+		logger.debug('after generating train data: tf.memory()', tf.memory());
+		train(trainXs, trainYs, valXs, valYs, batchSize, learningRates[0]);
+	}
+
+	async function train(
+		trainXs: tf.Tensor2D,
+		trainYs: tf.Tensor2D,
+		valXs: tf.Tensor2D | null,
+		valYs: tf.Tensor2D | null,
+		batchSize: number,
+		learningRate: number
+	) {
+		const networkUnderTraining = $networkStore;
+		const optimizer = networkUnderTraining.tfModel.optimizer as tf.SGDOptimizer;
+		optimizer.setLearningRate(learningRate);
+
+		function onBatchEnd(batch: number, logs?: tf.Logs) {
+			logger.debug('end batch:', batch, '. logs:', logs);
+			networkUnderTraining.trainingRoundDone({
+				samplesSeen: logs?.size || 0,
+				finalAccuracy: logs?.acc
+			});
+			const testResult = testNetwork(networkUnderTraining, classes?.length * 50);
+			networkUnderTraining.stats.test = testResult;
+			networkStore.update((n) => n); // Notify subscribers
+		}
+
+		function onEpochEnd(epoch: number, logs?: tf.Logs) {
+			logger.debug('end epoch:', epoch, '. logs:', logs);
+			if (logs?.val_acc) {
+				networkUnderTraining.trainingRoundDone({
+					samplesSeen: 0,
+					finalAccuracy: logs.val_acc
+				});
+				networkStore.update((n) => n); // Notify subscribers
+			}
+		}
+
+		function onTrainEnd(logs?: tf.Logs) {
+			logger.debug('onTrain end : tf.memory()', tf.memory());
+			tf.dispose(trainXs);
+			tf.dispose(trainYs);
+			if (valXs) {
+				tf.dispose(valXs);
+			}
+			if (valYs) {
+				tf.dispose(valYs);
+			}
+			logger.debug('after disposing: tf.memory()', tf.memory());
+		}
+
+		logger.debug('Before fit: tf.memory()', tf.memory());
+
+		// If this fails because there is already another fit running
+		// Then the 4 tensors get leaked (because the cleanup occurs in
+		// onTrainEnd, which is never called)
+		const params = {
+			epochs: 1,
+			batchSize: batchSize,
+			shuffle: true,
+			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd }
+		};
+		if (valXs && valYs) {
+			params['validationData'] = [valXs, valYs];
+		}
+
+		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
+	}
+
+	async function train100() {
+		trainOnData(100, 50);
+	}
+
+	async function train1000() {
+		trainOnData(1000, 50);
+	}
+
+	async function train5000() {
+		trainOnData(5000, 50);
+	}
+
+	function resetModel() {
+		networkStore.reload();
+	}
+
+	function clear() {
+		drawbox.clear();
+		linkFilter = keepTopLinks;
+		activations = undefined;
+	}
+
+	function keepTopLinks(links: Link[]) {
+		const length = links.length;
+		if (length <= 500) {
+			return links;
+		}
+		const sortedLinks = [...links].sort(
+			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
+		);
+		return sortedLinks.slice(0, Math.min(500, 0.1 * length));
+	}
+</script>
+
+{#if isLoading}
+	<span class="loading loading-spinner loading-lg text-primary"></span>
+{:else}
+	<div class="grid grid-cols-9 gap-4">
+		<div class="col-span-2">
+			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
+			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
+			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
+			<h4 class="text-xl mt-8 mb-2">Prédiction</h4>
+			<DistributionChart {classes} percentages={prediction} />
+
+			<div class="divider"></div>
+
+			<h4 class="text-xl mb-2">Taux d'apprentissage</h4>
+			<RangeSlider
+				bind:values={learningRates}
+				min={0}
+				max={1}
+				step={0.2}
+				pips
+				all="label"
+				springValues={{ stiffness: 0.2, damping: 0.7 }}
+			/>
+
+			<ul class="menu py-4">
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train100}>
+						Entraîner avec 100 images
+					</button>
+				</li>
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train1000}>
+						Entraîner avec 1'000 images
+					</button>
+				</li>
+				<li class="mt-1">
+					<button class="btn btn-outline btn-primary" on:click={train5000}>
+						Entraîner avec 5'000 images
+					</button>
+				</li>
+			</ul>
+		</div>
+		<div class="col-span-5">
+			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
+		</div>
+		<div class="col-span-2">
+			<NetworkStats stats={$networkStore.stats} />
+			<ul class="menu py-10 mx-5">
+				<li>
+					<button class="btn btn-outline btn-error" on:click={resetModel}>
+						Réinitialiser le réseau
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+{/if}
