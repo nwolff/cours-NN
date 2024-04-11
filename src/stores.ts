@@ -4,8 +4,8 @@ import { newAllDigitsNetwork, newZeroOneNetwork, type NetworkUnderTraining } fro
 export const networkStore = asyncWritable<never[], NetworkUnderTraining>(
 	[],
 	async () => {
-		//const network = newZeroOneNetwork();
-		const network = newAllDigitsNetwork();
+		const network = newZeroOneNetwork();
+		// const network = newAllDigitsNetwork();
 		await network.dataSource.loadData();
 		return network;
 	},

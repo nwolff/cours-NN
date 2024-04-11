@@ -15,23 +15,25 @@ type TrainingRound = {
 
 export type NetworkStats = {
 	samplesSeen: number;
-	accuracy?: number;
+	testAccuracy?: number;
+	trainingAccuracy?: number;
 };
 
 export class NetworkUnderTraining {
 	readonly tfModel: tf.Sequential;
 	readonly featureModel: tf.LayersModel;
 	readonly shape: DenseNetwork;
+	readonly stats: NetworkStats;
 	readonly dataSource: DataSource;
 
-	private _samplesSeen: number = 0;
-	private trainingStats: TrainingRound[] = [];
+	private trainingHistory: TrainingRound[] = [];
 
 	constructor(tfModel: tf.Sequential, networkShape: DenseNetwork, dataSource: DataSource) {
 		this.tfModel = tfModel;
 		this.featureModel = toFeatureModel(tfModel);
 		this.shape = networkShape;
 		this.dataSource = dataSource;
+		this.stats = { samplesSeen: 0 };
 	}
 
 	nextTrainBatch(batchSize: number) {
@@ -42,20 +44,10 @@ export class NetworkUnderTraining {
 		return this.dataSource.nextTrainBatch(batchSize);
 	}
 
-	get stats(): NetworkStats {
-		let accuracy;
-		if (this.trainingStats.length > 0) {
-			accuracy = this.trainingStats[this.trainingStats.length - 1].finalAccuracy;
-		}
-		return {
-			samplesSeen: this._samplesSeen,
-			accuracy: accuracy
-		};
-	}
-
 	trainingRoundDone(trainingRound: TrainingRound) {
-		this.trainingStats.push(trainingRound);
-		this._samplesSeen += trainingRound.samplesSeen;
+		this.trainingHistory.push(trainingRound);
+		this.stats.samplesSeen += trainingRound.samplesSeen;
+		this.stats.trainingAccuracy = trainingRound.finalAccuracy;
 	}
 }
 

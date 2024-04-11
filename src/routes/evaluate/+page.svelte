@@ -4,6 +4,7 @@
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
+	import { zip2 } from '$lib/utils';
 
 	let labelsAndPredictions: [number[], number[]];
 
@@ -14,10 +15,10 @@
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
-		showAccuracy();
+		showConfutionMatrixAndAccuracy();
 	});
 
-	function showAccuracy() {
+	function showConfutionMatrixAndAccuracy() {
 		labelsAndPredictions = tf.tidy(() => {
 			const testData = $networkStore.nextTestBatch(testDataSize);
 			const testxs = testData.xs.reshape([testDataSize, -1]);
@@ -27,6 +28,19 @@
 
 			return [labels.arraySync() as number[], preds.arraySync() as number[]];
 		});
+		$networkStore.stats.testAccuracy = computeAccuracy(...labelsAndPredictions);
+	}
+
+	function computeAccuracy(labels: number[], predictions: number[]): number {
+		let allPredictions = 0;
+		let correctPredictions = 0;
+		for (const [label, prediction] of zip2(labels, predictions)) {
+			allPredictions += 1;
+			if (label == prediction) {
+				correctPredictions += 1;
+			}
+		}
+		return correctPredictions / allPredictions;
 	}
 </script>
 
@@ -42,7 +56,7 @@
 				<b>test</b> qu'il n'a jamais vues.
 			</p>
 			<br />
-			<button class="btn btn-outline btn-primary" on:click={showAccuracy}>
+			<button class="btn btn-outline btn-primary" on:click={showConfutionMatrixAndAccuracy}>
 				Evaluer la précision
 			</button>
 			<NetworkStats stats={$networkStore.stats} />
