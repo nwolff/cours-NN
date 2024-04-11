@@ -2,7 +2,7 @@
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
-	import { Link } from '$lib/NetworkShape';
+	import { Link, type LinkFilter } from '$lib/NetworkShape';
 	import * as tf from '@tensorflow/tfjs';
 	import { networkStore } from '../../stores';
 	import { onMount } from 'svelte';
@@ -15,8 +15,9 @@
 	$: labels = networkShape?.outputLayer.labels;
 	let prediction: number[];
 	let activations: number[][];
+	let linkFilter = keepTopLinks;
 
-	let drawbox;
+	let drawbox: DrawBox;
 
 	$: weights = $networkStore?.tfModel.weights;
 
@@ -30,6 +31,7 @@
 		const image = event.detail.image;
 		activations = calculateActivations(image);
 		prediction = activations[activations.length - 1];
+		linkFilter = activatedlinkFilter;
 		logger.debug('tf.memory() ', tf.memory());
 	}
 
@@ -50,17 +52,6 @@
 		});
 	}
 
-	function keepTopLinks(links: Link[]): Link[] {
-		const length = links.length;
-		if (length <= 500) {
-			return links;
-		}
-		const sortedLinks = [...links].sort(
-			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
-		);
-		return sortedLinks.slice(0, Math.min(500, 0.1 * length));
-	}
-
 	function applyActivation(links: Link[]): Link[] {
 		if (!links.find((link) => link.a.activation)) {
 			// A small optimization
@@ -71,9 +62,26 @@
 		);
 	}
 
-	function linkFilter(links: Link[]) {
+	function activatedlinkFilter(links: Link[]) {
 		const linksWithActivationApplied = applyActivation(links);
 		return keepTopLinks(linksWithActivationApplied);
+	}
+
+	function keepTopLinks(links: Link[]) {
+		const length = links.length;
+		if (length <= 500) {
+			return links;
+		}
+		const sortedLinks = [...links].sort(
+			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
+		);
+		return sortedLinks.slice(0, Math.min(500, 0.1 * length));
+	}
+
+	function clear() {
+		drawbox.clear();
+		linkFilter = keepTopLinks;
+		activations = undefined;
 	}
 </script>
 
@@ -84,7 +92,7 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline btn-primary mt-4" on:click={drawbox.clear}>Effacer</button>
+			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
 			<h4 class="text-xl mt-12 mb-2">Prédiction</h4>
 			<DistributionChart {labels} percentages={prediction} />
 			<h4 class="text-xl mt-12 mb-2">Statistiques</h4>

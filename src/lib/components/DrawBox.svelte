@@ -77,7 +77,6 @@
 	export function clear() {
 		drawcontext.fillRect(0, 0, drawcanvas.width, drawcanvas.height);
 		normalize(100);
-		imageReady();
 	}
 
 	function addEventListeners() {
