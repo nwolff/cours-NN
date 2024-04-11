@@ -15,10 +15,10 @@
 	const labels = ['A', 'B', 'C', 'D'];
 	const percentages = [0, 0.2, 0.5, 0.3];
 
-	const classes = ['A', 'B', 'C'];
+	const classes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 	const labelsAndPredictions = [
-		[0, 1, 2, 1, 0, 0],
-		[0, 1, 2, 2, 2, 2]
+		[0, 1, 2, 1, 0, 0, 3, 4, 5, 6, 7, 8, 9],
+		[0, 1, 2, 2, 2, 2, 4, 4, 4, 8, 8, 9, 9]
 	] as [number[], number[]];
 
 	const batchSize = 100;
@@ -56,7 +56,11 @@
 
 	<div class="divider"></div>
 
-	<ConfusionMatrix {classes} {labelsAndPredictions} width={150} height={150} />
+	<ConfusionMatrix {classes} {labelsAndPredictions} />
+
+	<div class="divider"></div>
+
+	<ConfusionMatrix {classes} {labelsAndPredictions} size={140} />
 
 	<div class="divider"></div>
 

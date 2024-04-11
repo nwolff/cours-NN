@@ -8,12 +8,12 @@
 	export let classes: string[] = [];
 	export let labelsAndPredictions: [number[], number[]] = [[], []];
 
-	export let width = 300;
-	export let height = 300;
+	export let size = 300;
 
 	$: data = toData(classes, labelsAndPredictions);
 
-	$: options = optionsFromWidthAndHeight(width, height);
+	$: spec = size <= 150 ? miniSpec : fullSpec;
+	$: options = optionsFromSize(size);
 
 	function toData(classes: string[], [labels, predictions]: [number[], number[]]) {
 		// Aggregate over each label/prediction pair
@@ -44,7 +44,7 @@
 		return { matrixData: matrixData };
 	}
 
-	const spec: VegaLiteSpec = {
+	const fullSpec: VegaLiteSpec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		data: { name: 'matrixData' },
 		width: 400,
@@ -126,8 +126,47 @@
 		}
 	};
 
-	function optionsFromWidthAndHeight(width: number, height: number): EmbedOptions {
-		return { width: width, height: height, actions: false };
+	const miniSpec: VegaLiteSpec = {
+		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+		data: { name: 'matrixData' },
+		width: 400,
+		height: 400,
+		background: null,
+		mark: 'rect',
+		encoding: {
+			x: {
+				field: 'actual',
+				type: 'nominal',
+				sort: null,
+				title: null
+			},
+			y: {
+				field: 'predicted',
+				type: 'nominal',
+				sort: null,
+				title: null
+			},
+			color: {
+				field: 'signedPercentage',
+				type: 'quantitative',
+				scale: {
+					range: ['red', 'white', 'blue'],
+					interpolate: 'hsl',
+					domain: [-1, 0, 1]
+				},
+				legend: null
+			}
+		},
+		config: {
+			axis: {
+				labelFontSize: 14,
+				tickBand: 'extent'
+			}
+		}
+	};
+
+	function optionsFromSize(size: number): EmbedOptions {
+		return { width: size, height: size, actions: false };
 	}
 </script>
 

@@ -65,6 +65,7 @@
 		</div>
 		<div class="col-span-5">
 			<ConfusionMatrix {classes} {labelsAndPredictions} />
+			<ConfusionMatrix size={150} {classes} {labelsAndPredictions} />
 		</div>
 	</div>
 {/if}
