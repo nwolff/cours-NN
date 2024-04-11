@@ -51,23 +51,23 @@ function newAllDigitsNetworkShape(): DenseNetwork {
 		{
 			name: 'Couche cachée 1',
 			neuron_count: 32,
-			width: 55,
+			width: 50,
 			height: 0,
-			marker_size: 17
+			marker_size: 16
 		},
 		{
 			name: 'Couche cachée 2',
 			neuron_count: 32,
-			width: 55,
+			width: 50,
 			height: 0,
-			marker_size: 17
+			marker_size: 16
 		},
 		{
 			name: 'Couche de sortie',
 			neuron_count: 10,
 			width: 40,
 			height: 5,
-			marker_size: 17,
+			marker_size: 16,
 			labels: Array.from({ length: 10 }, (_, i) => i.toString())
 		}
 	);

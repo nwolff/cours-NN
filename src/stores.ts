@@ -6,8 +6,8 @@ import type { Network } from '$lib/Network';
 export const networkStore = asyncWritable<never[], Network>(
 	[],
 	async () => {
-		// const network = newZeroOneNetwork();
-		const network = newAllDigitsNetwork();
+		const network = newZeroOneNetwork();
+		// const network = newAllDigitsNetwork();
 		await network.dataSource.loadData();
 		return network;
 	},

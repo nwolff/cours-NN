@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { VegaLiteSpec } from 'svelte-vega';
-	import type { EmbedOptions } from 'vega-embed';
 	import { VegaLite } from 'svelte-vega';
 
 	import { zip2 } from '$lib/generic/utils';
@@ -11,12 +10,12 @@
 	export let size = 300;
 
 	$: data = toData(classes, labelsAndPredictions);
-
 	$: spec = size <= 150 ? miniSpec : fullSpec;
-	$: options = optionsFromSize(size);
+	$: options = { width: size, height: size, actions: false };
 
+	// Note that some labels may have been shown more often than others to the network
 	function toData(classes: string[], [labels, predictions]: [number[], number[]]) {
-		// Aggregate over each label/prediction pair
+		// Count occurences of every label/prediction pair
 		const size = classes.length;
 		const aggregates = Array(size)
 			.fill(null)
@@ -25,9 +24,8 @@
 			aggregates[label][prediction] += 1;
 		}
 
-		// Normalize for each input label
-		// (because in the data we got there were not the same number of labels shown to the network)
-		// And build a datastructure that can be easily fed into vega
+		// MatrixData contains everything needed by vega.
+		// We build a signedPercentage field that is positive only when on the diagonal
 		const matrixData = [];
 		for (const [colIndex, col] of aggregates.entries()) {
 			const colSum = col.reduce((a, b) => a + b, 0) as number;
@@ -164,10 +162,6 @@
 			}
 		}
 	};
-
-	function optionsFromSize(size: number): EmbedOptions {
-		return { width: size, height: size, actions: false };
-	}
 </script>
 
 <VegaLite {data} {spec} {options} />

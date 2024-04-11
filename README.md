@@ -56,3 +56,5 @@ https://medium.com/duke-ai-society-blog/training-neural-networks-for-binary-clas
 https://artemoppermann.com/activation-functions-in-deep-learning-sigmoid-tanh-relu/
 
 https://www.tensorflow.org/tutorials/keras/keras_tuner
+
+https://medium.com/@chamara95.eng/neural-network-example-using-fashion-mnist-dataset-c19b48c86cf1

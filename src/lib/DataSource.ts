@@ -69,7 +69,7 @@ export class MnistData implements DataSource {
 				canvas.height = chunkSize;
 
 				for (let i = 0; i < chunkCount; i++) {
-					console.log('chunk:', i);
+					// console.log('chunk:', i);
 					const datasetBytesView = new Float32Array(
 						datasetBytesBuffer,
 						i * this.config.imageSize * chunkSize * 4,

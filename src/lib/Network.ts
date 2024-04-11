@@ -1,6 +1,7 @@
 import { DenseNetwork } from '$lib/NetworkShape';
+import type { TestResult } from '$lib/NetworkTesting';
+import type { DataSource } from '$lib/DataSource';
 import * as tf from '@tensorflow/tfjs';
-import { type DataSource } from '$lib/DataSource';
 
 type TrainingRound = {
 	samplesSeen: number;
@@ -9,8 +10,8 @@ type TrainingRound = {
 
 export type NetworkStats = {
 	samplesSeen: number;
-	testAccuracy?: number;
 	trainingAccuracy?: number;
+	test: TestResult;
 };
 
 export class Network {
@@ -28,7 +29,10 @@ export class Network {
 		this.featureModel = toFeatureModel(tfModel);
 		this.shape = networkShape;
 		this.dataSource = dataSource;
-		this.stats = { samplesSeen: 0 };
+		this.stats = {
+			samplesSeen: 0,
+			test: { classes: [], labels: [], predictions: [], accuracy: 0 }
+		};
 	}
 
 	nextTrainBatch(batchSize: number) {
@@ -36,7 +40,7 @@ export class Network {
 	}
 
 	nextTestBatch(batchSize: number) {
-		return this.dataSource.nextTrainBatch(batchSize);
+		return this.dataSource.nextTestBatch(batchSize);
 	}
 
 	trainingRoundDone(trainingRound: TrainingRound) {
