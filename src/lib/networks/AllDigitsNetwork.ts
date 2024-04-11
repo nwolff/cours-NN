@@ -27,7 +27,7 @@ function newAllDigitsTFModel(): tf.Sequential {
 	model.add(tf.layers.dense({ units: 10, activation: 'softmax' }));
 
 	// This can be changed later, while training the model
-	const optimizer = tf.train.adam();
+	const optimizer = new tf.SGDOptimizer(0.1);
 
 	model.compile({
 		optimizer: optimizer,
@@ -68,7 +68,7 @@ function newAllDigitsNetworkShape(): DenseNetwork {
 			width: 40,
 			height: 5,
 			marker_size: 16,
-			labels: Array.from({ length: 10 }, (_, i) => i.toString())
+			classes: Array.from({ length: 10 }, (_, i) => i.toString())
 		}
 	);
 }

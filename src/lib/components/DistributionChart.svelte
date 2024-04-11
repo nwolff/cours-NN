@@ -4,12 +4,12 @@
 	import { VegaLite } from 'svelte-vega';
 	import { zip2 } from '$lib/generic/utils';
 
-	export let labels: string[] = [];
+	export let classes: string[] = [];
 	export let percentages: number[] = [];
 	export let color = '#8888CC';
 	export let highlightColor = '#0000FF';
 
-	$: data = toData(labels, percentages, color, highlightColor);
+	$: data = toData(classes, percentages, color, highlightColor);
 
 	type DistributionData = {
 		distributionData: { label: string; percentage: number; color: string }[];

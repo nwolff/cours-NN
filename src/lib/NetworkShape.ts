@@ -35,7 +35,7 @@ export declare interface LayerSpec {
 	height: number;
 	marker_size: number;
 	neurons_per_row?: number;
-	labels?: string[];
+	classes?: string[];
 }
 
 // Preforms the layout of a single layer, placing the neurons accordingly
@@ -43,12 +43,12 @@ export class Layer {
 	name: string;
 	marker_size: number;
 	neurons: Neuron[];
-	labels?: string[];
+	classes?: string[];
 
 	constructor(layer_start_y: number, spec: LayerSpec) {
 		this.name = spec.name;
 		this.marker_size = spec.marker_size;
-		this.labels = spec.labels;
+		this.classes = spec.classes;
 
 		const neurons_per_row = spec.neurons_per_row || spec.neuron_count;
 		const number_of_rows = Math.ceil(spec.neuron_count / neurons_per_row);
@@ -96,7 +96,7 @@ export class DenseNetwork {
 			layer_y -= spec.height + layer_spacing;
 		}
 		this.outputLayer = this.layers[this.layers.length - 1];
-		this.classes = this.outputLayer.labels!;
+		this.classes = this.outputLayer.classes!;
 	}
 
 	getLinks(weights: LayerVariable[], activations: number[][], linkFilter: LinkFilter) {

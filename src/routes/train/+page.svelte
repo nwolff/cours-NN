@@ -47,7 +47,7 @@
 		logger.debug('tf.memory() ', tf.memory());
 		const trainXs = processed_image;
 		const trainYs = tf.tensor([[1, 0]]) as tf.Tensor2D;
-		train(trainXs, trainYs, trainXs, trainYs, 1, learningRates[0]);
+		train(trainXs, trainYs, null, null, 1, learningRates[0]);
 	}
 
 	async function trainOnData(trainDataSize: number, batchSize: number) {
@@ -68,13 +68,14 @@
 	async function train(
 		trainXs: tf.Tensor2D,
 		trainYs: tf.Tensor2D,
-		valXs: tf.Tensor2D,
-		valYs: tf.Tensor2D,
+		valXs: tf.Tensor2D | null,
+		valYs: tf.Tensor2D | null,
 		batchSize: number,
 		learningRate: number
 	) {
 		const networkUnderTraining = $networkStore;
-		networkUnderTraining.tfModel.optimizer = new tf.SGDOptimizer(learningRate);
+		const optimizer = networkUnderTraining.tfModel.optimizer as tf.SGDOptimizer;
+		optimizer.setLearningRate(learningRate);
 
 		function onBatchEnd(batch: number, logs?: tf.Logs) {
 			logger.debug('end batch:', batch, '. logs:', logs);
@@ -89,19 +90,25 @@
 
 		function onEpochEnd(epoch: number, logs?: tf.Logs) {
 			logger.debug('end epoch:', epoch, '. logs:', logs);
-			networkUnderTraining.trainingRoundDone({
-				samplesSeen: 0,
-				finalAccuracy: logs?.val_acc
-			});
-			networkStore.update((n) => n); // Notify subscribers
+			if (logs?.val_acc) {
+				networkUnderTraining.trainingRoundDone({
+					samplesSeen: 0,
+					finalAccuracy: logs.val_acc
+				});
+				networkStore.update((n) => n); // Notify subscribers
+			}
 		}
 
 		function onTrainEnd(logs?: tf.Logs) {
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			tf.dispose(trainXs);
 			tf.dispose(trainYs);
-			tf.dispose(valXs);
-			tf.dispose(valYs);
+			if (valXs) {
+				tf.dispose(valXs);
+			}
+			if (valYs) {
+				tf.dispose(valYs);
+			}
 			logger.debug('after disposing: tf.memory()', tf.memory());
 		}
 
@@ -110,13 +117,17 @@
 		// If this fails because there is already another fit running
 		// Then the 4 tensors get leaked (because the cleanup occurs in
 		// onTrainEnd, which is never called)
-		return networkUnderTraining.tfModel.fit(trainXs, trainYs, {
-			validationData: [valXs, valYs],
+		const params = {
 			epochs: 1,
 			batchSize: batchSize,
 			shuffle: true,
-			callbacks: { onBatchEnd, onTrainEnd, onEpochEnd }
-		});
+			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd }
+		};
+		if (valXs && valYs) {
+			params['validationData'] = [valXs, valYs];
+		}
+
+		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
 	}
 
 	async function train1() {
@@ -156,7 +167,7 @@
 {:else}
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
-			<p>Taux d'apprentissage</p>
+			<h4 class="text-xl mb-2">Taux d'apprentissage</h4>
 			<RangeSlider
 				bind:values={learningRates}
 				min={0}
@@ -166,9 +177,15 @@
 				all="label"
 				springValues={{ stiffness: 0.2, damping: 0.7 }}
 			/>
+
+			<div class="divider"></div>
+
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4" on:click={drawbox.clear}>Effacer</button>
+
+			<div class="divider"></div>
+
 			<h4 class="text-xl">Entraîner avec des exemples</h4>
 			<br />
 			<ul class="menu py-4">
