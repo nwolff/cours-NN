@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { NetworkStats } from '$lib/models';
+	import type { NetworkStats } from '$lib/Network';
 
 	export let stats: NetworkStats;
 
@@ -18,14 +18,13 @@
 	<div class="stat">
 		<div class="stat-title"><b>Précision de test</b></div>
 		<div class="tooltip" data-tip="{testAccuracyPercent}%">
-			<progress class="progress" value={testAccuracyPercent} max="100"> </progress>
+			<progress class="progress progress-primary" value={testAccuracyPercent} max="100"> </progress>
 		</div>
 	</div>
 	<div class="stat">
 		<div class="stat-title">Précision entraînement</div>
 		<div class="tooltip" data-tip="{trainingAccuracyPercent}%">
-			<progress class="progress progress-primary" value={trainingAccuracyPercent} max="100">
-			</progress>
+			<progress class="progress" value={trainingAccuracyPercent} max="100"> </progress>
 		</div>
 	</div>
 </div>

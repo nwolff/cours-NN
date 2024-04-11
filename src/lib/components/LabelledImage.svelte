@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DataBatch } from '../models';
+	import type { DataBatch } from '$lib/DataSource';
 	import * as tf from '@tensorflow/tfjs';
 
 	export let dataBatch: DataBatch;

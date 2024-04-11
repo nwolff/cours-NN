@@ -4,7 +4,7 @@
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
-	import { zip2 } from '$lib/utils';
+	import { zip2 } from '$lib/generic/utils';
 
 	let labelsAndPredictions: [number[], number[]];
 
@@ -15,10 +15,12 @@
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
-		showConfutionMatrixAndAccuracy();
+		showConfusionMatrixAndAccuracy();
 	});
 
-	function showConfutionMatrixAndAccuracy() {
+	//	type TestResult { }
+
+	function showConfusionMatrixAndAccuracy() {
 		labelsAndPredictions = tf.tidy(() => {
 			const testData = $networkStore.nextTestBatch(testDataSize);
 			const testxs = testData.xs.reshape([testDataSize, -1]);
@@ -56,7 +58,7 @@
 				<b>test</b> qu'il n'a jamais vues.
 			</p>
 			<br />
-			<button class="btn btn-outline btn-primary" on:click={showConfutionMatrixAndAccuracy}>
+			<button class="btn btn-outline btn-primary" on:click={showConfusionMatrixAndAccuracy}>
 				Evaluer la précision
 			</button>
 			<NetworkStats stats={$networkStore.stats} />

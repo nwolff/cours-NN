@@ -1,7 +1,7 @@
 // Models the shape and layout of a dense feed forward neural network
 
 import type { LayerVariable } from '@tensorflow/tfjs';
-import { zip2, zip3 } from './utils';
+import { zip2, zip3 } from '$lib/generic/utils';
 
 export class Neuron {
 	x: number;

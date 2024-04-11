@@ -5,31 +5,13 @@ export type DataBatch = {
 	labels: tf.Tensor2D;
 };
 
-type DataSourceConfig = {
+export type DataSourceConfig = {
 	imagesSpriteURL: string;
 	labelsURL: string;
 	imageSize: number;
 	numClasses: number;
 	numDatasetElements: number;
 	numTrainElements: number;
-};
-
-export const allDigitsDataSourceConfig: DataSourceConfig = {
-	imagesSpriteURL: 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_images.png',
-	labelsURL: 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_labels_uint8',
-	imageSize: 28 * 28,
-	numClasses: 10,
-	numDatasetElements: 65_000,
-	numTrainElements: 55_000
-};
-
-export const zeroOneDataSourceConfig: DataSourceConfig = {
-	imagesSpriteURL: '/zero_one_images.png',
-	labelsURL: '/zero_one_labels_uint8',
-	imageSize: 28 * 28,
-	numClasses: 2,
-	numDatasetElements: 14_780,
-	numTrainElements: 12_000
 };
 
 export interface DataSource {

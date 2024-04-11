@@ -3,7 +3,7 @@
 	import type { EmbedOptions } from 'vega-embed';
 	import { VegaLite } from 'svelte-vega';
 
-	import { zip2 } from '../utils';
+	import { zip2 } from '$lib/generic/utils';
 
 	export let classes: string[] = [];
 	export let labelsAndPredictions: [number[], number[]] = [[], []];

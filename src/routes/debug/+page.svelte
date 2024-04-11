@@ -5,7 +5,7 @@
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import { onMount } from 'svelte';
-	import type { DataBatch } from '$lib/datasource';
+	import type { DataBatch } from '$lib/DataSource';
 	import LabelledImage from '$lib/components/LabelledImage.svelte';
 	import * as tslog from 'tslog';
 	import * as tf from '@tensorflow/tfjs';
