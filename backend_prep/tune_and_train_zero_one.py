@@ -30,7 +30,7 @@ def build_model(hp):
             layers.Input(shape=(28, 28)),
             layers.Flatten(),
             layers.Dense(
-                hp.Choice("units", [16, 24, 32, 40]),
+                hp.Choice("units", [16, 20, 24, 28, 32]),
                 activation=hp.Choice(
                     "activation", ["relu", "leaky_relu", "relu6", "tanh", "sigmoid"]
                 ),

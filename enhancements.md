@@ -9,9 +9,11 @@
 
 - Disable buttons while training is ongoing (this should also fix 4 tensor leaks)
 - Error in console when resizing
-- Show biases when no activations
 
 # Maybe
 
+- Only turn class names when they are big
+- Show biases when no activations
+- Tighter typing
 - Highlight connections when hovering over a neuron
 - Simplify link filtering
