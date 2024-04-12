@@ -1,19 +1,24 @@
-# TODO
+## TODO
 
-- Show what's being fed when training
-- Entrainer à la main le réseau. Résout : Entrainer avec un batch de 1 et montrer le gradient.
-- Better fashion input
+- Entrainer à la main le réseau.
+  - Résout : Entrainer avec un batch de 1 et montrer le gradient
+  - Think about removing the distribution-chart and making the prediction clearer on the network itself
+- Show what's being fed when training : Either as an overlay on the training zone, or as pixels on the network
+- Disable buttons while training is ongoing or queue them up. Maybe show current progress
+  (this should also fix 4 tensor leaks)
+- Umami.js
 
-# Later
+## Maybe
 
-- Extract common things from all routes pages
-- Disable buttons while training is ongoing (this should also fix 4 tensor leaks)
-- Error in console when resizing
-
-# Maybe
-
-- Only turn class names when they are big
-- Show biases when no activations
-- Tighter typing
+- Show biases when no activations (so we can talk about biases)
+- Only rotate class names when they are big
 - Highlight connections when hovering over a neuron
 - Simplify link filtering
+
+## Technical
+
+- Extract common things from all routes pages: functions, components, slots ?
+- Error in console when resizing
+- Tighter typing
+- Try to remove the extra invert-canvas, by using a grayscale and invert filter on the normalize canvas
+  (had this idea _after_ rewriting some image processing in javascript)

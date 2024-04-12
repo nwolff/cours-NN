@@ -2,7 +2,7 @@ A web application to experiment with a neural network that recognizes handwritte
 
 Deployed automatically when branch main is pushed, to:
 
-http://rn.nwolff.info/
+http://nn.nwolff.info/
 
 The python backend is only needed if you want to train new/different models or generate new datasets for use in the frontend
 
@@ -58,3 +58,11 @@ https://artemoppermann.com/activation-functions-in-deep-learning-sigmoid-tanh-re
 https://www.tensorflow.org/tutorials/keras/keras_tuner
 
 https://medium.com/@chamara95.eng/neural-network-example-using-fashion-mnist-dataset-c19b48c86cf1
+
+# Technical
+
+https://github.com/idris-maps/svelte-parts/blob/master/src/lib/DropFile.svelte
+
+https://blog.filestack.com/how-to-read-uploaded-file-content-in-javascript/
+
+https://dev.to/dailydevtips1/vanilla-javascript-canvas-images-to-black-and-white-mpe

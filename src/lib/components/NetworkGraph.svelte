@@ -4,7 +4,7 @@
 	import { allLinks } from '../NetworkShape';
 	import { onMount } from 'svelte';
 	import { DefaultMap, zip2 } from '../generic/utils';
-	import { hsv2rgb } from '../generic/colorconversions';
+	import { hsv2rgb } from '../generic/image';
 	import plotly from 'plotly.js-dist';
 
 	let plotElement: HTMLElement;

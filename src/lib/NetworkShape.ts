@@ -86,7 +86,7 @@ export function allLinks(links: Link[]) {
 export class DenseNetwork {
 	readonly layers: Layer[];
 	readonly classes: string[];
-	private outputLayer: Layer;
+	readonly outputLayer: Layer;
 
 	constructor(layer_spacing: number, ...layer_specs: LayerSpec[]) {
 		this.layers = [];
