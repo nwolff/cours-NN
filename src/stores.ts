@@ -2,7 +2,17 @@ import { asyncWritable, writable } from '@square/svelte-store';
 import { newAllDigitsNetwork } from '$lib/networks/AllDigitsNetwork';
 import { newZeroOneNetwork } from '$lib/networks/ZeroOneNetwork';
 import { newFashionNetwork } from '$lib/networks/FashionNetwork';
+import { newTemperatureControlNetwork } from '$lib/networks/TemperatureControlNetwork';
 import type { Network } from '$lib/Network';
+
+export const temperatureControlNetworkStore = asyncWritable<never[], Network>(
+	[],
+	async () => {
+		return newTemperatureControlNetwork();
+	},
+	undefined,
+	{ reloadable: true }
+);
 
 export const zeroOnenetworkStore = asyncWritable<never[], Network>(
 	[],
