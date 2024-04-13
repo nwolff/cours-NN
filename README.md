@@ -12,6 +12,13 @@ The python backend is only needed if you want to train new/different models or g
 
 Requires an installation of nodejs
 
+On a mac without homebrew or admin permissions, one can use nvm:
+https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating
+
+Then:
+
+    nvm install 25
+
 ## Installing dependencies
 
     npm install
