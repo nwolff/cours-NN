@@ -53,8 +53,8 @@ export class Layer {
 		const neurons_per_row = spec.neurons_per_row || spec.neuron_count;
 		const number_of_rows = Math.ceil(spec.neuron_count / neurons_per_row);
 
-		const x_space_between_neurons = spec.width / (neurons_per_row - 1);
-		const y_space_between_neurons = spec.height / (number_of_rows - 1);
+		const x_space_between_neurons = neurons_per_row == 1 ? 0 : spec.width / (neurons_per_row - 1);
+		const y_space_between_neurons = number_of_rows == 1 ? 0 : spec.height / (number_of_rows - 1);
 
 		const row_x_start = (-x_space_between_neurons * (neurons_per_row - 1)) / 2;
 

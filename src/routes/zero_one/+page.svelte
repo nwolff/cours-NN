@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Link, type LinkFilter } from '$lib/NetworkShape';
+	import { Link } from '$lib/NetworkShape';
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
@@ -147,7 +147,7 @@
 			}
 		}
 
-		function onTrainEnd(logs?: tf.Logs) {
+		function onTrainEnd(_logs?: tf.Logs) {
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			tf.dispose(trainXs);
 			tf.dispose(trainYs);

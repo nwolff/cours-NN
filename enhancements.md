@@ -21,3 +21,4 @@
 - Try to remove the extra invert-canvas, by using a grayscale and invert filter on the normalize canvas
   (had this idea _after_ rewriting some image processing in javascript)
 - Simplify link filtering
+- Use tf.confusionMatrix, instead of doing it manually
