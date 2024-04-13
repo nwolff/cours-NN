@@ -4,6 +4,8 @@ Deployed automatically when branch main is pushed, to:
 
 http://nn.nwolff.info/
 
+Usage statistics collected with umami.js
+
 The python backend is only needed if you want to train new/different models or generate new datasets for use in the frontend
 
 # Tooling

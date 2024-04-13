@@ -6,14 +6,12 @@
 - Show what's being fed when training : Either as an overlay on the training zone, or as pixels on the network
 - Disable buttons while training is ongoing or queue them up. Maybe show current progress
   (this should also fix 4 tensor leaks)
-- Umami.js
 
 ## Maybe
 
 - Show biases when no activations (so we can talk about biases)
 - Only rotate class names when they are big
 - Highlight connections when hovering over a neuron
-- Simplify link filtering
 
 ## Technical
 
@@ -22,3 +20,4 @@
 - Tighter typing
 - Try to remove the extra invert-canvas, by using a grayscale and invert filter on the normalize canvas
   (had this idea _after_ rewriting some image processing in javascript)
+- Simplify link filtering
