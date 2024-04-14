@@ -94,12 +94,12 @@
 		logger.debug('before generating train data: tf.memory()', tf.memory());
 		const [trainXs, trainYs] = tf.tidy(() => {
 			const d = $networkStore.nextTrainBatch(trainDataSize);
-			return [d.xs.reshape([trainDataSize, 28 * 28]), d.labels];
+			return [d.xs.reshape([trainDataSize, 28 * 28]), d.ys];
 		});
 		const validationDataSize = Math.ceil(trainDataSize / 20);
 		const [valXs, valYs] = tf.tidy(() => {
 			const d = $networkStore.nextTrainBatch(validationDataSize);
-			return [d.xs.reshape([validationDataSize, 28 * 28]), d.labels];
+			return [d.xs.reshape([validationDataSize, 28 * 28]), d.ys];
 		});
 		logger.debug('after generating train data: tf.memory()', tf.memory());
 		train(trainXs, trainYs, valXs, valYs, batchSize, learningRates[0]);

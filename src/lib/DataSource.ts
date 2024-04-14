@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 export type DataBatch = {
 	xs: tf.Tensor2D;
-	labels: tf.Tensor2D;
+	ys: tf.Tensor2D;
 };
 
 export type DataSourceConfig = {
@@ -22,9 +22,7 @@ export interface DataSource {
 
 /**
  * A class that fetches the sprited MNIST dataset and returns shuffled batches.
- *
- * NOTE: This will get much easier. For now, we do data fetching and
- * manipulation manually.
+ * Works for the original MNIST dataset and the FashionMNIST dataset
  */
 export class MnistData implements DataSource {
 	private config: DataSourceConfig;
@@ -131,7 +129,7 @@ export class MnistData implements DataSource {
 		});
 	}
 
-	nextBatch(batchSize: number, data: [Float32Array, Uint8Array], index: () => number) {
+	nextBatch(batchSize: number, data: [Float32Array, Uint8Array], index: () => number): DataBatch {
 		const batchImagesArray = new Float32Array(batchSize * this.config.imageSize);
 		const batchLabelsArray = new Uint8Array(batchSize * this.config.numClasses);
 
@@ -152,8 +150,8 @@ export class MnistData implements DataSource {
 		}
 
 		const xs = tf.tensor2d(batchImagesArray, [batchSize, this.config.imageSize]);
-		const labels = tf.tensor2d(batchLabelsArray, [batchSize, this.config.numClasses]);
+		const ys = tf.tensor2d(batchLabelsArray, [batchSize, this.config.numClasses]);
 
-		return { xs, labels };
+		return { xs, ys };
 	}
 }

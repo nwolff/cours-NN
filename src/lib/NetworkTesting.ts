@@ -14,7 +14,7 @@ export function testNetwork(network: Network, testDataSize: number): TestResult 
 		const testData = network.nextTestBatch(testDataSize);
 		const testxs = testData.xs.reshape([testDataSize, -1]);
 
-		const labels = testData.labels.argMax(-1);
+		const labels = testData.ys.argMax(-1);
 		const preds = network.tfModel.predict(testxs).argMax(-1);
 
 		return [labels.arraySync() as number[], preds.arraySync() as number[]];

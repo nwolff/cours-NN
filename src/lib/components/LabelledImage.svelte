@@ -6,7 +6,7 @@
 	export let indexInBatch: number = 0;
 
 	$: image = dataBatch.xs.slice([indexInBatch], [1]);
-	$: label = dataBatch.labels.slice([indexInBatch], [1]);
+	$: label = dataBatch.ys.slice([indexInBatch], [1]);
 </script>
 
 <div>
