@@ -28,7 +28,7 @@ export class Link {
 }
 
 // Describes the layout of a single layer.
-export declare interface LayerSpec {
+export type LayerSpec = {
 	name: string;
 	neuron_count: number;
 	width: number;
@@ -36,7 +36,8 @@ export declare interface LayerSpec {
 	marker_size: number;
 	neurons_per_row?: number;
 	classes?: string[];
-}
+	rotateClassNames?: boolean;
+};
 
 // Preforms the layout of a single layer, placing the neurons accordingly
 export class Layer {
@@ -44,11 +45,13 @@ export class Layer {
 	marker_size: number;
 	neurons: Neuron[];
 	classes?: string[];
+	rotateClassNames: boolean;
 
 	constructor(layer_start_y: number, spec: LayerSpec) {
 		this.name = spec.name;
 		this.marker_size = spec.marker_size;
 		this.classes = spec.classes;
+		this.rotateClassNames = spec.rotateClassNames ? true : false;
 
 		const neurons_per_row = spec.neurons_per_row || spec.neuron_count;
 		const number_of_rows = Math.ceil(spec.neuron_count / neurons_per_row);

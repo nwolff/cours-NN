@@ -79,7 +79,8 @@ function newFashionNetworkShape(): DenseNetwork {
 				'Basket',
 				'Sac',
 				'Bottine'
-			]
+			],
+			rotateClassNames: true
 		}
 	);
 }
