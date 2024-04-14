@@ -212,7 +212,7 @@
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
 			<h4 class="text-xl mt-8 mb-2">Prédiction</h4>
-			<DistributionChart {classes} percentages={prediction} />
+			<DistributionChart {classes} percentages={prediction} rotateClassNames />
 
 			<div class="divider"></div>
 

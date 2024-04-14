@@ -118,7 +118,6 @@
 				titlePadding: 15,
 				titleFontSize: 20,
 				tickBand: 'extent',
-				labelAngle: 0,
 				labelFontSize: 17
 			}
 		}

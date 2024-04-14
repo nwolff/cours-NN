@@ -119,7 +119,7 @@
 		},
 		yaxis: {
 			visible: false,
-			scaleanchor: 'x'
+			scaleanchor: 'x' // Preserves the aspect ratoi
 		},
 		showlegend: false,
 		font: { size: 18, color: 'black' },
@@ -132,23 +132,31 @@
 		responsive: true
 	};
 
-	function makeOutputAnnotations(
-		outputLayer: Layer
-	): { x: number; y: number; yanchor: string; yshift: number; text: string; showarrow: boolean }[] {
-		// https://plotly.com/javascript/text-and-annotations/
+	// https://plotly.com/javascript/text-and-annotations/
+	type Annotation = {
+		x: number;
+		y: number;
+		yanchor: string;
+		yshift: number;
+		text: string;
+		showarrow: boolean;
+	};
 
+	function buildAnnotations(layers: Layer[]): Annotation[] {
 		const annotations = [];
-		if (outputLayer.classes) {
-			for (const [neuron, class_] of zip2(outputLayer.neurons, outputLayer.classes)) {
-				annotations.push({
-					x: neuron.x,
-					y: neuron.y,
-					yanchor: 'top',
-					textangle: -90,
-					yshift: -10,
-					text: class_,
-					showarrow: false
-				});
+		for (const [rank, layer] of layers.entries()) {
+			if (layer.classes) {
+				for (const [neuron, class_] of zip2(layer.neurons, layer.classes)) {
+					annotations.push({
+						x: neuron.x,
+						y: neuron.y,
+						yanchor: rank == 0 ? 'bottom' : 'top',
+						textangle: layer.rotateClassNames ? -90 : 0,
+						yshift: rank == 0 ? 10 : -10,
+						text: class_,
+						showarrow: false
+					});
+				}
 			}
 		}
 		return annotations;
@@ -178,7 +186,7 @@
 		}
 
 		const graphLayout = JSON.parse(JSON.stringify(defaultGraphLayout));
-		graphLayout.annotations = makeOutputAnnotations(networkShape.outputLayer);
+		graphLayout.annotations = buildAnnotations(networkShape.layers);
 
 		plotly.newPlot('network-graph', traces, graphLayout, graphConfig);
 	}

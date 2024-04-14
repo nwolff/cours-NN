@@ -6,12 +6,7 @@
 - Show what's being fed when training : Either as an overlay on the training zone, or as pixels on the network
 - Disable buttons while training is ongoing or queue them up. Maybe show current progress
   (this should also fix 4 tensor leaks)
-
-## Maybe
-
 - Show biases when no activations (so we can talk about biases)
-- Only rotate class names when they are big
-- Highlight connections when hovering over a neuron
 
 ## Technical
 

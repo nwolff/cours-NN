@@ -5,17 +5,27 @@
 	import { zip2 } from '$lib/generic/utils';
 
 	export let classes: string[] = [];
+	export let rotateClassNames = false;
 	export let percentages: number[] | undefined;
 	export let color = '#8888CC';
 	export let highlightColor = '#0000FF';
 
 	$: data = toData(classes, percentages, color, highlightColor);
+	$: spec = makeSpec(rotateClassNames);
 
 	type DistributionData = {
 		distributionData: { label: string; percentage: number; color: string }[];
 	};
 
-	const spec: VegaLiteSpec = {
+	function makeSpec(rotateClassNames: boolean) {
+		let spec = defaultSpec;
+		if (rotateClassNames) {
+			spec.encoding.x.axis.labelAngle = 90;
+		}
+		return spec;
+	}
+
+	const defaultSpec: VegaLiteSpec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
 		width: 220,
 		height: 110,
@@ -29,7 +39,7 @@
 				type: 'nominal',
 				sort: null,
 				title: null,
-				axis: { labelFontSize: 18, tickBand: 'extent' }
+				axis: { labelFontSize: 18, labelAngle: 0, tickBand: 'extent' }
 			},
 			y: {
 				field: 'percentage',
