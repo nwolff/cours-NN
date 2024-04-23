@@ -4,6 +4,8 @@
 
 	export let stats: NetworkStats;
 
+	let confusionMatrixSize = 140;
+
 	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
 	$: formattedNumExamples = formatter.format(stats.samplesSeen);
@@ -23,8 +25,12 @@
 		<div class="tooltip" data-tip="{testAccuracyPercent}%">
 			<progress class="progress progress-primary" value={testAccuracyPercent} max="100"> </progress>
 		</div>
-		<div class="mt-3">
-			<ConfusionMatrix size={140} {classes} {labelsAndPredictions} />
+		<div
+			class="mt-3"
+			on:mouseenter={() => (confusionMatrixSize = 280)}
+			on:mouseleave={() => (confusionMatrixSize = 140)}
+		>
+			<ConfusionMatrix size={confusionMatrixSize} {classes} {labelsAndPredictions} />
 		</div>
 	</div>
 	<div class="stat">
