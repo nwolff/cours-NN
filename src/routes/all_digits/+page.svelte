@@ -216,13 +216,13 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
-			<h4 class="text-xl mt-8 mb-2">Prédiction</h4>
+			<button class="btn btn-outline btn-primary mt-4 mb-6" on:click={clear}>Effacer</button>
 			<DistributionChart {classes} percentages={prediction} />
 
 			<div class="divider"></div>
 
-			<h4 class="text-xl mb-2">Taux d'apprentissage</h4>
+			<h4 class="text-xl mb-2">Apprentissage</h4>
+			<div class="text-l mb-2">Taux d'apprentissage</div>
 			<RangeSlider
 				bind:values={learningRates}
 				min={0}

@@ -1,11 +1,10 @@
 ## TODO
 
-- Entrainer à la main le réseau.
-  - Résout : Entrainer avec un batch de 1 et montrer le gradient
-  - Think about removing the distribution-chart and making the prediction clearer on the network itself
+- Zero and One : Only enable training buttons when there is a drawing
 - Show what's being fed when training : Either as an overlay on the training zone, or as pixels on the network
 - Disable buttons while training is ongoing or queue them up. Maybe show current progress
   (this should also fix 4 tensor leaks)
+- Think about removing the distribution-chart and making the prediction clearer on the network itself
 - Show biases when no activations (so we can talk about biases)
 
 ## Technical

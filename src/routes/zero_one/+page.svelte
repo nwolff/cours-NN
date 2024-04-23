@@ -22,9 +22,10 @@
 	$: weights = $networkStore?.tfModel.weights;
 
 	let drawbox: DrawBox;
-	let prediction: number[];
-	let activations: number[][];
+	let prediction: number[] | undefined;
+	let activations: number[][] | undefined;
 	let linkFilter = keepTopLinks;
+	let image: ImageData | undefined;
 
 	let isLoading = true;
 	onMount(async () => {
@@ -40,11 +41,21 @@
 	});
 
 	function handleDrawnImage(event: { detail: { image: ImageData } }) {
-		const image = event.detail.image;
-		activations = calculateActivations(image);
-		prediction = activations[activations.length - 1];
-		linkFilter = activatedlinkFilter;
-		logger.debug('tf.memory() ', tf.memory());
+		image = event.detail.image;
+		predict_image();
+	}
+
+	function predict_image() {
+		if (image) {
+			activations = calculateActivations(image);
+			prediction = activations[activations.length - 1];
+			linkFilter = activatedlinkFilter;
+			logger.debug('tf.memory() ', tf.memory());
+		} else {
+			linkFilter = keepTopLinks;
+			activations = undefined;
+			prediction = undefined;
+		}
 	}
 
 	function calculateActivations(image: ImageData): number[][] {
@@ -79,11 +90,17 @@
 		return keepTopLinks(linksWithActivationApplied);
 	}
 
-	/*
-	function handleDrawnImage(event: { detail: { image: ImageData } }) {
-		const image = event.detail.image;
+	const ZERO_ACTIVATIONS = tf.tensor([[1, 0]]) as tf.Tensor2D;
+	const ONE_ACTIVATIONS = tf.tensor([[0, 1]]) as tf.Tensor2D;
+	const ACTIVATIONS_FOR_DIGIT = [ZERO_ACTIVATIONS, ONE_ACTIVATIONS];
+
+	async function learn(digit: number) {
+		if (!image) {
+			logger.info('Cannot learn without image');
+			return;
+		}
 		const processed_image = tf.tidy(() => {
-			const pixels = tf.browser.fromPixels(image, 1);
+			const pixels = tf.browser.fromPixels(image!, 1);
 
 			// XXX: This leaks ?
 			return tf
@@ -91,26 +108,9 @@
 				.toFloat()
 				.div(255) as tf.Tensor2D;
 		});
-		logger.debug('tf.memory() ', tf.memory());
 		const trainXs = processed_image;
-		const trainYs = tf.tensor([[1, 0]]) as tf.Tensor2D;
+		const trainYs = ACTIVATIONS_FOR_DIGIT[digit];
 		train(trainXs, trainYs, null, null, 1, learningRates[0]);
-	}
-	*/
-
-	async function trainOnData(trainDataSize: number, batchSize: number) {
-		logger.debug('before generating train data: tf.memory()', tf.memory());
-		const [trainXs, trainYs] = tf.tidy(() => {
-			const d = $networkStore.nextTrainBatch(trainDataSize);
-			return [d.xs.reshape([trainDataSize, 28 * 28]), d.ys];
-		});
-		const validationDataSize = Math.ceil(trainDataSize / 20);
-		const [valXs, valYs] = tf.tidy(() => {
-			const d = $networkStore.nextTrainBatch(validationDataSize);
-			return [d.xs.reshape([validationDataSize, 28 * 28]), d.ys];
-		});
-		logger.debug('after generating train data: tf.memory()', tf.memory());
-		train(trainXs, trainYs, valXs, valYs, batchSize, learningRates[0]);
 	}
 
 	async function train(
@@ -150,7 +150,7 @@
 		function onTrainEnd(_logs?: tf.Logs) {
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			tf.dispose(trainXs);
-			tf.dispose(trainYs);
+			// tf.dispose(trainYs); // For this network they live forever
 			if (valXs) {
 				tf.dispose(valXs);
 			}
@@ -178,12 +178,12 @@
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
 	}
 
-	async function train1() {
-		trainOnData(1, 1);
+	async function itsAZero() {
+		learn(0);
 	}
 
-	async function train10() {
-		trainOnData(10, 10);
+	async function itsAOne() {
+		learn(1);
 	}
 
 	function resetModel() {
@@ -216,13 +216,13 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
-			<h4 class="text-xl mt-8 mb-2">Prédiction</h4>
+			<button class="btn btn-outline btn-primary mt-4 mb-6" on:click={clear}>Effacer</button>
 			<DistributionChart {classes} percentages={prediction} />
 
 			<div class="divider"></div>
 
-			<h4 class="text-xl mb-2">Taux d'apprentissage</h4>
+			<h4 class="text-xl mb-2">Apprentissage</h4>
+			<div class="text-l mb-2">Taux d'apprentissage</div>
 			<RangeSlider
 				bind:values={learningRates}
 				min={0}
@@ -235,14 +235,10 @@
 
 			<ul class="menu py-4">
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train1}>
-						Entraîner avec 1 image
-					</button>
+					<button class="btn btn-outline btn-primary" on:click={itsAZero}> C'est un 0 </button>
 				</li>
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train10}>
-						Entraîner avec 10 images
-					</button>
+					<button class="btn btn-outline btn-primary" on:click={itsAOne}> C'est un 1 </button>
 				</li>
 			</ul>
 		</div>
