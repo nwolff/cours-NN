@@ -183,6 +183,7 @@
 
 	function resetModel() {
 		networkStore.reload();
+		predict_image();
 	}
 
 	function clear() {
