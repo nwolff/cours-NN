@@ -49,6 +49,12 @@
 					line: { width: 0.7 },
 					size: layer.marker_size
 				},
+				hoverlabel: {
+					bgcolor: 'white',
+					font: {
+						size: '17'
+					}
+				},
 				hovertemplate: '<extra></extra>'
 			};
 			if (layerActivations) {

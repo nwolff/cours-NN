@@ -16,12 +16,15 @@
 </script>
 
 <div class="stats shadow bg-base-200 stats-vertical">
-	<div class="stat">
-		<div class="stat-title">Précision entraînement</div>
-		<div class="tooltip" data-tip="{trainingAccuracyPercent}%">
-			<progress class="progress" value={trainingAccuracyPercent} max="100"> </progress>
+	{#if stats.trainingAccuracy}
+		<div class="stat">
+			<div class="stat-title">Précision entraînement</div>
+			<div class="tooltip" data-tip="{trainingAccuracyPercent}%">
+				<progress class="progress" value={trainingAccuracyPercent} max="100"> </progress>
+			</div>
 		</div>
-	</div>
+	{/if}
+
 	<div class="stat">
 		<div class="stat-title">Images vues</div>
 		<div class="stat-value">{formattedNumExamples}</div>

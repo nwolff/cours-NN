@@ -37,4 +37,4 @@ export const fashionNetworkStore = asyncWritable<never[], Network>(
 	{ reloadable: true }
 );
 
-export const learningRateStore = writable<number>(0);
+export const learningRateStore = writable<number>(0.4);

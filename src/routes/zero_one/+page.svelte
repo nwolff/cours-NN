@@ -193,8 +193,8 @@
 
 	function clear() {
 		drawbox.clear();
-		linkFilter = keepTopLinks;
-		activations = undefined;
+		image = undefined;
+		predict_image();
 	}
 
 	function keepTopLinks(links: Link[]) {
@@ -214,7 +214,7 @@
 {:else}
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
-			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
+			<h4 class="text-xl mb-2">Dessiner <b>0</b> ou <b>1</b></h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4 mb-6" on:click={clear}>Effacer</button>
 			<DistributionChart {classes} percentages={prediction} />

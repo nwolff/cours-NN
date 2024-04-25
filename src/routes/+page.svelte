@@ -7,12 +7,12 @@
 <div class="p-8 flex flex-row">
 	<div class="basis-1/4">
 		<a class="link link-primary" href="https://forms.office.com/e/Nt1PhkpX76" target="_blank"
-			>Formulaire avant</a
+			>Questionnaire avant</a
 		>
 	</div>
 	<div class="basis-1/4">
 		<a class="link link-error" href="https://forms.office.com/e/wb66rDKYHj" target="_blank"
-			>Formulaire après</a
+			>Questionnaire après</a
 		>
 	</div>
 </div>
