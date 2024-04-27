@@ -9,6 +9,8 @@
 
 ## Technical
 
+
+- Store the all digits dataset locally
 - Simplify link filtering
 - Bug on firefox when training the Zalando model, the accuracy stays very low and the confusion matrix shows a single line, as if there was only one number shown. Two participants had this on firefox and the problem went away when they switched to chrome
 - Tighter typing
