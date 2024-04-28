@@ -1,6 +1,5 @@
 ## TODO
 
-- Zero and One : Only enable training buttons when there is a drawing
 - Ajouter le nombre d'éléments qu'on a vus pour le test
 - Show what's being fed when training : Either as an overlay on the training zone, or as pixels on the network
 - Disable buttons while automatic training is ongoing or queue them up. Maybe show current progress

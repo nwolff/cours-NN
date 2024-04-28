@@ -223,10 +223,14 @@
 
 			<ul class="menu py-4">
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={itsAZero}> C'est un 0 </button>
+					<button class="btn btn-outline btn-primary" disabled={!image} on:click={itsAZero}>
+						C'est un 0
+					</button>
 				</li>
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={itsAOne}> C'est un 1 </button>
+					<button class="btn btn-outline btn-primary" disabled={!image} on:click={itsAOne}>
+						C'est un 1
+					</button>
 				</li>
 			</ul>
 
