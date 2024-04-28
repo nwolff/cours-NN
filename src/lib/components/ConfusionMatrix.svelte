@@ -10,8 +10,21 @@
 	export let size = 300;
 
 	$: data = toData(classes, labelsAndPredictions);
-	$: spec = size <= 150 ? miniSpec : fullSpec;
+	$: spec = makeSpec(size, classes);
 	$: options = { width: size, height: size, actions: false };
+
+	function makeSpec(size: number, classes: string[]) {
+		let spec = size <= 150 ? miniSpec : fullSpec;
+
+		let rotateClassNames = classes.some((s) => s.length > 1);
+
+		if (rotateClassNames) {
+			spec.encoding.x.axis.labelAngle = 90;
+		} else {
+			spec.encoding.x.axis.labelAngle = 0;
+		}
+		return spec;
+	}
 
 	// Note that some labels may have been shown more often than others to the network
 	function toData(classes: string[], [labels, predictions]: [number[], number[]]) {
@@ -61,7 +74,10 @@
 				field: 'predicted',
 				type: 'nominal',
 				sort: null,
-				title: 'Prédiction'
+				title: 'Prédiction',
+				axis: {
+					orient: 'right'
+				}
 			}
 		},
 		layer: [
@@ -128,20 +144,25 @@
 		data: { name: 'matrixData' },
 		width: 400,
 		height: 400,
-		background: null,
 		mark: 'rect',
 		encoding: {
 			x: {
 				field: 'actual',
 				type: 'nominal',
 				sort: null,
-				title: null
+				title: null,
+				axis: {
+					orient: 'top'
+				}
 			},
 			y: {
 				field: 'predicted',
 				type: 'nominal',
 				sort: null,
-				title: null
+				title: null,
+				axis: {
+					orient: 'right'
+				}
 			},
 			color: {
 				field: 'signedPercentage',
