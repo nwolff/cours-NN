@@ -208,23 +208,13 @@
 {:else}
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
-			<h4 class="text-xl mb-2">Déposer une image d'habit</h4>
+			<h4 class="text-xl mb-2">Déposer une image</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
 			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
 
 			<div class="divider"></div>
 
-			<h4 class="text-xl mb-2">Apprentissage</h4>
-			<div class="text-l mb-2">Taux d'apprentissage</div>
-			<RangeSlider
-				bind:values={learningRates}
-				min={0}
-				max={1}
-				step={0.2}
-				pips
-				all="label"
-				springValues={{ stiffness: 0.2, damping: 0.7 }}
-			/>
+			<h4 class="text-xl">Apprentissage</h4>
 
 			<ul class="menu py-4">
 				<li class="mt-1">
@@ -238,6 +228,17 @@
 					</button>
 				</li>
 			</ul>
+
+			<div class="text-l mb-2">Taux d'apprentissage</div>
+			<RangeSlider
+				bind:values={learningRates}
+				min={0}
+				max={1}
+				step={0.2}
+				pips
+				all="label"
+				springValues={{ stiffness: 0.2, damping: 0.7 }}
+			/>
 		</div>
 		<div class="col-span-5">
 			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />

@@ -219,17 +219,7 @@
 
 			<div class="divider"></div>
 
-			<h4 class="text-xl mb-2">Apprentissage</h4>
-			<div class="text-l mb-2">Taux d'apprentissage</div>
-			<RangeSlider
-				bind:values={learningRates}
-				min={0}
-				max={1}
-				step={0.2}
-				pips
-				all="label"
-				springValues={{ stiffness: 0.2, damping: 0.7 }}
-			/>
+			<h4 class="text-xl">Apprentissage</h4>
 
 			<ul class="menu py-4">
 				<li class="mt-1">
@@ -248,6 +238,17 @@
 					</button>
 				</li>
 			</ul>
+
+			<div class="text-l mb-2">Taux d'apprentissage</div>
+			<RangeSlider
+				bind:values={learningRates}
+				min={0}
+				max={1}
+				step={0.2}
+				pips
+				all="label"
+				springValues={{ stiffness: 0.2, damping: 0.7 }}
+			/>
 		</div>
 		<div class="col-span-5">
 			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
