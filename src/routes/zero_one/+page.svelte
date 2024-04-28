@@ -9,7 +9,6 @@
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import { testNetwork } from '$lib/NetworkTesting';
 	import DrawBox from '$lib/components/DrawBox.svelte';
-	import DistributionChart from '$lib/components/DistributionChart.svelte';
 
 	const logger = new tslog.Logger({ name: 'zero_one' });
 
@@ -216,8 +215,7 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner <b>0</b> ou <b>1</b></h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline btn-primary mt-4 mb-6" on:click={clear}>Effacer</button>
-			<DistributionChart {classes} percentages={prediction} />
+			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
 
 			<div class="divider"></div>
 
