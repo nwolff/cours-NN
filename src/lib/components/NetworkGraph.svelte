@@ -186,19 +186,26 @@
 			console.log('no plotElement');
 			return;
 		}
-
 		const traces = [];
 
-		traces.push(...neuronTraces(networkShape, activations));
+		// Neurons
+		if (activations) {
+			traces.push(...neuronTraces(networkShape, activations));
+		} else if (weights) {
+			let biasesTensors = weights.filter((w) => w.originalName.endsWith('bias'));
+			const biases = biasesTensors.map((t) => t.read().arraySync() as number[]);
+			biases.unshift(null); // The input layer does not have biases
+			traces.push(...neuronTraces(networkShape, biases));
+		}
 
+		// Links
 		if (weights) {
-			// We don't want the bias weights when generating the links
-			const kernelWeights = weights.filter((l) => l.originalName.endsWith('kernel'));
-
-			const links = networkShape.getLinks(kernelWeights, activations, linkFilter);
+			const weightsBetweenLayers = weights.filter((w) => w.originalName.endsWith('kernel'));
+			const links = networkShape.getLinks(weightsBetweenLayers, activations, linkFilter);
 			traces.push(...linkTraces(links));
 		}
 
+		// Annotations
 		const graphLayout = JSON.parse(JSON.stringify(defaultGraphLayout));
 		graphLayout.annotations = buildAnnotations(networkShape.layers);
 
