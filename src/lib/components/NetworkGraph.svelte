@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { LayerVariable } from '@tensorflow/tfjs';
+	import { type LayerVariable } from '@tensorflow/tfjs';
 	import type { DenseNetwork, Link, LinkFilter, Layer } from '$lib/NetworkShape';
 	import { allLinks } from '../NetworkShape';
 	import { onMount } from 'svelte';
@@ -107,7 +107,7 @@
 				x: edge_x_buckets.get(bucket),
 				y: edge_y_buckets.get(bucket),
 				mode: 'lines',
-				hoverinfo: 'skio',
+				hoverinfo: 'skip',
 				line: {
 					width: link_width(bucket / bucket_size),
 					color: link_color(bucket / bucket_size)
@@ -144,7 +144,8 @@
 		y: number;
 		yanchor: string;
 		yshift: number;
-		text: string;
+		textangle: number;
+		text: string; // Can be html
 		showarrow: boolean;
 	};
 
@@ -152,6 +153,10 @@
 		const annotations = [];
 		for (const [rank, layer] of layers.entries()) {
 			if (layer.classes) {
+				let maxActivation = undefined;
+				if (layer == layers[layers.length - 1]) {
+					maxActivation = Math.max(...layer.neurons.map((n) => n.activation));
+				}
 				for (const [neuron, class_] of zip2(layer.neurons, layer.classes)) {
 					annotations.push({
 						x: neuron.x,
@@ -159,7 +164,10 @@
 						yanchor: rank == 0 ? 'bottom' : 'top',
 						textangle: layer.rotateClassNames ? -90 : 0,
 						yshift: rank == 0 ? 10 : -10,
-						text: class_,
+						text:
+							neuron.activation > 0 && neuron.activation == maxActivation
+								? '<b>' + class_ + '</b>'
+								: class_,
 						showarrow: false
 					});
 				}
