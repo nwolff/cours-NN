@@ -10,21 +10,11 @@
 
 	$: formattedNumExamples = formatter.format(stats.samplesSeen);
 	$: testAccuracyPercent = Math.floor(stats.test?.accuracy * 100) || '';
-	$: trainingAccuracyPercent = Math.floor(stats.trainingAccuracy * 100) || '';
 	$: classes = stats.test.classes;
 	$: labelsAndPredictions = [stats.test.labels, stats.test.predictions] as [number[], number[]];
 </script>
 
 <div class="stats shadow bg-base-200 stats-vertical">
-	{#if stats.trainingAccuracy}
-		<div class="stat">
-			<div class="stat-title">Précision entraînement</div>
-			<div class="tooltip" data-tip="{trainingAccuracyPercent}%">
-				<progress class="progress" value={trainingAccuracyPercent} max="100"> </progress>
-			</div>
-		</div>
-	{/if}
-
 	<div class="stat">
 		<div class="stat-title">Images vues</div>
 		<div class="stat-value">{formattedNumExamples}</div>

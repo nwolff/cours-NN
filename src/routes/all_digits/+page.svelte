@@ -7,6 +7,7 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import * as tslog from 'tslog';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
+	import NetworkTrainingStats from '$lib/components/NetworkTrainingStats.svelte';
 	import { testNetwork } from '$lib/NetworkTesting';
 	import DrawBox from '$lib/components/DrawBox.svelte';
 
@@ -249,7 +250,14 @@
 				all="label"
 				springValues={{ stiffness: 0.2, damping: 0.7 }}
 			/>
+
+			<!--
+			<div class="divider"></div>
+
+			<NetworkTrainingStats stats={$networkStore.stats} />
+			-->
 		</div>
+
 		<div class="col-span-5">
 			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
 		</div>
