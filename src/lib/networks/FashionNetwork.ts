@@ -2,6 +2,7 @@ import { DenseNetwork } from '$lib/NetworkShape';
 import { Network } from '$lib/Network';
 import { MnistData, type DataSourceConfig } from '$lib/DataSource';
 import * as tf from '@tensorflow/tfjs';
+import { base } from '$app/paths';
 
 export function newFashionNetwork(): Network {
 	return new Network(
@@ -12,8 +13,8 @@ export function newFashionNetwork(): Network {
 }
 
 const zeroOneDataSourceConfig: DataSourceConfig = {
-	imagesSpriteURL: '/fashion_images.png',
-	labelsURL: '/fashion_labels_uint8',
+	imagesSpriteURL: base + '/fashion_images.png',
+	labelsURL: base + '/fashion_labels_uint8',
 	imageSize: 28 * 28,
 	numClasses: 10,
 	numDatasetElements: 60_000,

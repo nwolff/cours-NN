@@ -2,6 +2,7 @@ import { DenseNetwork } from '$lib/NetworkShape';
 import { Network } from '$lib/Network';
 import { MnistData, type DataSourceConfig } from '$lib/DataSource';
 import * as tf from '@tensorflow/tfjs';
+import { base } from '$app/paths';
 
 export function newZeroOneNetwork(): Network {
 	return new Network(
@@ -12,8 +13,8 @@ export function newZeroOneNetwork(): Network {
 }
 
 const zeroOneDataSourceConfig: DataSourceConfig = {
-	imagesSpriteURL: '/zero_one_images.png',
-	labelsURL: '/zero_one_labels_uint8',
+	imagesSpriteURL: base + '/zero_one_images.png',
+	labelsURL: base + '/zero_one_labels_uint8',
 	imageSize: 28 * 28,
 	numClasses: 2,
 	numDatasetElements: 14_780,

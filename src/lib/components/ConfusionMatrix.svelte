@@ -14,10 +14,8 @@
 	$: options = { width: size, height: size, actions: false };
 
 	function makeSpec(size: number, classes: string[]) {
-		let spec = size <= 150 ? miniSpec : fullSpec;
-
+		let spec = structuredClone(size <= 150 ? miniSpec : fullSpec);
 		let rotateClassNames = classes.some((s) => s.length > 1);
-
 		if (rotateClassNames) {
 			spec.encoding.x.axis.labelAngle = 90;
 		} else {
@@ -47,6 +45,7 @@
 				matrixData.push({
 					actual: classes[colIndex],
 					predicted: classes[rowIndex],
+					count: element,
 					percentage: percentage,
 					signedPercentage: rowIndex == colIndex ? percentage : -percentage
 				});
@@ -113,9 +112,8 @@
 				},
 				encoding: {
 					text: {
-						field: 'percentage',
+						field: 'count',
 						type: 'quantitative',
-						format: '.0%',
 						formatType: 'number'
 					},
 					color: {

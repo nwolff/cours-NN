@@ -206,7 +206,7 @@
 		}
 
 		// Annotations
-		const graphLayout = JSON.parse(JSON.stringify(defaultGraphLayout));
+		const graphLayout = structuredClone(defaultGraphLayout);
 		graphLayout.annotations = buildAnnotations(networkShape.layers);
 
 		plotly.newPlot('network-graph', traces, graphLayout, graphConfig);

@@ -18,7 +18,8 @@
 	};
 
 	function makeSpec(rotateClassNames: boolean) {
-		let spec = defaultSpec;
+		let spec = structuredClone(defaultSpec);
+
 		if (rotateClassNames) {
 			spec.encoding.x.axis.labelAngle = 90;
 		}
