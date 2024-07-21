@@ -2,6 +2,7 @@ import { DenseNetwork } from '$lib/NetworkShape';
 import { Network } from '$lib/Network';
 import * as tf from '@tensorflow/tfjs';
 import { MnistData, type DataSourceConfig } from '$lib/DataSource';
+import { base } from '$app/paths';
 
 export function newAllDigitsNetwork(): Network {
 	return new Network(
@@ -12,8 +13,8 @@ export function newAllDigitsNetwork(): Network {
 }
 
 const allDigitsDataSourceConfig: DataSourceConfig = {
-	imagesSpriteURL: 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_images.png',
-	labelsURL: 'https://storage.googleapis.com/learnjs-data/model-builder/mnist_labels_uint8',
+	imagesSpriteURL: base + '/mnist_images.png',
+	labelsURL: base + '/mnist_labels_uint8',
 	imageSize: 28 * 28,
 	numClasses: 10,
 	numDatasetElements: 65_000,
