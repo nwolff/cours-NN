@@ -6,10 +6,7 @@
 
 ## Technical
 
-- Try to remove the extra invert-canvas, by using a grayscale and invert filter on the normalize canvas
-  (had this idea _after_ rewriting some image processing in javascript)
-- Use tf.confusionMatrix, instead of doing it manually ?
+- build warning
+- "no plot element" Error in console when resizing
 - Simplify link filtering
 - Bug on firefox when training the Zalando model, the accuracy stays very low and the confusion matrix shows a single line, as if there was only one number shown. Two participants had this on firefox and the problem went away when they switched to chrome
-- Extract common things from all routes pages: functions, components, slots ?
-- Error in console when resizing

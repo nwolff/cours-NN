@@ -7,7 +7,6 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import * as tslog from 'tslog';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
-	import NetworkTrainingStats from '$lib/components/NetworkTrainingStats.svelte';
 	import { testNetwork } from '$lib/NetworkTesting';
 	import DrawBox from '$lib/components/DrawBox.svelte';
 
@@ -52,9 +51,9 @@
 			linkFilter = activatedlinkFilter;
 			logger.debug('tf.memory() ', tf.memory());
 		} else {
-			linkFilter = keepTopLinks;
 			activations = undefined;
 			prediction = undefined;
+			linkFilter = keepTopLinks;
 		}
 	}
 
