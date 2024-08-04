@@ -4,6 +4,7 @@ Based on :
 https://medium.com/analytics-vidhya/lenet-with-tensorflow-a35da0d503df
 
 """
+
 import keras
 import tensorflow as tf
 from keras import datasets, layers, losses, models

@@ -102,7 +102,7 @@ export class MnistData implements DataSource {
 		this.trainIndices = tf.util.createShuffledIndices(this.config.numTrainElements);
 		this.testIndices = tf.util.createShuffledIndices(numTestElements);
 
-		// Slice the the images and labels into train and test sets.
+		// Slice the images and labels into train and test sets.
 		this.trainImages = this.datasetImages.slice(
 			0,
 			this.config.imageSize * this.config.numTrainElements

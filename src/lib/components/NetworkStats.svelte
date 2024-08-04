@@ -25,6 +25,7 @@
 			<progress class="progress progress-primary" value={testAccuracyPercent} max="100"> </progress>
 		</div>
 		<div
+			role="complementary"
 			class="mt-3"
 			on:mouseenter={() => (confusionMatrixSize = 280)}
 			on:mouseleave={() => (confusionMatrixSize = 140)}

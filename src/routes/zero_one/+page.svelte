@@ -100,8 +100,6 @@
 		}
 		const processed_image = tf.tidy(() => {
 			const pixels = tf.browser.fromPixels(image!, 1);
-
-			// XXX: This leaks ?
 			return tf
 				.reshape(pixels, [1, 28 * 28])
 				.toFloat()
