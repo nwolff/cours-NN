@@ -2,6 +2,9 @@
 	import DistributionChart from '$lib/components/DistributionChart.svelte';
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
+	import DataBatchGrid from '$lib/components/DataBatchGrid.svelte';
+	import { onMount } from 'svelte';
+	import { allDigitsNetworkStore } from '../../stores';
 
 	const classes = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 	const percentages = [0, 0.2, 0.5, 0.3, 0.1, 0.3];
@@ -14,6 +17,16 @@
 	const previewCanvasSize = 28 * 4;
 
 	let processedImage: HTMLCanvasElement;
+
+	const networkStore = allDigitsNetworkStore;
+
+	let dataBatch = { xs: null, ys: null };
+
+	onMount(async () => {
+		const network = await networkStore.load();
+		dataBatch = network.nextTestBatch(10);
+		// isLoading = false;
+	});
 
 	function handleDrawnImage(event: { detail: { image: HTMLCanvasElement } }) {
 		const ctx = processedImage.getContext('2d')!;
@@ -47,3 +60,7 @@
 <div class="divider"></div>
 
 <DistributionChart {classes} {percentages} color="orange" />
+
+<div class="divider"></div>
+
+<DataBatchGrid {dataBatch}></DataBatchGrid>
