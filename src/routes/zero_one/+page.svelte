@@ -155,6 +155,8 @@
 				tf.dispose(valYs);
 			}
 			logger.debug('after disposing: tf.memory()', tf.memory());
+
+			predict_image();
 		}
 
 		logger.debug('Before fit: tf.memory()', tf.memory());
