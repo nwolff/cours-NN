@@ -109,6 +109,12 @@ export class DenseNetwork {
 					neuron.activation = activation;
 				}
 			}
+		} else {
+			for (const layer of this.layers) {
+				for (const neuron of layer.neurons) {
+					neuron.activation = 0;
+				}
+			}
 		}
 
 		const links: Link[] = [];
