@@ -30,6 +30,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # https://stackoverflow.com/questions/60942067/get-current-date-and-time-in-github-workflows
+      - name: Get current datetime
+        id: datetime
+        run: echo "::set-output name=datetime::$(date +'%Y-%m-%dT%H:%M:%S%z')"
+
       # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/variables
       - name: write build info to /about
         uses: cschleiden/replace-tokens@v1
@@ -38,7 +43,7 @@ jobs:
           tokenSuffix: ']'
           files: 'src/routes/about/+page.svelte'
         env:
-          TIMESTAMP: ${{ github.event.repository.updated_at}}
+          TIMESTAMP: ${{ steps.datetime.outputs.datetime }}
 
       - run: npm install
 

@@ -16,21 +16,25 @@ Requires an installation of nodejs
 
     npm install
 
+## Updating dependencies
+
+    npm update
+
 ## Developing
 
-Running the app under development, with automatic reload :
+Running the app under development, with automatic reload:
 
     npm run dev -- --open
 
-Automatically formatting :
+Automatically formatting:
 
     npm run format
 
-Type-checking :
+Type-checking:
 
     npm run check
 
-There are currently some typing errors, many because we extract numbers from tensors that are very generically typed.
+There are currently some typing errors, many because we extract data from tensors that are very generically typed.
 
 ## Verifying the production build
 
