@@ -72,3 +72,7 @@ https://github.com/idris-maps/svelte-parts/blob/master/src/lib/DropFile.svelte
 https://blog.filestack.com/how-to-read-uploaded-file-content-in-javascript/
 
 https://dev.to/dailydevtips1/vanilla-javascript-canvas-images-to-black-and-white-mpe
+
+https://plotly.com/javascript/plotlyjs-events/
+
+https://github.com/plotly/plotly.js/blob/master/src/plot_api/plot_config.js

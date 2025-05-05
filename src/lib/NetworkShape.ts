@@ -79,12 +79,38 @@ export class Layer {
 	}
 }
 
-// As an optimizazion we allow callers to pass in a filter when requesting the links
+// Alow callers to pass in a filter when requesting the links
 export type LinkFilter = (links: Link[]) => Link[];
 
-export function allLinks(links: Link[]) {
-	return links;
+export const allLinks: LinkFilter = (links) => links;
+
+// XXX: Whats with the 0.1 * length ?
+export function makeTopNLinksFilter(n: number) {
+	return function (links: Link[]) {
+		const length = links.length;
+		if (length <= n) {
+			return links;
+		}
+		const sortedLinks = [...links].sort(
+			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
+		);
+		return sortedLinks.slice(0, Math.min(n, 0.1 * length));
+	};
 }
+
+export function neighborsFilter(neuron: Neuron) {
+	return function (links: Link[]) {
+		return links.filter((link) => link.a == neuron || link.b == neuron);
+	};
+}
+
+export const applyActivation: LinkFilter = (links) => {
+	if (!links.find((link) => link.a.activation)) {
+		// A small optimization
+		return links;
+	}
+	return links.map((link) => new Link(link.a, link.b, link.weight * (1 + 0.5 * link.a.activation)));
+};
 
 export class DenseNetwork {
 	readonly layers: Layer[];

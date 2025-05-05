@@ -1,24 +1,43 @@
 <script lang="ts">
 	import { type LayerVariable } from '@tensorflow/tfjs';
-	import type { DenseNetwork, Link, LinkFilter, Layer } from '$lib/NetworkShape';
-	import { allLinks } from '../NetworkShape';
-	import { onMount } from 'svelte';
-	import { DefaultMap, zip2 } from '../generic/utils';
-	import { hsv2rgb } from '../generic/image';
+	import type { DenseNetwork, Link, LinkFilter, Layer, Neuron } from '$lib/NetworkShape';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { DefaultMap, zip2 } from '$lib/generic/utils';
+	import { hsv2rgb } from '$lib/generic/image';
 	import plotly from 'plotly.js-dist';
+
+	const dispatch = createEventDispatcher();
 
 	let plotElement: HTMLElement;
 
 	export let networkShape: DenseNetwork;
 	export let activations: number[][];
 	export let weights: LayerVariable[];
-	export let linkFilter: LinkFilter = allLinks;
+	export let linkFilter: LinkFilter;
 
 	$: drawGraph(networkShape, activations, weights, linkFilter);
 
 	onMount(() => {
 		drawGraph(networkShape, activations, weights, linkFilter);
+		plotElement.on('plotly_hover', onPlotlyHover);
+		plotElement.on('plotly_unhover', onPlotlyUnhover);
 	});
+
+	function lookup_neuron(curveNumber: number, pointNumber: number): Neuron | null {
+		return networkShape.layers[curveNumber]?.neurons[pointNumber];
+	}
+
+	function onPlotlyHover(data: any) {
+		if (data.points) {
+			const point = data.points[0];
+			const neuron = lookup_neuron(point.curveNumber, point.pointNumber);
+			dispatch('neuronSelected', neuron);
+		}
+	}
+
+	function onPlotlyUnhover(_: any) {
+		dispatch('neuronSelected', null);
+	}
 
 	function neuron_color(activation: number): string {
 		if (!activation) {
@@ -121,11 +140,13 @@
 
 	const defaultGraphLayout = {
 		xaxis: {
-			visible: false
+			visible: false,
+			uirevision: 'time' // preserve zoom and pan between redraws
 		},
 		yaxis: {
 			visible: false,
-			scaleanchor: 'x' // Preserves the aspect ratoi
+			scaleanchor: 'x', // 1:1 aspect ratio
+			uirevision: 'time' // preserve zoom and pan between redraws
 		},
 		showlegend: false,
 		font: { size: 18, color: 'black' },
@@ -209,7 +230,7 @@
 		const graphLayout = structuredClone(defaultGraphLayout);
 		graphLayout.annotations = buildAnnotations(networkShape.layers);
 
-		plotly.newPlot('network-graph', traces, graphLayout, graphConfig);
+		plotly.react('network-graph', traces, graphLayout, graphConfig);
 	}
 </script>
 

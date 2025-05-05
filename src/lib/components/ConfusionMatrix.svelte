@@ -55,7 +55,7 @@
 	}
 
 	const fullSpec: VegaLiteSpec = {
-		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+		$schema: 'https://vega.github.io/schema/vega-lite/v6.json',
 		data: { name: 'matrixData' },
 		width: 400,
 		height: 400,
@@ -138,7 +138,7 @@
 	};
 
 	const miniSpec: VegaLiteSpec = {
-		$schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+		$schema: 'https://vega.github.io/schema/vega-lite/v6.json',
 		data: { name: 'matrixData' },
 		width: 400,
 		height: 400,

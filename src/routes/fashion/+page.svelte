@@ -1,5 +1,11 @@
 <script lang="ts">
-	import { Link } from '$lib/NetworkShape';
+	import {
+		applyActivation,
+		makeTopNLinksFilter,
+		neighborsFilter,
+		Neuron,
+		type LinkFilter
+	} from '$lib/NetworkShape';
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
@@ -23,7 +29,8 @@
 	let drawbox: DrawBox;
 	let prediction: number[] | undefined;
 	let activations: number[][] | undefined;
-	let linkFilter = keepTopLinks;
+	const defaultLinkFilter: LinkFilter = (links) => makeTopNLinksFilter(500)(applyActivation(links));
+	let linkFilter = defaultLinkFilter;
 	let image: ImageData | undefined;
 
 	let isLoading = true;
@@ -39,6 +46,15 @@
 		learningRateStore.set(learningRates[0]);
 	});
 
+	function handleNeuronSelected(event: { detail: Neuron | null }) {
+		const neuron = event.detail;
+		if (neuron == null) {
+			linkFilter = defaultLinkFilter;
+		} else {
+			linkFilter = (links) => neighborsFilter(neuron)(applyActivation(links));
+		}
+	}
+
 	function handleDrawnImage(event: { detail: { image: ImageData } }) {
 		image = event.detail.image;
 		predict_image();
@@ -48,10 +64,8 @@
 		if (image) {
 			activations = calculateActivations(image);
 			prediction = activations[activations.length - 1];
-			linkFilter = activatedlinkFilter;
 			logger.debug('tf.memory() ', tf.memory());
 		} else {
-			linkFilter = keepTopLinks;
 			activations = undefined;
 			prediction = undefined;
 		}
@@ -72,21 +86,6 @@
 				tf.squeeze(x).arraySync()
 			) as number[][];
 		});
-	}
-
-	function applyActivation(links: Link[]): Link[] {
-		if (!links.find((link) => link.a.activation)) {
-			// A small optimization
-			return links;
-		}
-		return links.map(
-			(link) => new Link(link.a, link.b, link.weight * (1 + 0.5 * link.a.activation))
-		);
-	}
-
-	function activatedlinkFilter(links: Link[]) {
-		const linksWithActivationApplied = applyActivation(links);
-		return keepTopLinks(linksWithActivationApplied);
 	}
 
 	async function trainOnData(trainDataSize: number, batchSize: number) {
@@ -187,19 +186,8 @@
 
 	function clear() {
 		drawbox.clear();
-		linkFilter = keepTopLinks;
-		activations = undefined;
-	}
-
-	function keepTopLinks(links: Link[]) {
-		const length = links.length;
-		if (length <= 500) {
-			return links;
-		}
-		const sortedLinks = [...links].sort(
-			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
-		);
-		return sortedLinks.slice(0, Math.min(500, 0.1 * length));
+		image = undefined;
+		predict_image();
 	}
 </script>
 
@@ -241,7 +229,13 @@
 			/>
 		</div>
 		<div class="col-span-5">
-			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
+			<NetworkGraph
+				{networkShape}
+				{weights}
+				{activations}
+				{linkFilter}
+				on:neuronSelected={handleNeuronSelected}
+			/>
 		</div>
 		<div class="col-span-2">
 			<NetworkStats stats={$networkStore.stats} />
