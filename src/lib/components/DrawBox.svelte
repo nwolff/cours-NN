@@ -7,6 +7,7 @@
 		blueToGrayscaleInverted,
 		findBoundingBox
 	} from '$lib/generic/image';
+
 	const dispatch = createEventDispatcher();
 
 	let SCALE_FACTOR = 9;
