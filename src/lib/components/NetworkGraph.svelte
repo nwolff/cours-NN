@@ -23,8 +23,8 @@
 		plotElement.on('plotly_unhover', onPlotlyUnhover);
 	});
 
-	function lookup_neuron(curveNumber: number, pointNumber: number): Neuron {
-		return networkShape.layers[curveNumber].neurons[pointNumber];
+	function lookup_neuron(curveNumber: number, pointNumber: number): Neuron | null {
+		return networkShape.layers[curveNumber]?.neurons[pointNumber];
 	}
 
 	function onPlotlyHover(data: any) {
