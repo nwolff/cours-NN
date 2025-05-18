@@ -23,7 +23,7 @@ const zeroOneDataSourceConfig: DataSourceConfig = {
 
 function newZeroOneTFModel(): tf.Sequential {
 	const model = tf.sequential();
-	model.add(tf.layers.dense({ inputShape: [28 * 28], units: 16, activation: 'relu' }));
+	model.add(tf.layers.dense({ inputShape: [28 * 28], units: 9, activation: 'relu' }));
 	model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
 
 	// This can be changed later, while training the model
@@ -45,12 +45,12 @@ function newZeroOneNetworkShape(): DenseNetwork {
 			neuron_count: 28 * 28,
 			width: 24,
 			height: 24,
-			marker_size: 7,
+			marker_size: 10,
 			neurons_per_row: 28
 		},
 		{
 			name: 'Couche cachée 1',
-			neuron_count: 16,
+			neuron_count: 9,
 			width: 25,
 			height: 0,
 			marker_size: 15

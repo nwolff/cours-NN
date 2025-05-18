@@ -5,6 +5,7 @@
 	import { DefaultMap, zip2 } from '$lib/generic/utils';
 	import { hsv2rgb } from '$lib/generic/image';
 	import plotly from 'plotly.js-dist';
+	import { visualWeight } from '$lib/LinkFilters';
 
 	const dispatch = createEventDispatcher();
 
@@ -109,7 +110,8 @@
 		const edge_x_buckets = new DefaultMap<number, any>(() => []);
 		const edge_y_buckets = new DefaultMap<number, any>(() => []);
 		for (const link of links) {
-			const bucket = Math.round(link.weight * bucket_size);
+			const linkVisualWeight = visualWeight(link);
+			const bucket = Math.round(linkVisualWeight * bucket_size);
 			const edge_x = edge_x_buckets.get(bucket);
 			const edge_y = edge_y_buckets.get(bucket);
 			edge_x.push(link.a.x);
@@ -209,7 +211,7 @@
 		}
 		const traces = [];
 
-		// Neurons
+		// 1. Neurons
 		if (activations) {
 			traces.push(...neuronTraces(networkShape, activations));
 		} else if (weights) {
@@ -219,14 +221,14 @@
 			traces.push(...neuronTraces(networkShape, biases));
 		}
 
-		// Links
+		// 2. Links
 		if (weights) {
 			const weightsBetweenLayers = weights.filter((w) => w.originalName.endsWith('kernel'));
-			const links = networkShape.getLinks(weightsBetweenLayers, activations, linkFilter);
-			traces.push(...linkTraces(links));
+			const links = networkShape.getLinks(weightsBetweenLayers, activations);
+			traces.push(...linkTraces(linkFilter(links)));
 		}
 
-		// Annotations
+		// 3. Annotations
 		const graphLayout = structuredClone(defaultGraphLayout);
 		graphLayout.annotations = buildAnnotations(networkShape.layers);
 

@@ -25,6 +25,10 @@ export class Link {
 		this.b = b;
 		this.weight = weight;
 	}
+
+	get activation() {
+		return this.a.activation;
+	}
 }
 
 // Describes the layout of a single layer.
@@ -39,7 +43,7 @@ export type LayerSpec = {
 	rotateClassNames?: boolean;
 };
 
-// Preforms the layout of a single layer, placing the neurons accordingly
+// Performs the layout of a single layer, placing the neurons accordingly
 export class Layer {
 	name: string;
 	marker_size: number;
@@ -79,39 +83,6 @@ export class Layer {
 	}
 }
 
-// Alow callers to pass in a filter when requesting the links
-export type LinkFilter = (links: Link[]) => Link[];
-
-export const allLinks: LinkFilter = (links) => links;
-
-// XXX: Whats with the 0.1 * length ?
-export function makeTopNLinksFilter(n: number) {
-	return function (links: Link[]) {
-		const length = links.length;
-		if (length <= n) {
-			return links;
-		}
-		const sortedLinks = [...links].sort(
-			(l1: Link, l2: Link) => Math.abs(l2.weight) - Math.abs(l1.weight)
-		);
-		return sortedLinks.slice(0, Math.min(n, 0.1 * length));
-	};
-}
-
-export function neighborsFilter(neuron: Neuron) {
-	return function (links: Link[]) {
-		return links.filter((link) => link.a == neuron || link.b == neuron);
-	};
-}
-
-export const applyActivation: LinkFilter = (links) => {
-	if (!links.find((link) => link.a.activation)) {
-		// A small optimization
-		return links;
-	}
-	return links.map((link) => new Link(link.a, link.b, link.weight * (1 + 0.5 * link.a.activation)));
-};
-
 export class DenseNetwork {
 	readonly layers: Layer[];
 	readonly classes: string[];
@@ -128,7 +99,7 @@ export class DenseNetwork {
 		this.classes = this.outputLayer.classes!;
 	}
 
-	getLinks(weights: LayerVariable[], activations: number[][], linkFilter: LinkFilter) {
+	getLinks(weights: LayerVariable[], activations: number[][]) {
 		if (activations) {
 			for (const [layer, activationsForLayer] of zip2(this.layers, activations)) {
 				for (const [neuron, activation] of zip2(layer.neurons, activationsForLayer)) {
@@ -151,19 +122,15 @@ export class DenseNetwork {
 		)) {
 			const weights_between_layers = weights_between_layers_tensor.read().arraySync() as number[][];
 
-			const layerLinks = [];
-
 			for (const [from_neuron, outgoing_weights_for_neuron] of zip2(
 				from_layer.neurons,
 				weights_between_layers
 			)) {
 				for (const [to_neuron, weight] of zip2(to_layer.neurons, outgoing_weights_for_neuron)) {
 					const link = new Link(from_neuron, to_neuron, weight);
-					layerLinks.push(link);
+					links.push(link);
 				}
 			}
-			const filteredLayerLinks = linkFilter(layerLinks);
-			links.push(...filteredLayerLinks);
 		}
 
 		return links;

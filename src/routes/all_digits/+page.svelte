@@ -1,12 +1,4 @@
 <script lang="ts">
-	import {
-		applyActivation,
-		Link,
-		makeTopNLinksFilter,
-		neighborsFilter,
-		Neuron,
-		type LinkFilter
-	} from '$lib/NetworkShape';
 	import { onDestroy, onMount } from 'svelte';
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
@@ -16,6 +8,8 @@
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import { testNetwork } from '$lib/NetworkTesting';
 	import DrawBox from '$lib/components/DrawBox.svelte';
+	import { makeTopNLinksFilter, neighborsFilter } from '$lib/LinkFilters';
+	import type { Neuron } from '$lib/NetworkShape';
 
 	const logger = new tslog.Logger({ name: 'all_digits' });
 
@@ -30,7 +24,7 @@
 	let drawbox: DrawBox;
 	let prediction: number[] | undefined;
 	let activations: number[][] | undefined;
-	const defaultLinkFilter: LinkFilter = (links) => makeTopNLinksFilter(500)(applyActivation(links));
+	const defaultLinkFilter = makeTopNLinksFilter(700);
 	let linkFilter = defaultLinkFilter;
 	let image: ImageData | undefined;
 
@@ -52,7 +46,7 @@
 		if (neuron == null) {
 			linkFilter = defaultLinkFilter;
 		} else {
-			linkFilter = (links) => neighborsFilter(neuron)(applyActivation(links));
+			linkFilter = neighborsFilter(neuron);
 		}
 	}
 
