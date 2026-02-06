@@ -26,7 +26,7 @@ Running the app under development, with automatic reload:
 
     npm run dev -- --open
 
-Automatic formatting:
+Automatically formatting:
 
     npm run format
 

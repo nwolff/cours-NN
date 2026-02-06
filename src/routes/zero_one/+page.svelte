@@ -173,12 +173,10 @@
 
 	async function itsAZero() {
 		learn(0);
-		clear();
 	}
 
 	async function itsAOne() {
 		learn(1);
-		clear();
 	}
 
 	function resetModel() {
@@ -200,9 +198,7 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner <b>0</b> ou <b>1</b></h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline btn-primary mt-4" disabled={!image} on:click={clear}
-				>Effacer</button
-			>
+			<button class="btn btn-outline btn-primary mt-4" on:click={clear}>Effacer</button>
 
 			<div class="divider"></div>
 
