@@ -6,7 +6,7 @@ export type Rect = {
 };
 
 /**
- * Draws src onto dest, fiilling it without stretching the image
+ * Draws src onto dest, filling it without stretching the image
  *
  * @param dest destination canvas
  * @param destBackgroundColor used to fill the empty bands either on the sides, or at the top and bottom
@@ -47,7 +47,7 @@ export function drawImageFitted(
 /**
  * @param image an inverted grayscale image
  * @param threshold  the luminance value at which we consider there is a pixel there (and not the background)
- * @returns
+ * @returns A rectangle bounding all the pixels we found
  */
 export function findBoundingBox(image: ImageData, threshold: number): Rect {
 	let top = Number.MAX_SAFE_INTEGER;
@@ -76,6 +76,7 @@ export function findBoundingBox(image: ImageData, threshold: number): Rect {
 		return { x: 0, y: 0, width: image.width, height: image.height };
 	}
 }
+
 /**
  * @param px bytes representing an image in rgba format.
  * It gets modified in place.

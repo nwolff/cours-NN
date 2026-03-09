@@ -26,7 +26,8 @@ function newZeroOneTFModel(): tf.Sequential {
 	model.add(tf.layers.dense({ inputShape: [28 * 28], units: 9, activation: 'relu' }));
 	model.add(tf.layers.dense({ units: 2, activation: 'softmax' }));
 
-	// This can be changed later, while training the model
+	// The optimizer itself cannot be changed during training
+	// but the learnig rate can
 	const optimizer = new tf.SGDOptimizer(0.1);
 
 	model.compile({
