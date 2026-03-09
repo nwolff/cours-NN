@@ -27,7 +27,8 @@ function newFashionTFModel(): tf.Sequential {
 	model.add(tf.layers.dense({ units: 50, activation: 'relu' }));
 	model.add(tf.layers.dense({ units: 10, activation: 'softmax' }));
 
-	// This can be changed later, while training the model
+	// The optimizer itself cannot be changed during training
+	// but the learnig rate can
 	const optimizer = new tf.SGDOptimizer(0.1);
 
 	model.compile({

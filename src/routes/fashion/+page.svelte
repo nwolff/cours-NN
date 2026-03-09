@@ -193,9 +193,7 @@
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Déposer une image</h4>
 			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline mt-4" disabled={!image} on:click={clear}
-				>Effacer</button
-			>
+			<button class="btn btn-outline mt-4" disabled={!image} on:click={clear}>Effacer</button>
 
 			<div class="divider"></div>
 
@@ -237,11 +235,7 @@
 		<div class="col-span-2">
 			<NetworkStats stats={$networkStore.stats} />
 			<div class="m-6" />
-			<button
-				class="btn btn-outline btn-error"
-				disabled={$networkStore.stats.samplesSeen == 0}
-				on:click={resetModel}
-			>
+			<button class="btn btn-outline btn-error" on:click={resetModel}>
 				Réinitialiser le réseau
 			</button>
 		</div>
