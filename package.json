@@ -37,11 +37,11 @@
 	"type": "module",
 	"dependencies": {
 		"@square/svelte-store": "^1.0.18",
-		"@tensorflow/tfjs": "^4.20.0",
+		"@tensorflow/tfjs": "^4.22.0",
 		"daisyui": "^4.12.0",
 		"plotly.js-dist": "^2.32.0",
 		"svelte-range-slider-pips": "^3.0.0",
-		"svelte-vega": "^2.2.1",
+		"svelte-vega": "^2.3.0",
 		"tslog": "^4.9.3"
 	}
 }

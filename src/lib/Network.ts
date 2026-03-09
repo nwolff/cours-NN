@@ -6,11 +6,13 @@ import * as tf from '@tensorflow/tfjs';
 type TrainingRound = {
 	samplesSeen: number;
 	finalAccuracy?: number;
+	loss?: number;
 };
 
 export type NetworkStats = {
 	samplesSeen: number;
 	trainingAccuracy?: number;
+	loss?: number;
 	test: TestResult;
 };
 
@@ -47,6 +49,7 @@ export class Network {
 		this.trainingHistory.push(trainingRound);
 		this.stats.samplesSeen += trainingRound.samplesSeen;
 		this.stats.trainingAccuracy = trainingRound.finalAccuracy;
+		this.stats.loss = trainingRound.loss;
 	}
 }
 
