@@ -23,6 +23,26 @@
 
 	$: networkShape = $networkStore?.shape;
 	$: weights = $networkStore?.tfModel.weights;
+	$: neuronFormula = buildNeuronFormula(weights);
+
+	const formulaFormatter = Intl.NumberFormat('en', {
+		notation: 'compact',
+		signDisplay: 'always',
+		maximumFractionDigits: 2
+	});
+
+	function buildNeuronFormula(tfWeights) {
+		// Build something like:  1,0 * T - 0.19 * V + 0.33 * H - 4
+		if (!tfWeights) {
+			return;
+		}
+		let [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync());
+		weights = weights.map((w) => formulaFormatter.format(w));
+		biases = biases.map((w) => formulaFormatter.format(w));
+		return `${weights[0]}*T${weights[1]}*V${weights[2]}*H${biases[0]}`;
+	}
+
+	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
 	$: temperature = MIN_TEMPERATURE;
 	$: windSpeed = MIN_WIND_SPEED;
@@ -31,8 +51,6 @@
 	let prediction: number[] | undefined;
 	let activations: number[][] | undefined;
 	let linkFilter = allLinks;
-
-	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
 	$: formattedPrediction = formatter.format(prediction);
 
@@ -61,7 +79,7 @@
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
-		setApparentTemperatureFunctionWeights($networkStore.tfModel);
+		// setApparentTemperatureFunctionWeights($networkStore.tfModel);
 		predict_apparent_temperature();
 	});
 
@@ -156,7 +174,7 @@
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
 			<div class="stats stats-vertical shadow">
-				<div class="stat py-2">
+				<div class="stat py-2 pl-0">
 					<div class="stat-title">Température</div>
 					<input
 						type="range"
@@ -167,7 +185,7 @@
 					/>
 					<div class="stat-value text-xl">{temperature} °C</div>
 				</div>
-				<div class="stat py-2">
+				<div class="stat py-2 pl-0">
 					<div class="stat-title">Vent</div>
 					<input
 						type="range"
@@ -178,7 +196,7 @@
 					/>
 					<div class="stat-value text-xl">{windSpeed} km/h</div>
 				</div>
-				<div class="stat py-2">
+				<div class="stat py-2 pl-0">
 					<div class="stat-title">Humidité</div>
 					<input
 						type="range"
@@ -189,14 +207,20 @@
 					/>
 					<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
 				</div>
-				<div class="stat py-2">
-					<div class="stat-title">Temperature apparente calculée</div>
+				<div class="stat py-2 pl-0">
+					<div class="stat-title">Calcul officiel</div>
+					<div class="stat-value text-xl">T - 0.19 * V + 0.33 * H - 4</div>
+					<div class="stat-title">Température apparente officielle</div>
 					<div class="stat-value text-xl">
 						{formattedComputedApparentTemperature} °C
 					</div>
 				</div>
-				<div class="stat py-1">
-					<div class="stat-title">Température apparente prédite</div>
+				<div class="stat py-2 pl-0">
+					<div class="stat-title">Formule calculéé</div>
+					<div class="stat-value text-base">{neuronFormula}</div>
+				</div>
+				<div class="stat py-2 pl-0">
+					<div class="stat-title">Température apparente</div>
 					<div class="stat-value text-xl">
 						{formattedPrediction} °C
 					</div>
