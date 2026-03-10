@@ -170,7 +170,7 @@
 					<div class="stat-value text-2xl">{windSpeed} km/h</div>
 				</div>
 				<div class="stat">
-					<div class="stat-title">Vapeur d'eau</div>
+					<div class="stat-title">Humidité</div>
 					<input
 						type="range"
 						min={MIN_WATER_VAPOR_PRESSURE}
