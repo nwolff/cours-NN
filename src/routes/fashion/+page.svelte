@@ -117,7 +117,8 @@
 			logger.debug('end batch:', batch, '. logs:', logs);
 			networkUnderTraining.trainingRoundDone({
 				samplesSeen: logs.size,
-				finalAccuracy: logs.acc
+				finalAccuracy: logs.acc,
+				loss: logs.loss
 			});
 			const testResult = testNetwork(networkUnderTraining, classes?.length * 50);
 			networkUnderTraining.stats.test = testResult;
@@ -126,17 +127,9 @@
 
 		function onEpochEnd(epoch: number, logs: tf.Logs) {
 			logger.debug('end epoch:', epoch, '. logs:', logs);
-			if (logs.val_acc) {
-				networkUnderTraining.trainingRoundDone({
-					samplesSeen: 0,
-					finalAccuracy: logs.val_acc,
-					loss: logs.loss
-				});
-				networkStore.update((n) => n); // Notify subscribers
-			}
 		}
 
-		function onTrainEnd(_logs?: tf.Logs) {
+		function onTrainEnd(_logs: tf.Logs) {
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			tf.dispose(trainXs);
 			tf.dispose(trainYs);

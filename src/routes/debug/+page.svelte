@@ -3,6 +3,7 @@
 	import DrawBox from '$lib/components/DrawBox.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 	import DataBatchGrid from '$lib/components/DataBatchGrid.svelte';
+	import LossChart from '$lib/components/LossChart.svelte';
 	import { onMount } from 'svelte';
 	import { allDigitsNetworkStore } from '../../stores';
 
@@ -38,6 +39,13 @@
 		const ctx = processedImage.getContext('2d')!;
 		ctx.clearRect(0, 0, previewCanvasSize, previewCanvasSize);
 	}
+
+	const losses = [
+		{ samples: 1, loss: 5 },
+		{ samples: 2, loss: 15 },
+		{ samples: 3, loss: 8 },
+		{ samples: 4, loss: 20 }
+	];
 </script>
 
 <div class="flex">
@@ -50,6 +58,10 @@
 	></canvas>
 </div>
 <button class="btn btn-primary mt-3" on:click={clear}>Clear</button>
+
+<div class="divider"></div>
+
+<LossChart {losses} />
 
 <div class="divider"></div>
 

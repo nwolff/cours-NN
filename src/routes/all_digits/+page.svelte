@@ -128,14 +128,6 @@
 
 		function onEpochEnd(epoch: number, logs: tf.Logs) {
 			logger.debug('end epoch:', epoch, '. logs:', logs);
-			if (logs.val_acc) {
-				networkUnderTraining.trainingRoundDone({
-					samplesSeen: 0,
-					finalAccuracy: logs.val_acc,
-					loss: logs.loss
-				});
-				networkStore.update((n) => n); // Notify subscribers
-			}
 		}
 
 		function onTrainEnd(_logs: tf.Logs) {
