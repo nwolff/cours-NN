@@ -17,7 +17,7 @@ function newTemperatureControlNetworkShape(): DenseNetwork {
 		{
 			name: "Couche d'entrée",
 			neuron_count: 3,
-			width: 3,
+			width: 4,
 			height: 0,
 			marker_size: 20,
 			classes: ['Température', 'Vent', 'Humidité']
@@ -40,7 +40,7 @@ function newTemperatureControlTFModel(): tf.Sequential {
 			inputShape: [3],
 			units: 1,
 			activation: 'linear',
-			biasInitializer: tf.initializers.randomUniform({ minval: -5, maxval: 5 })
+			biasInitializer: tf.initializers.randomUniform({ minval: -1, maxval: 1 })
 		})
 	);
 
@@ -97,7 +97,7 @@ export const MAX_TEMPERATURE = 30;
 export const MIN_WIND_SPEED = 0;
 export const MAX_WIND_SPEED = 50;
 
-export const MIN_WATER_VAPOR_PRESSURE = 2;
+export const MIN_WATER_VAPOR_PRESSURE = 6;
 export const MAX_WATER_VAPORT_PRESSURE = 40;
 
 class TemperatureControlDataSource implements DataSource {
@@ -146,28 +146,3 @@ class TemperatureControlDataSource implements DataSource {
 		return this.nextTrainBatch(batchSize);
 	}
 }
-
-/*
-
-	// 1. Setting the weights
-
-	const newWeights = tf.tensor2d([[1.0], [-0.19], [0.33]], [3, 1]);
-	const newBiases = tf.tensor1d([-4]);
-	model.setWeights([newWeights, newBiases]);
-	newWeights.dispose();
-	newBiases.dispose();
-
-	// 2. Getting the weights
-	const layerParameters = model.layers[0].getWeights();
-
-	// Separate weights and biases
-	const weights = layerParameters[0];
-	const biases = layerParameters[1];
-
-	// View them in the console
-	console.log('--- Weights (Kernel) ---');
-	weights.print();
-
-	console.log('--- Biases ---');
-	biases.print();
- */

@@ -15,7 +15,7 @@
 				href="{base}/temperature_control"
 				class={$page.url.pathname.endsWith('/temperature_control') ? 'active' : ''}
 			>
-				Température
+				Un neurone
 			</a>
 		</li>
 		<ul class="menu menu-horizontal">
