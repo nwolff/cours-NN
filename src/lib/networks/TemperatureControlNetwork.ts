@@ -53,6 +53,14 @@ function newTemperatureControlTFModel(): tf.Sequential {
 	return model;
 }
 
+export function setApparentTemperatureFunctionWeights(model: tf.Sequential) {
+	const newWeights = tf.tensor2d([[1.0], [-0.19], [0.33]], [3, 1]);
+	const newBiases = tf.tensor1d([-4]);
+	model.setWeights([newWeights, newBiases]);
+	newWeights.dispose();
+	newBiases.dispose();
+}
+
 /**
  * Australian Apparent Temperature (AT)
  * Robert Steadman
