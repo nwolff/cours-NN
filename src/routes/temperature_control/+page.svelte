@@ -13,7 +13,8 @@
 		MAX_WIND_SPEED,
 		MIN_TEMPERATURE,
 		MIN_WATER_VAPOR_PRESSURE,
-		MIN_WIND_SPEED
+		MIN_WIND_SPEED,
+		setApparentTemperatureFunctionWeights
 	} from '$lib/networks/TemperatureControlNetwork';
 
 	const logger = new tslog.Logger({ name: 'temperature' });
@@ -60,6 +61,7 @@
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
+		setApparentTemperatureFunctionWeights($networkStore.tfModel);
 		predict_apparent_temperature();
 	});
 
@@ -139,6 +141,13 @@
 		networkStore.reload();
 		predict_apparent_temperature();
 	}
+
+	function setATFunctionWeights() {
+		const networkUnderTraining = $networkStore;
+		setApparentTemperatureFunctionWeights(networkUnderTraining.tfModel);
+		networkStore.update((n) => n); // Notify subscribers
+		predict_apparent_temperature();
+	}
 </script>
 
 {#if isLoading}
@@ -147,70 +156,62 @@
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
 			<div class="stats stats-vertical shadow">
-				<div class="stat">
+				<div class="stat py-2">
 					<div class="stat-title">Température</div>
 					<input
 						type="range"
 						min={MIN_TEMPERATURE}
 						max={MAX_TEMPERATURE}
 						bind:value={temperature}
-						class="range range-primary"
+						class="range range-primary range-xs"
 					/>
-					<div class="stat-value text-2xl">{temperature} °C</div>
+					<div class="stat-value text-xl">{temperature} °C</div>
 				</div>
-				<div class="stat">
+				<div class="stat py-2">
 					<div class="stat-title">Vent</div>
 					<input
 						type="range"
 						min={MIN_WIND_SPEED}
 						max={MAX_WIND_SPEED}
 						bind:value={windSpeed}
-						class="range range-primary"
+						class="range range-primary range-xs"
 					/>
-					<div class="stat-value text-2xl">{windSpeed} km/h</div>
+					<div class="stat-value text-xl">{windSpeed} km/h</div>
 				</div>
-				<div class="stat">
+				<div class="stat py-2">
 					<div class="stat-title">Humidité</div>
 					<input
 						type="range"
 						min={MIN_WATER_VAPOR_PRESSURE}
 						max={MAX_WATER_VAPORT_PRESSURE}
 						bind:value={waterVaporPressure}
-						class="range range-primary"
+						class="range range-primary range-xs"
 					/>
-					<div class="stat-value text-2xl">{waterVaporPressure} hPa</div>
+					<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
 				</div>
-				<div class="stat">
+				<div class="stat py-2">
 					<div class="stat-title">Temperature apparente calculée</div>
-					<div class="stat-value text-2xl">
+					<div class="stat-value text-xl">
 						{formattedComputedApparentTemperature} °C
 					</div>
 				</div>
-				<div class="stat">
+				<div class="stat py-1">
 					<div class="stat-title">Température apparente prédite</div>
-					<div class="stat-value text-2xl">
+					<div class="stat-value text-xl">
 						{formattedPrediction} °C
 					</div>
 				</div>
 			</div>
 
-			<div class="divider"></div>
-			<h1 class="text-2xl mt-0 mb-2">Apprentissage</h1>
+			<h1 class="text-2xl mt-5 mb-2">Apprentissage</h1>
 
-			<ul class="menu py-4">
-				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train100}>
-						Entraîner avec 100 exemples
-					</button>
-				</li>
-			</ul>
-			<ul class="menu py-4">
-				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train1000}>
-						Entraîner avec 1000 exemples
-					</button>
-				</li>
-			</ul>
+			<button class="btn btn-outline btn-primary" on:click={train100}>
+				Entraîner avec 100 exemples
+			</button>
+			<div class="m-6" />
+			<button class="btn btn-outline btn-primary" on:click={train1000}>
+				Entraîner avec 1000 exemples
+			</button>
 		</div>
 		<div class="col-span-5">
 			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
@@ -231,6 +232,10 @@
 			<div class="m-6" />
 			<button class="btn btn-outline btn-error" on:click={resetModel}>
 				Réinitialiser le réseau
+			</button>
+			<div class="m-6" />
+			<button class="btn btn-outline btn-primary" on:click={setATFunctionWeights}>
+				Réseau attendu
 			</button>
 		</div>
 	</div>
