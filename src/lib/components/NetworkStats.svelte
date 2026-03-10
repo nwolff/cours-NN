@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { NetworkStats } from '$lib/Network';
+	import LossChart from './LossChart.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 
 	export let stats: NetworkStats;
@@ -11,6 +12,7 @@
 	$: formattedNumExamples = formatter.format(stats.samplesSeen);
 	$: testAccuracyPercent = Math.floor(stats.test?.accuracy * 100) || '';
 	$: classes = stats.test.classes;
+	$: losses = stats.losses;
 	$: labelsAndPredictions = [stats.test.labels, stats.test.predictions] as [number[], number[]];
 </script>
 
@@ -19,6 +21,12 @@
 		<div class="stat-title">Images vues</div>
 		<div class="stat-value">{formattedNumExamples}</div>
 	</div>
+	{#if losses?.length}
+		<div class="stat">
+			<div class="stat-title">Perte</div>
+			<LossChart {losses} />
+		</div>
+	{/if}
 	<div class="stat">
 		<div class="stat-title">Précision de test</div>
 		<div class="tooltip" data-tip="{testAccuracyPercent}%">

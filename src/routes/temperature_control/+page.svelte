@@ -5,6 +5,7 @@
 	import { temperatureControlNetworkStore } from '../../stores';
 	import * as tslog from 'tslog';
 	import { allLinks } from '$lib/LinkFilters';
+	import LossChart from '$lib/components/LossChart.svelte';
 	import {
 		computeApparentTemperature,
 		MAX_TEMPERATURE,
@@ -53,7 +54,7 @@
 
 	$: stats = $networkStore?.stats;
 	$: formattedNumExamples = formatter.format(stats?.samplesSeen);
-	$: formattedLoss = stats?.loss ? formatter.format(stats?.loss) : '';
+	$: losses = stats?.losses;
 
 	let isLoading = true;
 	onMount(async () => {
@@ -101,12 +102,6 @@
 
 		function onEpochEnd(epoch: number, logs: tf.Logs) {
 			logger.debug('end epoch:', epoch, '. logs:', logs);
-			networkUnderTraining.trainingRoundDone({
-				samplesSeen: 0,
-				finalAccuracy: logs.acc,
-				loss: logs.loss
-			});
-			networkStore.update((n) => n); // Notify subscribers
 		}
 
 		function onTrainEnd(_logs: tf.Logs) {
@@ -230,7 +225,7 @@
 				</div>
 				<div class="stat">
 					<div class="stat-title">Perte</div>
-					<div class="stat-value">{formattedLoss}</div>
+					<LossChart {losses} />
 				</div>
 			</div>
 			<div class="m-6" />

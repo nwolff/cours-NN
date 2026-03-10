@@ -5,14 +5,16 @@ import * as tf from '@tensorflow/tfjs';
 
 type TrainingRound = {
 	samplesSeen: number;
+	loss: number;
 	finalAccuracy?: number;
-	loss?: number;
 };
+
+export type Losses = { samples: number; loss: number }[];
 
 export type NetworkStats = {
 	samplesSeen: number;
 	trainingAccuracy?: number;
-	loss?: number;
+	losses: Losses;
 	test: TestResult;
 };
 
@@ -33,6 +35,7 @@ export class Network {
 		this.dataSource = dataSource;
 		this.stats = {
 			samplesSeen: 0,
+			losses: [],
 			test: { classes: [], labels: [], predictions: [], accuracy: 0 }
 		};
 	}
@@ -47,9 +50,10 @@ export class Network {
 
 	trainingRoundDone(trainingRound: TrainingRound) {
 		this.trainingHistory.push(trainingRound);
-		this.stats.samplesSeen += trainingRound.samplesSeen;
+		const totalSamplesSeen = this.stats.samplesSeen + trainingRound.samplesSeen;
+		this.stats.samplesSeen = totalSamplesSeen;
 		this.stats.trainingAccuracy = trainingRound.finalAccuracy;
-		this.stats.loss = trainingRound.loss;
+		this.stats.losses.push({ samples: totalSamplesSeen, loss: trainingRound.loss });
 	}
 }
 
