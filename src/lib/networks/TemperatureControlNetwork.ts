@@ -1,7 +1,6 @@
 import { DenseNetwork } from '$lib/NetworkShape';
 import { Network } from '$lib/Network';
 import type { DataSource, DataBatch } from '$lib/DataSource';
-import { zip3 } from '$lib/generic/utils';
 import * as tf from '@tensorflow/tfjs';
 
 export function newTemperatureControlNetwork(): Network {
@@ -21,7 +20,7 @@ function newTemperatureControlNetworkShape(): DenseNetwork {
 			width: 3,
 			height: 0,
 			marker_size: 20,
-			classes: ['Température', 'Vent', "Vapeur d'eau"]
+			classes: ['Température', 'Vent', 'Humidité']
 		},
 		{
 			name: 'Couche de sortie',
