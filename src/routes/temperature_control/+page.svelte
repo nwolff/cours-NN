@@ -5,7 +5,7 @@
 	import { temperatureControlNetworkStore } from '../../stores';
 	import * as tslog from 'tslog';
 	import { allLinks } from '$lib/LinkFilters';
-	import LossChart from '$lib/components/LossChart.svelte';
+	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import {
 		computeApparentTemperature,
 		MAX_TEMPERATURE,
@@ -70,10 +70,6 @@
 			prediction = prediction; // To trigger a reactive chain
 		}
 	}
-
-	$: stats = $networkStore?.stats;
-	$: formattedNumExamples = formatter.format(stats?.samplesSeen);
-	$: losses = stats?.losses;
 
 	let isLoading = true;
 	onMount(async () => {
@@ -277,16 +273,7 @@
 
 		<!-- Right -->
 		<div class="col-span-2">
-			<div class="stats shadow bg-base-200 stats-vertical">
-				<div class="stat">
-					<div class="stat-title">Exemples vus</div>
-					<div class="stat-value">{formattedNumExamples}</div>
-				</div>
-				<div class="stat">
-					<div class="stat-title">Perte</div>
-					<LossChart {losses} />
-				</div>
-			</div>
+			<NetworkStats stats={$networkStore.stats} />
 			<div class="m-6" />
 			<button class="btn btn-outline btn-error" on:click={resetModel}>
 				Réinitialiser le réseau

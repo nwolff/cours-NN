@@ -4,7 +4,7 @@
 	import { VegaLite } from 'svelte-vega';
 
 	export let losses: Losses;
-	export let width = 300;
+	export let width = 200;
 	export let height = 100;
 
 	$: dataObject = toDataObject(losses);
