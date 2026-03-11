@@ -27,7 +27,6 @@
 
 	const formulaFormatter = Intl.NumberFormat('en', {
 		notation: 'compact',
-		signDisplay: 'always',
 		maximumFractionDigits: 2
 	});
 
@@ -36,10 +35,11 @@
 		if (!tfWeights) {
 			return;
 		}
-		let [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync());
-		weights = weights.map((w) => formulaFormatter.format(w));
-		biases = biases.map((w) => formulaFormatter.format(w));
-		return `${weights[0]}*T${weights[1]}*V${weights[2]}*H${biases[0]}`;
+		const withOperator = (x) => (x > 0 ? `+ ${x}` : `- ${Math.abs(x)}`);
+		const [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync());
+		const [wT, wV, wH] = weights.map((w) => formulaFormatter.format(w));
+		const bias = formulaFormatter.format(biases[0]);
+		return `${wT} * T ${withOperator(wV)} * V ${withOperator(wH)} * H ${withOperator(bias)}`;
 	}
 
 	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
@@ -89,7 +89,6 @@
 		logger.debug('tf.memory() ', tf.memory());
 	}
 
-	// A better name would be retrieveActivations
 	function calculateActivations(
 		temperature: number,
 		windSpeed: number,
@@ -171,62 +170,21 @@
 {#if isLoading}
 	<span class="loading loading-spinner loading-lg text-primary"></span>
 {:else}
-	<div class="grid grid-cols-9 gap-4">
+	<div class="grid grid-cols-8 gap-9">
+		<!-- Left -->
 		<div class="col-span-2">
+			<h1 class="text-2xl mt-5 mb-2">Fonction Cible</h1>
 			<div class="stats stats-vertical shadow">
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Température</div>
-					<input
-						type="range"
-						min={MIN_TEMPERATURE}
-						max={MAX_TEMPERATURE}
-						bind:value={temperature}
-						class="range range-primary range-xs"
-					/>
-					<div class="stat-value text-xl">{temperature} °C</div>
-				</div>
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Vent</div>
-					<input
-						type="range"
-						min={MIN_WIND_SPEED}
-						max={MAX_WIND_SPEED}
-						bind:value={windSpeed}
-						class="range range-primary range-xs"
-					/>
-					<div class="stat-value text-xl">{windSpeed} km/h</div>
-				</div>
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Humidité</div>
-					<input
-						type="range"
-						min={MIN_WATER_VAPOR_PRESSURE}
-						max={MAX_WATER_VAPORT_PRESSURE}
-						bind:value={waterVaporPressure}
-						class="range range-primary range-xs"
-					/>
-					<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
-				</div>
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Calcul officiel</div>
-					<div class="stat-value text-xl">T - 0.19 * V + 0.33 * H - 4</div>
-					<div class="stat-title">Température apparente officielle</div>
+				<div class="stat px-0">
+					<div class="stat-title">Calcul</div>
+					<div class="stat-value text-xl">1 * T - 0.19 * V + 0.33 * H - 4</div>
+					<div class="stat-title">Température apparente</div>
 					<div class="stat-value text-xl">
 						{formattedComputedApparentTemperature} °C
 					</div>
 				</div>
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Formule calculéé</div>
-					<div class="stat-value text-base">{neuronFormula}</div>
-				</div>
-				<div class="stat py-2 pl-0">
-					<div class="stat-title">Température apparente</div>
-					<div class="stat-value text-xl">
-						{formattedPrediction} °C
-					</div>
-				</div>
 			</div>
-
+			<div class="divider"></div>
 			<h1 class="text-2xl mt-5 mb-2">Apprentissage</h1>
 
 			<button class="btn btn-outline btn-primary" on:click={train100}>
@@ -237,11 +195,69 @@
 				Entraîner avec 1000 exemples
 			</button>
 		</div>
-		<div class="col-span-5">
-			<NetworkGraph {networkShape} {weights} {activations} {linkFilter} />
+
+		<!-- Center -->
+		<div class="col-span-4">
+			<div class="flex flex-col w-full">
+				<!-- Controls -->
+				<div class="grid h-20 place-items-center">
+					<div class="stats stats-horizontal shadow">
+						<div class="stat">
+							<div class="stat-title">Température</div>
+							<input
+								type="range"
+								min={MIN_TEMPERATURE}
+								max={MAX_TEMPERATURE}
+								bind:value={temperature}
+								class="range range-primary range-xs"
+							/>
+							<div class="stat-value text-xl">{temperature} °C</div>
+						</div>
+						<div class="stat">
+							<div class="stat-title">Vent</div>
+							<input
+								type="range"
+								min={MIN_WIND_SPEED}
+								max={MAX_WIND_SPEED}
+								bind:value={windSpeed}
+								class="range range-primary range-xs"
+							/>
+							<div class="stat-value text-xl">{windSpeed} km/h</div>
+						</div>
+						<div class="stat">
+							<div class="stat-title">Humidité</div>
+							<input
+								type="range"
+								min={MIN_WATER_VAPOR_PRESSURE}
+								max={MAX_WATER_VAPORT_PRESSURE}
+								bind:value={waterVaporPressure}
+								class="range range-primary range-xs"
+							/>
+							<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
+						</div>
+					</div>
+				</div>
+				<!-- Network -->
+				<div class="grid p-10">
+					<NetworkGraph {networkShape} {weights} {activations} {linkFilter} style="" />
+				</div>
+				<!-- Output -->
+				<div class="grid place-items-center">
+					<div class="stats stats-vertical shadow">
+						<div class="stat">
+							<div class="stat-title">Calcul</div>
+							<div class="stat-value text-xl">{neuronFormula}</div>
+							<div class="stat-title">Température apparente</div>
+							<div class="stat-value text-xl">
+								{formattedPrediction} °C
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 
-		<!-- Stats -->
+		<!-- Right -->
 		<div class="col-span-2">
 			<div class="stats shadow bg-base-200 stats-vertical">
 				<div class="stat">
@@ -259,7 +275,7 @@
 			</button>
 			<div class="m-6" />
 			<button class="btn btn-outline btn-primary" on:click={setATFunctionWeights}>
-				Réseau attendu
+				Réseau cible
 			</button>
 		</div>
 	</div>

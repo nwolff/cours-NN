@@ -15,6 +15,7 @@
 	export let activations: number[][];
 	export let weights: LayerVariable[];
 	export let linkFilter: LinkFilter;
+	export let style = 'height: 85vh';
 
 	$: drawGraph(networkShape, activations, weights, linkFilter);
 
@@ -158,7 +159,7 @@
 	const graphConfig = {
 		displayModeBar: false,
 		scrollZoom: true,
-		responsive: true
+		responsive: false // Important, otherwise anything under it in the layout floats back up
 	};
 
 	// https://plotly.com/javascript/text-and-annotations/
@@ -236,4 +237,4 @@
 	}
 </script>
 
-<div bind:this={plotElement} id="network-graph" class="network-graph" style="height: 85vh" />
+<div bind:this={plotElement} id="network-graph" class="network-graph" {style} />
