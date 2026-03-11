@@ -100,6 +100,17 @@ export const MAX_WIND_SPEED = 50;
 export const MIN_WATER_VAPOR_PRESSURE = 6;
 export const MAX_WATER_VAPORT_PRESSURE = 40;
 
+export const MIN_APPARENT_TEMPERATURE = computeApparentTemperature(
+	MIN_TEMPERATURE,
+	MAX_WIND_SPEED,
+	MIN_WATER_VAPOR_PRESSURE
+);
+export const MAX_APPARENT_TEMPERATURE = computeApparentTemperature(
+	MAX_TEMPERATURE,
+	MIN_WIND_SPEED,
+	MAX_WATER_VAPORT_PRESSURE
+);
+
 class TemperatureControlDataSource implements DataSource {
 	async loadData(): Promise<void> {}
 

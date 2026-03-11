@@ -8,9 +8,11 @@
 	import LossChart from '$lib/components/LossChart.svelte';
 	import {
 		computeApparentTemperature,
+		MAX_APPARENT_TEMPERATURE,
 		MAX_TEMPERATURE,
 		MAX_WATER_VAPORT_PRESSURE,
 		MAX_WIND_SPEED,
+		MIN_APPARENT_TEMPERATURE,
 		MIN_TEMPERATURE,
 		MIN_WATER_VAPOR_PRESSURE,
 		MIN_WIND_SPEED,
@@ -83,6 +85,34 @@
 		predict_apparent_temperature();
 	});
 
+	/**
+	 * Creates normalization and denormalization functions for a specific range.
+	 * @param {number} min - The lower bound of the range.
+	 * @param {number} max - The upper bound of the range.
+	 * @returns {Object} An object containing normalize and denormalize functions.
+	 */
+	const createScaler = (min, max) => {
+		const range = max - min;
+
+		// Handle division by zero if min and max are the same
+		if (range === 0) {
+			return [(x) => 0, (n) => min];
+		}
+
+		return [(x) => (x - min) / range, (n) => n * range + min];
+	};
+
+	const [normalizeTemp, denormalizeTemp] = createScaler(MIN_TEMPERATURE, MAX_TEMPERATURE);
+	const [normalizeWindSpeed, denormalizeWindSpeed] = createScaler(MIN_WIND_SPEED, MAX_WIND_SPEED);
+	const [normalizeHumidity, dernormalizeHumidity] = createScaler(
+		MIN_WATER_VAPOR_PRESSURE,
+		MAX_WATER_VAPORT_PRESSURE
+	);
+	const [normalizeApparentTemperator, denormalizeApparentTemperature] = createScaler(
+		MIN_APPARENT_TEMPERATURE,
+		MAX_APPARENT_TEMPERATURE
+	);
+
 	const randomUniformInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
 	function show_example_in_UI() {
@@ -93,8 +123,13 @@
 	}
 
 	function predict_apparent_temperature() {
-		activations = calculateActivations(temperature, windSpeed, waterVaporPressure);
-		prediction = activations[activations.length - 1];
+		activations = calculateActivations(
+			normalizeTemp(temperature),
+			normalizeWindSpeed(windSpeed),
+			normalizeHumidity(waterVaporPressure)
+		);
+		const normalizedPrediction = activations[activations.length - 1];
+		prediction = denormalizeApparentTemperature(normalizedPrediction);
 		logger.debug('tf.memory() ', tf.memory());
 	}
 
