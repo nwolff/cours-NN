@@ -83,6 +83,15 @@
 		predict_apparent_temperature();
 	});
 
+	const randomUniformInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
+
+	function show_example_in_UI() {
+		temperature = randomUniformInt(MIN_TEMPERATURE, MAX_TEMPERATURE);
+		windSpeed = randomUniformInt(MIN_WIND_SPEED, MAX_WIND_SPEED);
+		waterVaporPressure = randomUniformInt(MIN_WATER_VAPOR_PRESSURE, MAX_WATER_VAPORT_PRESSURE);
+		predict_apparent_temperature();
+	}
+
 	function predict_apparent_temperature() {
 		activations = calculateActivations(temperature, windSpeed, waterVaporPressure);
 		prediction = activations[activations.length - 1];
@@ -117,6 +126,7 @@
 				loss: logs.loss
 			});
 			networkStore.update((n) => n); // Notify subscribers
+			show_example_in_UI();
 		}
 
 		function onEpochEnd(epoch: number, logs: tf.Logs) {
@@ -144,6 +154,10 @@
 			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd }
 		};
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
+	}
+
+	async function train1() {
+		trainOnData(1);
 	}
 
 	async function train100() {
@@ -184,9 +198,13 @@
 					</div>
 				</div>
 			</div>
-			<div class="divider"></div>
-			<h1 class="text-2xl mt-5 mb-2">Apprentissage</h1>
+			<div class="divider mt-10"></div>
+			<h1 class="text-2xl mt-3 mb-6">Apprentissage</h1>
 
+			<button class="btn btn-outline btn-primary" on:click={train1}>
+				Entraîner avec 1 exemple
+			</button>
+			<div class="m-6" />
 			<button class="btn btn-outline btn-primary" on:click={train100}>
 				Entraîner avec 100 exemples
 			</button>
