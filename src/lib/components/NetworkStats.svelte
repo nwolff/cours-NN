@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NetworkStats } from '$lib/Network';
-	import LossChart from './LossChart.svelte';
+	import LossChart from '$lib/components/LossChart.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 
 	export let stats: NetworkStats;
@@ -24,21 +24,26 @@
 	{#if losses?.length}
 		<div class="stat">
 			<div class="stat-title">Perte</div>
+			<div class="stat-value">{formatter.format(losses[losses.length - 1].loss)}</div>
 			<LossChart {losses} />
 		</div>
 	{/if}
-	<div class="stat">
-		<div class="stat-title">Précision de test</div>
-		<div class="tooltip" data-tip="{testAccuracyPercent}%">
-			<progress class="progress progress-primary" value={testAccuracyPercent} max="100"> </progress>
+
+	{#if testAccuracyPercent}
+		<div class="stat">
+			<div class="stat-title">Précision de test</div>
+			<div class="tooltip" data-tip="{testAccuracyPercent}%">
+				<progress class="progress progress-primary" value={testAccuracyPercent} max="100">
+				</progress>
+			</div>
+			<div
+				role="complementary"
+				class="mt-3"
+				on:mouseenter={() => (confusionMatrixSize = 280)}
+				on:mouseleave={() => (confusionMatrixSize = 140)}
+			>
+				<ConfusionMatrix size={confusionMatrixSize} {classes} {labelsAndPredictions} />
+			</div>
 		</div>
-		<div
-			role="complementary"
-			class="mt-3"
-			on:mouseenter={() => (confusionMatrixSize = 280)}
-			on:mouseleave={() => (confusionMatrixSize = 140)}
-		>
-			<ConfusionMatrix size={confusionMatrixSize} {classes} {labelsAndPredictions} />
-		</div>
-	</div>
+	{/if}
 </div>
