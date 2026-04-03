@@ -8,6 +8,8 @@ Usage statistics collected with umami.js
 
 The python backend is only needed if you want to train new/different models or generate new datasets for use in the frontend.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/nwolff/cours-NN)
+
 # Tooling
 
 Requires an installation of nodejs
