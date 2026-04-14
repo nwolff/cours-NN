@@ -186,10 +186,10 @@
 			<h1 class="text-2xl mt-5 mb-2">Fonction Cible</h1>
 			<div class="stats stats-vertical shadow">
 				<div class="stat px-0">
-					<div class="stat-title">Calcul</div>
-					<div class="stat-value text-xl">1 * T - 0.19 * V + 0.33 * H - 4</div>
-					<div class="stat-title">Température apparente</div>
-					<div class="stat-value text-xl">
+					<div class="stat-title !text-base">Calcul</div>
+					<div class="stat-value !text-xl">1 * T - 0.19 * V + 0.33 * H - 4</div>
+					<div class="stat-title !text-base">Température apparente</div>
+					<div class="stat-value !text-xl">
 						{formattedComputedApparentTemperature} °C
 					</div>
 				</div>
@@ -217,7 +217,7 @@
 				<div class="grid h-20 place-items-center">
 					<div class="stats stats-horizontal shadow">
 						<div class="stat">
-							<div class="stat-title">Température</div>
+							<div class="stat-title !text-base">Température</div>
 							<input
 								type="range"
 								min={MIN_TEMPERATURE}
@@ -226,10 +226,10 @@
 								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
-							<div class="stat-value text-xl">{temperature} °C</div>
+							<div class="stat-value !text-xl">{temperature} °C</div>
 						</div>
 						<div class="stat">
-							<div class="stat-title">Vent</div>
+							<div class="stat-title !text-base">Vent</div>
 							<input
 								type="range"
 								min={MIN_WIND_SPEED}
@@ -238,10 +238,10 @@
 								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
-							<div class="stat-value text-xl">{windSpeed} km/h</div>
+							<div class="stat-value !text-xl">{windSpeed} km/h</div>
 						</div>
 						<div class="stat">
-							<div class="stat-title">Humidité</div>
+							<div class="stat-title !text-base">Humidité</div>
 							<input
 								type="range"
 								min={MIN_WATER_VAPOR_PRESSURE}
@@ -250,22 +250,28 @@
 								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
-							<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
+							<div class="stat-value !text-xl">{waterVaporPressure} hPa</div>
 						</div>
 					</div>
 				</div>
 				<!-- Network -->
 				<div class="grid p-10">
-					<NetworkGraph {networkShape} weights={weights ?? []} activations={activations ?? []} {linkFilter} style="" />
+					<NetworkGraph
+						{networkShape}
+						weights={weights ?? []}
+						activations={activations ?? []}
+						{linkFilter}
+						style=""
+					/>
 				</div>
 				<!-- Output -->
 				<div class="grid place-items-center">
 					<div class="stats stats-vertical shadow">
 						<div class="stat">
-							<div class="stat-title">Calcul</div>
-							<div class="stat-value text-xl">{neuronFormula}</div>
-							<div class="stat-title">Température apparente</div>
-							<div class="stat-value text-xl">
+							<div class="stat-title !text-base">Calcul</div>
+							<div class="stat-value !text-xl">{neuronFormula}</div>
+							<div class="stat-title !text-base">Température apparente</div>
+							<div class="stat-value !text-xl">
 								{formattedPrediction} °C
 							</div>
 						</div>

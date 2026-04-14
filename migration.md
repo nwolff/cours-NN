@@ -58,10 +58,6 @@ DrawBox.svelte — createEventDispatcher, on:event → callback prop onImageData
 temperature_control/+page.svelte — $: → $derived/$state, $effect for slider reactivity
 zero_one, all_digits, fashion, debug — same pattern, on:imageData/on:neuronSelected → callback props, on:click → onclick, bind:values → on:change workaround
 
-# Phase 1.1
-
-Server is up clean — no errors. App is running at http://localhost:5173/
-
 The fixes needed were:
 
 vega, vega-embed, vega-lite — now explicit peer deps of svelte-vega v4 (previously bundled, now separate)
