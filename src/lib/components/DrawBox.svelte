@@ -206,7 +206,7 @@
 	//
 	//////////////////////////////////////////////
 
-	let dropHighlighted = false;
+	let dropHighlighted = $state(false);
 
 	function handleDragOver(event: DragEvent) {
 		event.preventDefault();

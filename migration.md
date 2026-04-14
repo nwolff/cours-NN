@@ -66,3 +66,18 @@ The fixes needed were:
 
 vega, vega-embed, vega-lite — now explicit peer deps of svelte-vega v4 (previously bundled, now separate)
 svelte-range-slider-pips excluded from Vite's optimizer to avoid the Tailwind @layer base conflict
+
+# Phase 2
+
+The remaining diagnostics are pre-existing TypeScript issues unrelated to the migration — the validationData indexing error and onTrainEnd signature mismatch were there before. The "Cannot invoke object possibly undefined" on drawbox!.clear() is also a Svelte 5 component typing quirk.
+
+Now done. Summary of what was fixed:
+
+Two build warnings:
+
++page.svelte: <script type="ts"> → <script lang="ts">
+DrawBox.svelte: let dropHighlighted = false → let dropHighlighted = $state(false)
+Reactivity bugs (all 4 pages):
+
+temperature_control: removed the $effect that caused the cycle (write→read activations in same effect), replaced with explicit oninput on sliders; fixed predict_apparent_temperature to use a local variable
+All pages: replaced networkStore.update((n) => n) with \_tick++; added $derived.by(() => { \_tick; ... }) for weights and currentStats so training updates create new object references that Svelte 5 actually detects

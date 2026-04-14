@@ -17,9 +17,20 @@
 
 	const networkStore = allDigitsNetworkStore;
 
+	let _tick = $state(0);
+
 	const networkShape = $derived($networkStore?.shape);
 	const classes = $derived($networkStore?.shape.classes);
-	const weights = $derived($networkStore?.tfModel.weights);
+	const weights = $derived.by(() => {
+		_tick;
+		const w = $networkStore?.tfModel.weights;
+		return w ? [...w] : undefined;
+	});
+	const currentStats = $derived.by(() => {
+		_tick;
+		const s = $networkStore?.stats;
+		return s ? { ...s, losses: [...s.losses] } : null;
+	});
 
 	let drawbox = $state<DrawBox>();
 	let prediction: number[] | undefined = $state(undefined);
@@ -122,7 +133,7 @@
 			});
 			const testResult = testNetwork(networkUnderTraining, classes?.length * 50);
 			networkUnderTraining.stats.test = testResult;
-			networkStore.update((n) => n); // Notify subscribers
+			_tick++; // Notify subscribers
 		}
 
 		function onEpochEnd(epoch: number, logs: tf.Logs) {
@@ -174,6 +185,7 @@
 
 	function resetModel() {
 		networkStore.reload();
+		_tick++;
 		predict_image();
 	}
 
@@ -227,14 +239,14 @@
 		<div class="col-span-5">
 			<NetworkGraph
 				{networkShape}
-				{weights}
-				{activations}
+				weights={weights ?? []}
+				activations={activations ?? []}
 				{linkFilter}
 				onNeuronSelected={handleNeuronSelected}
 			/>
 		</div>
 		<div class="col-span-2">
-			<NetworkStats stats={$networkStore.stats} />
+			<NetworkStats stats={currentStats!} />
 			<div class="m-6"></div>
 			<button class="btn btn-outline btn-error" onclick={resetModel}>
 				Réinitialiser le réseau
