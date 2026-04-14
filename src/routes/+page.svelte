@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import numbersImage from '$lib/assets/neural-numbers.png';
 	import { base } from '$app/paths';
 </script>

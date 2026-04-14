@@ -21,9 +21,20 @@
 
 	const networkStore = temperatureControlNetworkStore;
 
+	let _tick = $state(0);
+
 	const networkShape = $derived($networkStore?.shape);
-	const weights = $derived($networkStore?.tfModel.weights);
+	const weights = $derived.by(() => {
+		_tick;
+		const w = $networkStore?.tfModel.weights;
+		return w ? [...w] : undefined;
+	});
 	const neuronFormula = $derived(buildNeuronFormula(weights));
+	const currentStats = $derived.by(() => {
+		_tick;
+		const s = $networkStore?.stats;
+		return s ? { ...s, losses: [...s.losses] } : null;
+	});
 
 	const formulaFormatter = Intl.NumberFormat('en', {
 		notation: 'compact',
@@ -59,13 +70,6 @@
 
 	let isLoading = $state(true);
 
-	// Re-predict whenever sliders change (after loading)
-	$effect(() => {
-		if (!isLoading) {
-			predict_apparent_temperature();
-		}
-	});
-
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
@@ -83,8 +87,9 @@
 	}
 
 	function predict_apparent_temperature() {
-		activations = calculateActivations(temperature, windSpeed, waterVaporPressure);
-		prediction = activations[activations.length - 1];
+		const result = calculateActivations(temperature, windSpeed, waterVaporPressure);
+		activations = result;
+		prediction = result[result.length - 1];
 		logger.debug('tf.memory() ', tf.memory());
 	}
 
@@ -115,7 +120,7 @@
 				finalAccuracy: logs.acc,
 				loss: logs.loss
 			});
-			networkStore.update((n) => n); // Notify subscribers
+			_tick++; // Notify subscribers
 			show_example_in_UI();
 		}
 
@@ -160,13 +165,14 @@
 
 	function resetModel() {
 		networkStore.reload();
+		_tick++; // Notify subscribers
 		predict_apparent_temperature();
 	}
 
 	function setATFunctionWeights() {
 		const networkUnderTraining = $networkStore;
 		setApparentTemperatureFunctionWeights(networkUnderTraining.tfModel);
-		networkStore.update((n) => n); // Notify subscribers
+		_tick++; // Notify subscribers
 		predict_apparent_temperature();
 	}
 </script>
@@ -217,6 +223,7 @@
 								min={MIN_TEMPERATURE}
 								max={MAX_TEMPERATURE}
 								bind:value={temperature}
+								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
 							<div class="stat-value text-xl">{temperature} °C</div>
@@ -228,6 +235,7 @@
 								min={MIN_WIND_SPEED}
 								max={MAX_WIND_SPEED}
 								bind:value={windSpeed}
+								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
 							<div class="stat-value text-xl">{windSpeed} km/h</div>
@@ -239,6 +247,7 @@
 								min={MIN_WATER_VAPOR_PRESSURE}
 								max={MAX_WATER_VAPORT_PRESSURE}
 								bind:value={waterVaporPressure}
+								oninput={predict_apparent_temperature}
 								class="range range-primary range-xs"
 							/>
 							<div class="stat-value text-xl">{waterVaporPressure} hPa</div>
@@ -247,7 +256,7 @@
 				</div>
 				<!-- Network -->
 				<div class="grid p-10">
-					<NetworkGraph {networkShape} {weights} {activations} {linkFilter} style="" />
+					<NetworkGraph {networkShape} weights={weights ?? []} activations={activations ?? []} {linkFilter} style="" />
 				</div>
 				<!-- Output -->
 				<div class="grid place-items-center">
@@ -267,7 +276,7 @@
 
 		<!-- Right -->
 		<div class="col-span-2">
-			<NetworkStats stats={$networkStore.stats} />
+			<NetworkStats stats={currentStats!} />
 			<div class="m-6"></div>
 			<button class="btn btn-outline btn-error" onclick={resetModel}>
 				Réinitialiser le réseau
