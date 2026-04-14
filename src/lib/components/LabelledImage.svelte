@@ -2,11 +2,10 @@
 	import type { DataBatch } from '$lib/DataSource';
 	import * as tf from '@tensorflow/tfjs';
 
-	export let dataBatch: DataBatch;
-	export let indexInBatch: number = 0;
+	let { dataBatch, indexInBatch = 0 }: { dataBatch: DataBatch; indexInBatch?: number } = $props();
 
-	$: image = dataBatch.xs.slice([indexInBatch], [1]);
-	$: label = dataBatch.ys.slice([indexInBatch], [1]);
+	const image = $derived(dataBatch.xs.slice([indexInBatch], [1]));
+	const label = $derived(dataBatch.ys.slice([indexInBatch], [1]));
 </script>
 
 <div>

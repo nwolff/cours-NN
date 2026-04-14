@@ -21,9 +21,9 @@
 
 	const networkStore = temperatureControlNetworkStore;
 
-	$: networkShape = $networkStore?.shape;
-	$: weights = $networkStore?.tfModel.weights;
-	$: neuronFormula = buildNeuronFormula(weights);
+	const networkShape = $derived($networkStore?.shape);
+	const weights = $derived($networkStore?.tfModel.weights);
+	const neuronFormula = $derived(buildNeuronFormula(weights));
 
 	const formulaFormatter = Intl.NumberFormat('en', {
 		notation: 'compact',
@@ -44,34 +44,28 @@
 
 	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
-	$: temperature = MIN_TEMPERATURE;
-	$: windSpeed = MIN_WIND_SPEED;
-	$: waterVaporPressure = MIN_WATER_VAPOR_PRESSURE;
+	let temperature = $state(MIN_TEMPERATURE);
+	let windSpeed = $state(MIN_WIND_SPEED);
+	let waterVaporPressure = $state(MIN_WATER_VAPOR_PRESSURE);
 
-	let prediction: number[] | undefined;
-	let activations: number[][] | undefined;
+	let prediction: number[] | undefined = $state(undefined);
+	let activations: number[][] | undefined = $state(undefined);
 	let linkFilter = allLinks;
 
-	$: formattedPrediction = formatter.format(prediction);
-
-	$: formattedComputedApparentTemperature = formatter.format(
-		computeApparentTemperature(temperature, windSpeed, waterVaporPressure)
+	const formattedPrediction = $derived(formatter.format(prediction as any));
+	const formattedComputedApparentTemperature = $derived(
+		formatter.format(computeApparentTemperature(temperature, windSpeed, waterVaporPressure))
 	);
 
-	// Whenever the user moves the slider, we want to predict.
-	// The first three lines make the svelte compiler understand that changes
-	// to those variables need to trigger this block
-	$: {
-		temperature;
-		windSpeed;
-		waterVaporPressure;
+	let isLoading = $state(true);
+
+	// Re-predict whenever sliders change (after loading)
+	$effect(() => {
 		if (!isLoading) {
 			predict_apparent_temperature();
-			prediction = prediction; // To trigger a reactive chain
 		}
-	}
+	});
 
-	let isLoading = true;
 	onMount(async () => {
 		await networkStore.load();
 		isLoading = false;
@@ -197,15 +191,15 @@
 			<div class="divider mt-10"></div>
 			<h1 class="text-2xl mt-3 mb-6">Apprentissage</h1>
 
-			<button class="btn btn-outline btn-primary" on:click={train1}>
+			<button class="btn btn-outline btn-primary" onclick={train1}>
 				Entraîner avec 1 exemple
 			</button>
-			<div class="m-6" />
-			<button class="btn btn-outline btn-primary" on:click={train100}>
+			<div class="m-6"></div>
+			<button class="btn btn-outline btn-primary" onclick={train100}>
 				Entraîner avec 100 exemples
 			</button>
-			<div class="m-6" />
-			<button class="btn btn-outline btn-primary" on:click={train1000}>
+			<div class="m-6"></div>
+			<button class="btn btn-outline btn-primary" onclick={train1000}>
 				Entraîner avec 1000 exemples
 			</button>
 		</div>
@@ -274,12 +268,12 @@
 		<!-- Right -->
 		<div class="col-span-2">
 			<NetworkStats stats={$networkStore.stats} />
-			<div class="m-6" />
-			<button class="btn btn-outline btn-error" on:click={resetModel}>
+			<div class="m-6"></div>
+			<button class="btn btn-outline btn-error" onclick={resetModel}>
 				Réinitialiser le réseau
 			</button>
-			<div class="m-6" />
-			<button class="btn btn-outline btn-primary" on:click={setATFunctionWeights}>
+			<div class="m-6"></div>
+			<button class="btn btn-outline btn-primary" onclick={setATFunctionWeights}>
 				Réseau cible
 			</button>
 		</div>

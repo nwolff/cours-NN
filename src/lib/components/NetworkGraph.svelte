@@ -1,28 +1,37 @@
 <script lang="ts">
 	import { type LayerVariable } from '@tensorflow/tfjs';
 	import type { DenseNetwork, Link, LinkFilter, Layer, Neuron } from '$lib/NetworkShape';
-	import { createEventDispatcher, onMount } from 'svelte';
 	import { DefaultMap, zip2 } from '$lib/generic/utils';
 	import { hsv2rgb } from '$lib/generic/image';
 	import plotly from 'plotly.js-dist';
 	import { visualWeight } from '$lib/LinkFilters';
 
-	const dispatch = createEventDispatcher();
+	let {
+		networkShape,
+		activations,
+		weights,
+		linkFilter,
+		style = 'height: 85vh',
+		onNeuronSelected
+	}: {
+		networkShape: DenseNetwork;
+		activations: number[][];
+		weights: LayerVariable[];
+		linkFilter: LinkFilter;
+		style?: string;
+		onNeuronSelected?: (neuron: Neuron | null) => void;
+	} = $props();
 
 	let plotElement: HTMLElement;
+	let plotlyInitialized = false;
 
-	export let networkShape: DenseNetwork;
-	export let activations: number[][];
-	export let weights: LayerVariable[];
-	export let linkFilter: LinkFilter;
-	export let style = 'height: 85vh';
-
-	$: drawGraph(networkShape, activations, weights, linkFilter);
-
-	onMount(() => {
+	$effect(() => {
 		drawGraph(networkShape, activations, weights, linkFilter);
-		plotElement.on('plotly_hover', onPlotlyHover);
-		plotElement.on('plotly_unhover', onPlotlyUnhover);
+		if (!plotlyInitialized) {
+			plotlyInitialized = true;
+			(plotElement as any).on('plotly_hover', onPlotlyHover);
+			(plotElement as any).on('plotly_unhover', onPlotlyUnhover);
+		}
 	});
 
 	function lookup_neuron(curveNumber: number, pointNumber: number): Neuron | null {
@@ -33,12 +42,12 @@
 		if (data.points) {
 			const point = data.points[0];
 			const neuron = lookup_neuron(point.curveNumber, point.pointNumber);
-			dispatch('neuronSelected', neuron);
+			onNeuronSelected?.(neuron);
 		}
 	}
 
 	function onPlotlyUnhover(_: any) {
-		dispatch('neuronSelected', null);
+		onNeuronSelected?.(null);
 	}
 
 	function neuron_color(activation: number): string {
@@ -237,4 +246,4 @@
 	}
 </script>
 
-<div bind:this={plotElement} id="network-graph" class="network-graph" {style} />
+<div bind:this={plotElement} id="network-graph" class="network-graph" {style}></div>

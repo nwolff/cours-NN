@@ -1,8 +1,10 @@
 <script lang="ts">
 	import 'tailwindcss/tailwind.css';
 	import { base } from '$app/paths';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Logo from './_Logo.svelte';
+
+	let { children } = $props();
 </script>
 
 <div class="navbar px-8 py-0">
@@ -13,27 +15,27 @@
 		<li class="text-lg mx-1">
 			<a
 				href="{base}/temperature_control"
-				class={$page.url.pathname.endsWith('/temperature_control') ? 'active' : ''}
+				class={page.url.pathname.endsWith('/temperature_control') ? 'active' : ''}
 			>
 				Un neurone
 			</a>
 		</li>
 		<ul class="menu menu-horizontal">
 			<li class="text-lg mx-1">
-				<a href="{base}/zero_one" class={$page.url.pathname.endsWith('/zero_one') ? 'active' : ''}>
+				<a href="{base}/zero_one" class={page.url.pathname.endsWith('/zero_one') ? 'active' : ''}>
 					0 et 1
 				</a>
 			</li>
 			<li class="text-lg mx-1">
 				<a
 					href="{base}/all_digits"
-					class={$page.url.pathname.endsWith('/all_digits') ? 'active' : ''}
+					class={page.url.pathname.endsWith('/all_digits') ? 'active' : ''}
 				>
 					Tous les chiffres
 				</a>
 			</li>
 			<li class="text-lg mx-1">
-				<a href="{base}/fashion" class={$page.url.pathname.endsWith('/fashion') ? 'active' : ''}>
+				<a href="{base}/fashion" class={page.url.pathname.endsWith('/fashion') ? 'active' : ''}>
 					Mode
 				</a>
 			</li>
@@ -44,5 +46,5 @@
 <div class="divider m-0 pb-6"></div>
 
 <div class="container px-8">
-	<slot />
+	{@render children()}
 </div>

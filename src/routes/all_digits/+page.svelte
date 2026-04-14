@@ -3,7 +3,7 @@
 	import * as tf from '@tensorflow/tfjs';
 	import NetworkGraph from '$lib/components/NetworkGraph.svelte';
 	import { learningRateStore, allDigitsNetworkStore } from '../../stores';
-	import RangeSlider from 'svelte-range-slider-pips';
+
 	import * as tslog from 'tslog';
 	import NetworkStats from '$lib/components/NetworkStats.svelte';
 	import { testNetwork } from '$lib/NetworkTesting';
@@ -13,36 +13,35 @@
 
 	const logger = new tslog.Logger({ name: 'all_digits' });
 
-	let learningRates = [0];
+	let learningRate = $state(0);
 
 	const networkStore = allDigitsNetworkStore;
 
-	$: networkShape = $networkStore?.shape;
-	$: classes = $networkStore?.shape.classes;
-	$: weights = $networkStore?.tfModel.weights;
+	const networkShape = $derived($networkStore?.shape);
+	const classes = $derived($networkStore?.shape.classes);
+	const weights = $derived($networkStore?.tfModel.weights);
 
-	let drawbox: DrawBox;
-	let prediction: number[] | undefined;
-	let activations: number[][] | undefined;
+	let drawbox = $state<DrawBox>();
+	let prediction: number[] | undefined = $state(undefined);
+	let activations: number[][] | undefined = $state(undefined);
 	const defaultLinkFilter = makeTopNLinksFilter(700);
-	let linkFilter = defaultLinkFilter;
-	let image: ImageData | undefined;
+	let linkFilter = $state(defaultLinkFilter);
+	let image: HTMLCanvasElement | undefined = $state(undefined);
 
-	let isLoading = true;
+	let isLoading = $state(true);
 	onMount(async () => {
 		await networkStore.load();
 		learningRateStore.load().then((value) => {
-			learningRates = [value];
+			learningRate = value;
 		});
 		isLoading = false;
 	});
 
 	onDestroy(async () => {
-		learningRateStore.set(learningRates[0]);
+		learningRateStore.set(learningRate);
 	});
 
-	function handleNeuronSelected(event: { detail: Neuron | null }) {
-		const neuron = event.detail;
+	function handleNeuronSelected(neuron: Neuron | null) {
 		if (neuron == null) {
 			linkFilter = defaultLinkFilter;
 		} else {
@@ -50,8 +49,8 @@
 		}
 	}
 
-	function handleDrawnImage(event: { detail: { image: ImageData } }) {
-		image = event.detail.image;
+	function handleDrawnImage({ image: drawnImage }: { image: HTMLCanvasElement }) {
+		image = drawnImage;
 		predict_image();
 	}
 
@@ -66,7 +65,7 @@
 		}
 	}
 
-	function calculateActivations(image: ImageData): number[][] {
+	function calculateActivations(image: HTMLCanvasElement): number[][] {
 		return tf.tidy(() => {
 			const pixels = tf.browser.fromPixels(image, 1);
 
@@ -95,7 +94,7 @@
 			return [d.xs.reshape([validationDataSize, 28 * 28]), d.ys];
 		});
 		logger.debug('after generating train data: tf.memory()', tf.memory());
-		train(trainXs, trainYs, valXs, valYs, batchSize, learningRates[0]);
+		train(trainXs, trainYs, valXs, valYs, batchSize, learningRate);
 	}
 
 	async function train(
@@ -179,7 +178,7 @@
 	}
 
 	function clear() {
-		drawbox.clear();
+		drawbox!.clear();
 		image = undefined;
 		predict_image();
 	}
@@ -191,8 +190,8 @@
 	<div class="grid grid-cols-9 gap-4">
 		<div class="col-span-2">
 			<h4 class="text-xl mb-2">Dessiner un chiffre</h4>
-			<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
-			<button class="btn btn-outline mt-4" disabled={!image} on:click={clear}>Effacer</button>
+			<DrawBox bind:this={drawbox} onImageData={handleDrawnImage} />
+			<button class="btn btn-outline mt-4" disabled={!image} onclick={clear}>Effacer</button>
 
 			<div class="divider"></div>
 
@@ -200,32 +199,29 @@
 
 			<ul class="menu py-4">
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train100}>
+					<button class="btn btn-outline btn-primary" onclick={train100}>
 						Entraîner avec 100 images
 					</button>
 				</li>
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train1000}>
+					<button class="btn btn-outline btn-primary" onclick={train1000}>
 						Entraîner avec 1'000 images
 					</button>
 				</li>
 				<li class="mt-1">
-					<button class="btn btn-outline btn-primary" on:click={train5000}>
+					<button class="btn btn-outline btn-primary" onclick={train5000}>
 						Entraîner avec 5'000 images
 					</button>
 				</li>
 			</ul>
 
 			<div class="text-l mb-2">Taux d'apprentissage</div>
-			<RangeSlider
-				bind:values={learningRates}
-				min={0}
-				max={1}
-				step={0.2}
-				pips
-				all="label"
-				springValues={{ stiffness: 0.2, damping: 0.7 }}
-			/>
+			<input type="range" bind:value={learningRate} min={0} max={1} step={0.2} class="range range-primary range-xs w-full" />
+			<div class="flex justify-between text-xs px-1 mt-1">
+				{#each [0, 0.2, 0.4, 0.6, 0.8, 1] as v}
+					<span class:font-bold={learningRate === v}>{v}</span>
+				{/each}
+			</div>
 		</div>
 
 		<div class="col-span-5">
@@ -234,13 +230,13 @@
 				{weights}
 				{activations}
 				{linkFilter}
-				on:neuronSelected={handleNeuronSelected}
+				onNeuronSelected={handleNeuronSelected}
 			/>
 		</div>
 		<div class="col-span-2">
 			<NetworkStats stats={$networkStore.stats} />
-			<div class="m-6" />
-			<button class="btn btn-outline btn-error" on:click={resetModel}>
+			<div class="m-6"></div>
+			<button class="btn btn-outline btn-error" onclick={resetModel}>
 				Réinitialiser le réseau
 			</button>
 		</div>

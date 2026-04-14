@@ -1,17 +1,21 @@
 <script lang="ts">
 	import type { VegaLiteSpec } from 'svelte-vega';
 	import { VegaLite } from 'svelte-vega';
-
 	import { zip2 } from '$lib/generic/utils';
 
-	export let classes: string[] = [];
-	export let labelsAndPredictions: [number[], number[]] = [[], []];
+	let {
+		classes = [],
+		labelsAndPredictions = [[], []],
+		size = 300
+	}: {
+		classes?: string[];
+		labelsAndPredictions?: [number[], number[]];
+		size?: number;
+	} = $props();
 
-	export let size = 300;
-
-	$: data = toData(classes, labelsAndPredictions);
-	$: spec = makeSpec(size, classes);
-	$: options = { width: size, height: size, actions: false };
+	const data = $derived(toData(classes, labelsAndPredictions));
+	const spec = $derived(makeSpec(size, classes));
+	const options = $derived({ width: size, height: size, actions: false });
 
 	function makeSpec(size: number, classes: string[]) {
 		let spec = structuredClone(size <= 150 ? miniSpec : fullSpec);
@@ -24,9 +28,7 @@
 		return spec;
 	}
 
-	// Note that some labels may have been shown more often than others to the network
 	function toData(classes: string[], [labels, predictions]: [number[], number[]]) {
-		// Count occurences of every label/prediction pair
 		const size = classes.length;
 		const aggregates = Array(size)
 			.fill(null)
@@ -35,8 +37,6 @@
 			aggregates[label][prediction] += 1;
 		}
 
-		// MatrixData contains everything needed by vega.
-		// We build a signedPercentage field that is positive only when on the diagonal
 		const matrixData = [];
 		for (const [colIndex, col] of aggregates.entries()) {
 			const colSum = col.reduce((a, b) => a + b, 0) as number;
@@ -65,18 +65,14 @@
 				type: 'nominal',
 				sort: null,
 				title: 'Classe réelle',
-				axis: {
-					orient: 'top'
-				}
+				axis: { orient: 'top' }
 			},
 			y: {
 				field: 'predicted',
 				type: 'nominal',
 				sort: null,
 				title: 'Prédiction',
-				axis: {
-					orient: 'right'
-				}
+				axis: { orient: 'right' }
 			}
 		},
 		layer: [
@@ -85,37 +81,22 @@
 				params: [
 					{
 						name: 'select-col',
-						select: {
-							type: 'point',
-							fields: ['actual'],
-							on: 'pointerover'
-						}
+						select: { type: 'point', fields: ['actual'], on: 'pointerover' }
 					}
 				],
 				encoding: {
 					color: {
 						field: 'signedPercentage',
 						type: 'quantitative',
-						scale: {
-							range: ['red', 'white', 'blue'],
-							interpolate: 'hsl',
-							domain: [-1, 0, 1]
-						},
+						scale: { range: ['red', 'white', 'blue'], interpolate: 'hsl', domain: [-1, 0, 1] },
 						legend: null
 					}
 				}
 			},
 			{
-				mark: {
-					type: 'text',
-					fontSize: 13
-				},
+				mark: { type: 'text', fontSize: 13 },
 				encoding: {
-					text: {
-						field: 'count',
-						type: 'quantitative',
-						formatType: 'number'
-					},
+					text: { field: 'count', type: 'quantitative', formatType: 'number' },
 					color: {
 						condition: { test: "datum['percentage'] < 0.4", value: 'black' },
 						value: 'white'
@@ -128,12 +109,7 @@
 			}
 		],
 		config: {
-			axis: {
-				titlePadding: 15,
-				titleFontSize: 20,
-				tickBand: 'extent',
-				labelFontSize: 17
-			}
+			axis: { titlePadding: 15, titleFontSize: 20, tickBand: 'extent', labelFontSize: 17 }
 		}
 	};
 
@@ -149,36 +125,23 @@
 				type: 'nominal',
 				sort: null,
 				title: null,
-				axis: {
-					orient: 'top'
-				}
+				axis: { orient: 'top' }
 			},
 			y: {
 				field: 'predicted',
 				type: 'nominal',
 				sort: null,
 				title: null,
-				axis: {
-					orient: 'right'
-				}
+				axis: { orient: 'right' }
 			},
 			color: {
 				field: 'signedPercentage',
 				type: 'quantitative',
-				scale: {
-					range: ['red', 'white', 'blue'],
-					interpolate: 'hsl',
-					domain: [-1, 0, 1]
-				},
+				scale: { range: ['red', 'white', 'blue'], interpolate: 'hsl', domain: [-1, 0, 1] },
 				legend: null
 			}
 		},
-		config: {
-			axis: {
-				labelFontSize: 14,
-				tickBand: 'extent'
-			}
-		}
+		config: { axis: { labelFontSize: 14, tickBand: 'extent' } }
 	};
 </script>
 
