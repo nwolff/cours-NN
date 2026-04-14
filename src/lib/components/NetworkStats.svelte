@@ -20,12 +20,12 @@
 
 <div class="stats shadow bg-base-200 stats-vertical">
 	<div class="stat">
-		<div class="stat-title">Images vues</div>
+		<div class="stat-title !text-base">Images vues</div>
 		<div class="stat-value">{formattedNumExamples}</div>
 	</div>
 	{#if losses?.length}
 		<div class="stat">
-			<div class="stat-title">Perte</div>
+			<div class="stat-title !text-base">Perte</div>
 			<div class="stat-value">{formatter.format(losses[losses.length - 1].loss)}</div>
 			<LossChart {losses} />
 		</div>
@@ -33,7 +33,7 @@
 
 	{#if testAccuracyPercent}
 		<div class="stat">
-			<div class="stat-title">Précision de test</div>
+			<div class="stat-title !text-base">Précision de test</div>
 			<div class="tooltip" data-tip="{testAccuracyPercent}%">
 				<progress class="progress progress-primary" value={testAccuracyPercent} max="100">
 				</progress>
