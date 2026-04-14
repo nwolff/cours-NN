@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Paint code from https://www.i-am.ai/neural-numbers.html
-	import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import {
 		drawImageFitted,
 		toGrayscaleInverted,
@@ -8,7 +8,7 @@
 		findBoundingBox
 	} from '$lib/generic/image';
 
-	const dispatch = createEventDispatcher();
+	let { onImageData }: { onImageData?: (data: { image: HTMLCanvasElement }) => void } = $props();
 
 	let SCALE_FACTOR = 9;
 	let LINEWIDTH = 2 * SCALE_FACTOR;
@@ -197,7 +197,7 @@
 	}
 
 	function imageReady() {
-		dispatch('imageData', { image: normalizeCanvas });
+		onImageData?.({ image: normalizeCanvas });
 	}
 
 	//////////////////////////////////////////////
@@ -251,22 +251,22 @@
 <div class="drawbox">
 	<div class="drawcanvas-wrapper" class:highlighted={dropHighlighted}>
 		<canvas
-			on:drop={handleDrop}
-			on:dragover={handleDragOver}
-			on:dragenter={handleDragEnter}
-			on:dragleave={handleDragLeave}
+			ondrop={handleDrop}
+			ondragover={handleDragOver}
+			ondragenter={handleDragEnter}
+			ondragleave={handleDragLeave}
 			bind:this={drawCanvas}
 			class="drawcanvas"
 			id="canvas"
 			width="140"
 			height="140"
-		/>
+		></canvas>
 	</div>
 	<div class="negativecanvas-wrapper">
-		<canvas class="negativecanvas" bind:this={negativeCanvas} width="140" height="140" />
+		<canvas class="negativecanvas" bind:this={negativeCanvas} width="140" height="140"></canvas>
 	</div>
 	<div class="normalizecanvas-wrapper">
-		<canvas class="normalizecanvas" bind:this={normalizeCanvas} width="28" height="28" />
+		<canvas class="normalizecanvas" bind:this={normalizeCanvas} width="28" height="28"></canvas>
 	</div>
 </div>
 

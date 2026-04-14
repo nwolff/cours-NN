@@ -4,14 +4,22 @@
 	import { VegaLite } from 'svelte-vega';
 	import { zip2 } from '$lib/generic/utils';
 
-	export let classes: string[] = [];
-	export let rotateClassNames = false;
-	export let percentages: number[] | undefined;
-	export let color = '#8888CC';
-	export let highlightColor = '#0000FF';
+	let {
+		classes = [],
+		rotateClassNames = false,
+		percentages,
+		color = '#8888CC',
+		highlightColor = '#0000FF'
+	}: {
+		classes?: string[];
+		rotateClassNames?: boolean;
+		percentages?: number[];
+		color?: string;
+		highlightColor?: string;
+	} = $props();
 
-	$: data = toData(classes, percentages, color, highlightColor);
-	$: spec = makeSpec(rotateClassNames);
+	const data = $derived(toData(classes, percentages, color, highlightColor));
+	const spec = $derived(makeSpec(rotateClassNames));
 
 	type DistributionData = {
 		distributionData: { label: string; percentage: number; color: string }[];
@@ -19,7 +27,6 @@
 
 	function makeSpec(rotateClassNames: boolean) {
 		let spec = structuredClone(defaultSpec);
-
 		if (rotateClassNames) {
 			spec.encoding.x.axis.labelAngle = 90;
 		}
@@ -83,11 +90,7 @@
 			}
 		} else {
 			for (const label of labels) {
-				rows.push({
-					label: label,
-					percentage: 0,
-					color: 'black'
-				});
+				rows.push({ label: label, percentage: 0, color: 'black' });
 			}
 		}
 		return { distributionData: rows };

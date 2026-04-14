@@ -3,17 +3,15 @@
 	import type { VegaLiteSpec } from 'svelte-vega';
 	import { VegaLite } from 'svelte-vega';
 
-	export let losses: Losses;
-	export let width = 200;
-	export let height = 100;
+	let { losses, width = 200, height = 100 }: { losses: Losses; width?: number; height?: number } =
+		$props();
 
-	$: dataObject = toDataObject(losses);
+	const dataObject = $derived(toDataObject(losses));
+	const options = $derived({ width, height, actions: false });
 
 	function toDataObject(losses: Losses) {
 		return { table: losses };
 	}
-
-	$: options = { width: width, height: height, actions: false };
 
 	const spec: VegaLiteSpec = {
 		$schema: 'https://vega.github.io/schema/vega-lite/v6.json',

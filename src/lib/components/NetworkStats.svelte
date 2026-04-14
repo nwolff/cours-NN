@@ -3,17 +3,19 @@
 	import LossChart from '$lib/components/LossChart.svelte';
 	import ConfusionMatrix from '$lib/components/ConfusionMatrix.svelte';
 
-	export let stats: NetworkStats;
+	let { stats }: { stats: NetworkStats } = $props();
 
-	let confusionMatrixSize = 140;
+	let confusionMatrixSize = $state(140);
 
 	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
 
-	$: formattedNumExamples = formatter.format(stats.samplesSeen);
-	$: testAccuracyPercent = Math.floor(stats.test?.accuracy * 100) || '';
-	$: classes = stats.test.classes;
-	$: losses = stats.losses;
-	$: labelsAndPredictions = [stats.test.labels, stats.test.predictions] as [number[], number[]];
+	const formattedNumExamples = $derived(formatter.format(stats.samplesSeen));
+	const testAccuracyPercent = $derived(Math.floor(stats.test?.accuracy * 100) || '');
+	const classes = $derived(stats.test.classes);
+	const losses = $derived(stats.losses);
+	const labelsAndPredictions = $derived(
+		[stats.test.labels, stats.test.predictions] as [number[], number[]]
+	);
 </script>
 
 <div class="stats shadow bg-base-200 stats-vertical">
@@ -39,8 +41,8 @@
 			<div
 				role="complementary"
 				class="mt-3"
-				on:mouseenter={() => (confusionMatrixSize = 280)}
-				on:mouseleave={() => (confusionMatrixSize = 140)}
+				onmouseenter={() => (confusionMatrixSize = 280)}
+				onmouseleave={() => (confusionMatrixSize = 140)}
 			>
 				<ConfusionMatrix size={confusionMatrixSize} {classes} {labelsAndPredictions} />
 			</div>

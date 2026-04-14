@@ -14,14 +14,14 @@
 		[0, 1, 2, 2, 2, 2, 4, 4, 4, 6, 6]
 	] as [number[], number[]];
 
-	let drawbox: DrawBox;
+	let drawbox = $state<DrawBox>();
 	const previewCanvasSize = 28 * 4;
 
 	let processedImage: HTMLCanvasElement;
 
 	const networkStore = allDigitsNetworkStore;
 
-	let dataBatch = { xs: null, ys: null };
+	let dataBatch = $state({ xs: null, ys: null });
 
 	onMount(async () => {
 		const network = await networkStore.load();
@@ -29,13 +29,13 @@
 		// isLoading = false;
 	});
 
-	function handleDrawnImage(event: { detail: { image: HTMLCanvasElement } }) {
+	function handleDrawnImage({ image }: { image: HTMLCanvasElement }) {
 		const ctx = processedImage.getContext('2d')!;
-		ctx.drawImage(event.detail.image, 0, 0, previewCanvasSize, previewCanvasSize);
+		ctx.drawImage(image, 0, 0, previewCanvasSize, previewCanvasSize);
 	}
 
 	function clear() {
-		drawbox.clear();
+		drawbox!.clear();
 		const ctx = processedImage.getContext('2d')!;
 		ctx.clearRect(0, 0, previewCanvasSize, previewCanvasSize);
 	}
@@ -49,7 +49,7 @@
 </script>
 
 <div class="flex">
-	<DrawBox bind:this={drawbox} on:imageData={handleDrawnImage} />
+	<DrawBox bind:this={drawbox} onImageData={handleDrawnImage} />
 	<canvas
 		class="border-2 m-4"
 		width={previewCanvasSize}
@@ -57,7 +57,7 @@
 		bind:this={processedImage}
 	></canvas>
 </div>
-<button class="btn btn-primary mt-3" on:click={clear}>Clear</button>
+<button class="btn btn-primary mt-3" onclick={clear}>Clear</button>
 
 <div class="divider"></div>
 
