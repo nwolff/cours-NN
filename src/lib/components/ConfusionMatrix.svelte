@@ -17,14 +17,12 @@
 	const spec = $derived(makeSpec(size, classes));
 	const options = $derived({ width: size, height: size, actions: false });
 
+	type WithXLabelAngle = { encoding: { x: { axis: { labelAngle: number } } } };
+
 	function makeSpec(size: number, classes: string[]) {
-		let spec = structuredClone(size <= 150 ? miniSpec : fullSpec);
-		let rotateClassNames = classes.some((s) => s.length > 1);
-		if (rotateClassNames) {
-			spec.encoding.x.axis.labelAngle = 90;
-		} else {
-			spec.encoding.x.axis.labelAngle = 0;
-		}
+		const spec = structuredClone(size <= 150 ? miniSpec : fullSpec);
+		const xAxis = (spec as WithXLabelAngle).encoding.x.axis;
+		xAxis.labelAngle = classes.some((s) => s.length > 1) ? 90 : 0;
 		return spec;
 	}
 
