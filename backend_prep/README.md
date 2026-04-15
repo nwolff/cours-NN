@@ -1,6 +1,6 @@
 # Setting up dependencies
 
-We use uv. All the requirements are in pyproject.toml
+We use uv. 
 
 # Preparing datasets
 
@@ -15,7 +15,7 @@ we prepare that dataset here in python and then use it from the frontend.
 
 ## Fashion
 The original format it's in (gzipped binary files) would mean more work in the frontend.
-We prefer preparing the data in the backend, because we get support from keras and because python is simpler.
+We prefer preparing the data in the backend, because we get support from keras and because python is easier for me.
 
 
     uv run make_fashion_dataset.py

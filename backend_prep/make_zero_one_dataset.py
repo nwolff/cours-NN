@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import numpy as np
 from keras import datasets, utils
 
@@ -13,7 +11,10 @@ def load():
 
 def keep_zeros_and_ones(images_and_labels):
     images, labels = images_and_labels
-    label_to_mask = lambda label: label <= 1
+
+    def label_to_mask(label):
+        return label <= 1
+
     mask = label_to_mask(labels)
     return (images[mask], labels[mask])
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import keras_tuner
 from keras import datasets, layers, losses, models, optimizers
 

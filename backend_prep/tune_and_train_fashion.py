@@ -1,8 +1,5 @@
-#!/usr/bin/env python
-
 import keras_tuner
 from keras import layers, losses, models, optimizers
-
 from make_fashion_dataset import load
 
 images, labels = load()
