@@ -42,6 +42,7 @@
 			</a>
 		</li>
 	</ul>
+	<a href="{base}/about" class="ml-auto text-2xl text-base-content/30 hover:text-base-content" title="À propos">ⓘ</a>
 </div>
 
 <div class="divider m-0 pb-6"></div>
