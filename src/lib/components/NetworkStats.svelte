@@ -13,9 +13,10 @@
 	const testAccuracyPercent = $derived(Math.floor(stats.test?.accuracy * 100) || '');
 	const classes = $derived(stats.test.classes);
 	const losses = $derived(stats.losses);
-	const labelsAndPredictions = $derived(
-		[stats.test.labels, stats.test.predictions] as [number[], number[]]
-	);
+	const labelsAndPredictions = $derived([stats.test.labels, stats.test.predictions] as [
+		number[],
+		number[]
+	]);
 </script>
 
 <div class="stats shadow bg-base-200 stats-vertical">
