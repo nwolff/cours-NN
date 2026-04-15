@@ -25,10 +25,12 @@
 		distributionData: { label: string; percentage: number; color: string }[];
 	};
 
+	type WithXLabelAngle = { encoding: { x: { axis: { labelAngle: number } } } };
+
 	function makeSpec(rotateClassNames: boolean) {
-		let spec = structuredClone(defaultSpec);
+		const spec = structuredClone(defaultSpec);
 		if (rotateClassNames) {
-			spec.encoding.x.axis.labelAngle = 90;
+			(spec as WithXLabelAngle).encoding.x.axis.labelAngle = 90;
 		}
 		return spec;
 	}
