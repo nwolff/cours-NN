@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/nwolff/src/routes/temperature_control/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git cherry-pick *)",
+      "Bash(git commit --amend -m ' *)",
+      "Bash(git branch *)",
+      "Bash(ls /Users/nwolff/src/github.com/nwolff/cours-NN/.eslint* /Users/nwolff/src/github.com/nwolff/cours-NN/.prettier*)",
+      "Bash(ls /Users/nwolff/src/github.com/nwolff/cours-NN/postcss*)",
+      "Bash(npx eslint *)",
+      "Bash(node -e \"const p = require\\('/Users/nwolff/src/github.com/nwolff/cours-NN/node_modules/@typescript-eslint/eslint-plugin'\\); console.log\\(Object.keys\\(p.configs || {}\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node --input-type=module)"
+    ]
+  }
+}
