@@ -22,12 +22,12 @@
 	const networkShape = $derived($networkStore?.shape);
 	const classes = $derived($networkStore?.shape.classes);
 	const weights = $derived.by(() => {
-		_tick;
+		void _tick;
 		const w = $networkStore?.tfModel.weights;
 		return w ? [...w] : undefined;
 	});
 	const currentStats = $derived.by(() => {
-		_tick;
+		void _tick;
 		const s = $networkStore?.stats;
 		return s ? { ...s, losses: [...s.losses] } : null;
 	});
