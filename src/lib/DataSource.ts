@@ -28,14 +28,14 @@ export class MnistData implements DataSource {
 	private config: DataSourceConfig;
 	private shuffledTrainIndex: number;
 	private shuffledTestIndex: number;
-	private datasetImages: Float32Array;
-	private datasetLabels: Uint8Array;
-	private trainIndices: Uint32Array;
-	private testIndices: Uint32Array;
-	private trainImages: Float32Array;
-	private testImages: Float32Array;
-	private trainLabels: Uint8Array;
-	private testLabels: Uint8Array;
+	private datasetImages!: Float32Array;
+	private datasetLabels!: Uint8Array;
+	private trainIndices!: Uint32Array;
+	private testIndices!: Uint32Array;
+	private trainImages!: Float32Array;
+	private testImages!: Float32Array;
+	private trainLabels!: Uint8Array;
+	private testLabels!: Uint8Array;
 
 	constructor(config: DataSourceConfig) {
 		this.config = config;
