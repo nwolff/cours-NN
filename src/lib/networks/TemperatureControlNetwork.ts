@@ -28,7 +28,7 @@ function newTemperatureControlNetworkShape(): DenseNetwork {
 			width: 3,
 			height: 0,
 			marker_size: 20,
-			classes: ['Temperature apparente (°C)']
+			classes: ['Température apparente (°C)']
 		}
 	);
 }
