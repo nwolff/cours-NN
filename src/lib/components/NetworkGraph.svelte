@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { type LayerVariable } from '@tensorflow/tfjs';
-	import type { DenseNetwork, Link, LinkFilter, Layer, Neuron } from '$lib/NetworkShape';
+	import type { DenseNetwork, Link, Layer, Neuron } from '$lib/NetworkShape';
+	import type { LinkFilter } from '$lib/LinkFilters';
 	import { DefaultMap, zip2 } from '$lib/generic/utils';
 	import { hsv2rgb } from '$lib/generic/image';
 	import plotly from 'plotly.js-dist';
@@ -60,7 +61,7 @@
 		return `rgb(${r},${g},${b})`;
 	}
 
-	function neuronTraces(networkShape: DenseNetwork, activations: number[][] | null) {
+	function neuronTraces(networkShape: DenseNetwork, activations: (number[] | null)[] | null) {
 		const traces = [];
 		for (const [i, layer] of networkShape.layers.entries()) {
 			const layerActivations = activations?.[i];
@@ -226,7 +227,7 @@
 			traces.push(...neuronTraces(networkShape, activations));
 		} else if (weights) {
 			let biasesTensors = weights.filter((w) => w.originalName.endsWith('bias'));
-			const biases = biasesTensors.map((t) => t.read().arraySync() as number[]);
+			const biases: (number[] | null)[] = biasesTensors.map((t) => t.read().arraySync() as number[]);
 			biases.unshift(null); // The input layer does not have biases
 			traces.push(...neuronTraces(networkShape, biases));
 		}
@@ -239,8 +240,7 @@
 		}
 
 		// 3. Annotations
-		const graphLayout = structuredClone(defaultGraphLayout);
-		graphLayout.annotations = buildAnnotations(networkShape.layers);
+		const graphLayout = { ...defaultGraphLayout, annotations: buildAnnotations(networkShape.layers) };
 
 		plotly.react('network-graph', traces, graphLayout, graphConfig);
 	}
