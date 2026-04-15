@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 Based on :
 https://medium.com/analytics-vidhya/lenet-with-tensorflow-a35da0d503df
