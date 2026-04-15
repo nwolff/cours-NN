@@ -157,15 +157,13 @@
 		// If this fails because there is already another fit running
 		// Then the 4 tensors get leaked (because the cleanup occurs in
 		// onTrainEnd, which is never called)
-		const params = {
+		const params: tf.ModelFitArgs = {
 			epochs: 1,
 			batchSize: batchSize,
 			shuffle: true,
-			callbacks: { onBatchBegin, onBatchEnd, onEpochEnd, onTrainEnd }
+			callbacks: { onBatchBegin, onBatchEnd, onEpochEnd, onTrainEnd } as tf.CustomCallbackArgs,
+			validationData: valXs && valYs ? [valXs, valYs] : undefined
 		};
-		if (valXs && valYs) {
-			params['validationData'] = [valXs, valYs];
-		}
 
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
 	}
