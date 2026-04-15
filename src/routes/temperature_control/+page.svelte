@@ -41,16 +41,19 @@
 		maximumFractionDigits: 2
 	});
 
-	function buildNeuronFormula(tfWeights) {
+	function buildNeuronFormula(tfWeights: tf.LayerVariable[] | undefined) {
 		// Build something like:  1,0 * T - 0.19 * V + 0.33 * H - 4
 		if (!tfWeights) {
 			return;
 		}
-		const withOperator = (x) => (x > 0 ? `+ ${x}` : `- ${Math.abs(x)}`);
-		const [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync());
-		const [wT, wV, wH] = weights.map((w) => formulaFormatter.format(w));
-		const bias = formulaFormatter.format(biases[0]);
-		return `${wT} * T ${withOperator(wV)} * V ${withOperator(wH)} * H ${withOperator(bias)}`;
+		const withOperator = (x: number) =>
+			x > 0
+				? `+ ${formulaFormatter.format(x)}`
+				: `- ${formulaFormatter.format(Math.abs(x))}`;
+		const [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync() as number[]);
+		const [wT, wV, wH] = weights;
+		const bias = biases[0];
+		return `${formulaFormatter.format(wT)} * T ${withOperator(wV)} * V ${withOperator(wH)} * H ${withOperator(bias)}`;
 	}
 
 	const formatter = Intl.NumberFormat('en', { notation: 'compact' });
@@ -77,7 +80,7 @@
 		predict_apparent_temperature();
 	});
 
-	const randomUniformInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
+	const randomUniformInt = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min);
 
 	function show_example_in_UI() {
 		temperature = randomUniformInt(MIN_TEMPERATURE, MAX_TEMPERATURE);
@@ -101,7 +104,7 @@
 		return tf.tidy(() => {
 			let input = tf.tensor([temperature, windSpeed, waterVaporPressure]).reshape([-1, 3]);
 			const activationTensor = $networkStore.featureModel.predict(input) as tf.Tensor[];
-			return [input, activationTensor].map((x) => tf.squeeze(x).arraySync()) as number[][];
+			return [input, ...activationTensor].map((x) => tf.squeeze(x).arraySync()) as number[][];
 		});
 	}
 
@@ -113,7 +116,7 @@
 	async function train(trainXs: tf.Tensor2D, trainYs: tf.Tensor2D, batchSize: number) {
 		const networkUnderTraining = $networkStore;
 
-		function onBatchEnd(batch: number, logs: tf.Logs) {
+		function onBatchEnd(batch: number, logs: tf.Logs = {}) {
 			logger.debug('end batch:', batch, '. logs:', logs);
 			networkUnderTraining.trainingRoundDone({
 				samplesSeen: logs.size,
@@ -124,11 +127,11 @@
 			show_example_in_UI();
 		}
 
-		function onEpochEnd(epoch: number, logs: tf.Logs) {
+		function onEpochEnd(epoch: number, logs: tf.Logs = {}) {
 			logger.debug('end epoch:', epoch, '. logs:', logs);
 		}
 
-		function onTrainEnd(_logs: tf.Logs) {
+		function onTrainEnd(_logs: tf.Logs = {}) {
 			logger.debug('onTrain end : tf.memory()', tf.memory());
 			// tf.dispose(trainXs);
 			// tf.dispose(trainYs); // For this network they live forever. XXX
@@ -142,11 +145,11 @@
 		// If this fails because there is already another fit running
 		// Then the 2 tensors get leaked (because the cleanup occurs in
 		// onTrainEnd, which is never called)
-		const params = {
+		const params: tf.ModelFitArgs = {
 			epochs: 1,
 			batchSize: batchSize,
 			shuffle: false,
-			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd }
+			callbacks: { onBatchEnd, onEpochEnd, onTrainEnd } as tf.CustomCallbackArgs
 		};
 		return networkUnderTraining.tfModel.fit(trainXs, trainYs, params);
 	}

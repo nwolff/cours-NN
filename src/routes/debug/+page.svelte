@@ -21,11 +21,12 @@
 
 	const networkStore = allDigitsNetworkStore;
 
-	let dataBatch = $state({ xs: null, ys: null });
+	import type { DataBatch } from '$lib/DataSource';
+	let dataBatch: DataBatch | null = $state(null);
 
 	onMount(async () => {
-		const network = await networkStore.load();
-		dataBatch = network.nextTestBatch(10);
+		await networkStore.load();
+		dataBatch = $networkStore.nextTestBatch(10);
 		// isLoading = false;
 	});
 
@@ -75,4 +76,4 @@
 
 <div class="divider"></div>
 
-<DataBatchGrid {dataBatch}></DataBatchGrid>
+{#if dataBatch}<DataBatchGrid {dataBatch}></DataBatchGrid>{/if}
