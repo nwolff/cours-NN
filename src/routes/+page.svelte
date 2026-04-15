@@ -16,7 +16,5 @@
 			>Questionnaire après</a
 		>
 	</div>
-	<div class="basis-1/4">
-		<a class="link" href="{base}/about">A propos</a>
-	</div>
+
 </div>
