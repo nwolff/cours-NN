@@ -3,7 +3,6 @@ import { newAllDigitsNetwork } from '$lib/networks/AllDigitsNetwork';
 import { newZeroOneNetwork } from '$lib/networks/ZeroOneNetwork';
 import { newFashionNetwork } from '$lib/networks/FashionNetwork';
 import { newTemperatureControlNetwork } from '$lib/networks/TemperatureControlNetwork';
-import type { Network } from '$lib/Network';
 
 function asyncReloadable<T>(loader: () => Promise<T>) {
 	const { subscribe, set } = writable<T>(undefined as unknown as T);

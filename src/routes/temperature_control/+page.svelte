@@ -25,13 +25,13 @@
 
 	const networkShape = $derived($networkStore?.shape);
 	const weights = $derived.by(() => {
-		_tick;
+		void _tick;
 		const w = $networkStore?.tfModel.weights;
 		return w ? [...w] : undefined;
 	});
 	const neuronFormula = $derived(buildNeuronFormula(weights));
 	const currentStats = $derived.by(() => {
-		_tick;
+		void _tick;
 		const s = $networkStore?.stats;
 		return s ? { ...s, losses: [...s.losses] } : null;
 	});
@@ -47,9 +47,7 @@
 			return;
 		}
 		const withOperator = (x: number) =>
-			x > 0
-				? `+ ${formulaFormatter.format(x)}`
-				: `- ${formulaFormatter.format(Math.abs(x))}`;
+			x > 0 ? `+ ${formulaFormatter.format(x)}` : `- ${formulaFormatter.format(Math.abs(x))}`;
 		const [weights, biases] = tfWeights.map((w) => w.read().flatten().arraySync() as number[]);
 		const [wT, wV, wH] = weights;
 		const bias = biases[0];
@@ -80,7 +78,8 @@
 		predict_apparent_temperature();
 	});
 
-	const randomUniformInt = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min);
+	const randomUniformInt = (min: number, max: number) =>
+		Math.floor(Math.random() * (max - min) + min);
 
 	function show_example_in_UI() {
 		temperature = randomUniformInt(MIN_TEMPERATURE, MAX_TEMPERATURE);

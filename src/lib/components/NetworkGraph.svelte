@@ -227,7 +227,9 @@
 			traces.push(...neuronTraces(networkShape, activations));
 		} else if (weights) {
 			let biasesTensors = weights.filter((w) => w.originalName.endsWith('bias'));
-			const biases: (number[] | null)[] = biasesTensors.map((t) => t.read().arraySync() as number[]);
+			const biases: (number[] | null)[] = biasesTensors.map(
+				(t) => t.read().arraySync() as number[]
+			);
 			biases.unshift(null); // The input layer does not have biases
 			traces.push(...neuronTraces(networkShape, biases));
 		}
@@ -240,7 +242,10 @@
 		}
 
 		// 3. Annotations
-		const graphLayout = { ...defaultGraphLayout, annotations: buildAnnotations(networkShape.layers) };
+		const graphLayout = {
+			...defaultGraphLayout,
+			annotations: buildAnnotations(networkShape.layers)
+		};
 
 		plotly.react('network-graph', traces, graphLayout, graphConfig);
 	}
