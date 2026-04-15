@@ -224,7 +224,14 @@
 			</ul>
 
 			<div class="text-l mb-2">Taux d'apprentissage</div>
-			<input type="range" bind:value={learningRate} min={0} max={1} step={0.2} class="range range-primary range-xs w-full" />
+			<input
+				type="range"
+				bind:value={learningRate}
+				min={0}
+				max={1}
+				step={0.2}
+				class="range range-primary range-xs w-full"
+			/>
 			<div class="flex justify-between text-xs px-1 mt-1">
 				{#each [0, 0.2, 0.4, 0.6, 0.8, 1] as v}
 					<span class:font-bold={learningRate === v}>{v}</span>

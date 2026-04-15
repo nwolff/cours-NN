@@ -3,8 +3,11 @@
 	import type { VegaLiteSpec } from 'svelte-vega';
 	import { VegaLite } from 'svelte-vega';
 
-	let { losses, width = 200, height = 100 }: { losses: Losses; width?: number; height?: number } =
-		$props();
+	let {
+		losses,
+		width = 200,
+		height = 100
+	}: { losses: Losses; width?: number; height?: number } = $props();
 
 	const dataObject = $derived(toDataObject(losses));
 	const options = $derived({ width, height, actions: false });
