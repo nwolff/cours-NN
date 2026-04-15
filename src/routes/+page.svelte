@@ -1,10 +1,9 @@
 <script lang="ts">
-	import numbersImage from '$lib/assets/neural-numbers.png';
 	import { base } from '$app/paths';
 </script>
 
 <h1 class="px-8 text-3xl">Aider un réseau de neurones à apprendre</h1>
-<img alt="Chiffres" src={numbersImage} class="pt-8 size-10/12" />
+<img alt="Chiffres" src="{base}/neural-numbers.png" class="pt-8 size-10/12" />
 <div class="p-8 flex flex-row">
 	<div class="basis-1/4">
 		<a class="link link-primary" href="https://forms.office.com/e/Nt1PhkpX76" target="_blank"
