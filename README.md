@@ -39,6 +39,10 @@ Automatically formatting:
 
     npm run format
 
+Linting:
+
+    npm run lint
+
 Type-checking:
 
     npm run check
