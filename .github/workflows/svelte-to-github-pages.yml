@@ -50,6 +50,10 @@ jobs:
 
       - run: npm install
 
+      - run: npm run format
+
+      - run: npm run check
+
       - run: npm run build
 
       - name: Setup Pages
