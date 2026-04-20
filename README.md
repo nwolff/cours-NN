@@ -43,11 +43,11 @@ Linting:
 
     npm run lint
 
+There are currently some linting errors
+
 Type-checking:
 
     npm run check
-
-There are currently some typing errors, many because we extract data from tensors that are very generically typed.
 
 ## Verifying the production build
 
