@@ -21,7 +21,7 @@
 
 <div class="stats shadow bg-base-200 stats-vertical">
 	<div class="stat">
-		<div class="stat-title !text-base">Images vues</div>
+		<div class="stat-title !text-base">Exemples vus</div>
 		<div class="stat-value">{formattedNumExamples}</div>
 	</div>
 	{#if losses?.length}
