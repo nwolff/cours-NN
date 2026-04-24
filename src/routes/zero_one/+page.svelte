@@ -13,7 +13,7 @@
 
 	const logger = new tslog.Logger({ name: 'zero_one' });
 
-	let learningRate = $state(0);
+	let learningRate = 0.2;
 
 	const networkStore = zeroOnenetworkStore;
 
@@ -43,14 +43,7 @@
 	let isLoading = $state(true);
 	onMount(async () => {
 		await networkStore.load();
-		learningRateStore.load().then((value) => {
-			learningRate = value;
-		});
 		isLoading = false;
-	});
-
-	onDestroy(async () => {
-		learningRateStore.set(learningRate);
 	});
 
 	function handleDrawnImage({ image: drawnImage }: { image: HTMLCanvasElement }) {
@@ -221,20 +214,6 @@
 				</li>
 			</ul>
 
-			<div class="text-l mb-2">Taux d'apprentissage</div>
-			<input
-				type="range"
-				bind:value={learningRate}
-				min={0}
-				max={1}
-				step={0.2}
-				class="range range-primary range-xs w-full"
-			/>
-			<div class="flex justify-between text-xs px-1 mt-1">
-				{#each [0, 0.2, 0.4, 0.6, 0.8, 1] as v}
-					<span class:font-bold={learningRate === v}>{v}</span>
-				{/each}
-			</div>
 		</div>
 		<div class="col-span-5">
 			<NetworkGraph
