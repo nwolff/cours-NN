@@ -1,4 +1,4 @@
-#Assessment
+# Assessment
 
 Library compatibility
 Library Status
@@ -43,7 +43,7 @@ svelte-range-slider-pips GitHub
 Svelte 5 migration guide
 Refactoring Svelte stores to $state runes
 
-# Phase 1
+## Phase 1
 
 Those on:change are intentional — the RangeSlider component uses createEventDispatcher internally, so on:change is the correct way to consume it (this is the bind:values workaround from the migration plan).
 
@@ -63,7 +63,7 @@ The fixes needed were:
 vega, vega-embed, vega-lite — now explicit peer deps of svelte-vega v4 (previously bundled, now separate)
 svelte-range-slider-pips excluded from Vite's optimizer to avoid the Tailwind @layer base conflict
 
-# Phase 2
+## Phase 2
 
 The remaining diagnostics are pre-existing TypeScript issues unrelated to the migration — the validationData indexing error and onTrainEnd signature mismatch were there before. The "Cannot invoke object possibly undefined" on drawbox!.clear() is also a Svelte 5 component typing quirk.
 

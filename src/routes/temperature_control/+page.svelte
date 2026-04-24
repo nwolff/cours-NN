@@ -101,9 +101,19 @@
 		waterVaporPressure: number
 	): number[][] {
 		return tf.tidy(() => {
-			let input = tf.tensor([temperature, windSpeed, waterVaporPressure]).reshape([-1, 3]);
-			const activationTensor = $networkStore.featureModel.predict(input) as tf.Tensor[];
-			return [input, ...activationTensor].map((x) => tf.squeeze(x).arraySync()) as number[][];
+			const input = tf.tensor([temperature, windSpeed, waterVaporPressure]).reshape([-1, 3]);
+			const rawPrediction = $networkStore.featureModel.predict(input);
+			// predict() returns Tensor when there is a single output layer, Tensor[] otherwise
+			const activationTensors: tf.Tensor[] = Array.isArray(rawPrediction)
+				? rawPrediction
+				: [rawPrediction as tf.Tensor];
+			const layerActivations = activationTensors.map((x) => {
+				const values = tf.squeeze(x).arraySync();
+				// A single-unit layer produces a scalar; wrap it so every layer has number[]
+				return (Array.isArray(values) ? values : [values]) as number[];
+			});
+			const inputActivations = tf.squeeze(input).arraySync() as number[];
+			return [inputActivations, ...layerActivations];
 		});
 	}
 
